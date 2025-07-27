@@ -21,3 +21,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.idea/vcs.xml
+/.kotlin/sessions/kotlin-compiler-16705911744538807944.salive
