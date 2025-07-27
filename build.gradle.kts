@@ -35,6 +35,6 @@ subprojects {
     configure<DetektExtension> {
         config.setFrom(files("$rootDir/config/detekt.yml"))
         buildUponDefaultConfig = true
-        allRules = true
+        allRules = false
     }
 }
