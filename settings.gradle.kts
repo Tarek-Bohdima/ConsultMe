@@ -23,4 +23,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Consult Me"
 include(":app")
-include(":chat-core")
+include(":core-ui")
+include(":core-data")
+include(":core-database")
+include(":core-testing")
+include(":feature-chat")
