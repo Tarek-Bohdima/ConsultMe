@@ -12,7 +12,7 @@
 
 - Fully configured for Jetpack Compose
 - Code quality tools included and pre-configured
-- Acts as a wrapper/template for Socialite (Google sample project)
+- Acts as a template 
 - 100% Kotlin codebase
 
 ## Getting Started
