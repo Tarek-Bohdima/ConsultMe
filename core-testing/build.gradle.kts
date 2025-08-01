@@ -1,3 +1,6 @@
+/*
+ * Copyright 2025 MyCompany
+ */
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +8,10 @@ plugins {
 
 kotlin {
     jvmToolchain(17)
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        freeCompilerArgs.set(listOf("-Xcontext-receivers"))
+    }
 }
 
 android {
@@ -32,9 +39,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs = listOf("-Xcontext-receivers")
+
+    buildFeatures {
+        aidl = false
+        buildConfig = false
+        renderScript = false
+        shaders = false
     }
 
     lint {
@@ -59,11 +69,12 @@ android {
 }
 
 dependencies {
+    // Dependencies required by this module's own code (e.g., HiltTestRunner)
+    implementation(libs.androidx.test.runner) // For AndroidJUnitRunner
+    implementation(libs.hilt.android.testing) // For HiltTestApplication
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.compose.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // Common test dependencies exposed to other modules
+    api(libs.junit)
+    api(libs.androidx.test.ext.junit) // Alias for androidx.test.ext:junit
+    api(libs.androidx.espresso.core)
 }
