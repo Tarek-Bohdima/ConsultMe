@@ -2,7 +2,7 @@
 
 [![Android CI](https://github.com/Tarek-Bohdima/ConsultMe/actions/workflows/android_ci.yml/badge.svg)](https://github.com/Tarek-Bohdima/ConsultMe/actions/workflows/android_ci.yml)
 
-**ConsultMe** is a template project for Jetpack Compose applications, featuring integrated tools for code quality and automation. It wraps another project, Socialite (sample from Google), and includes:
+**ConsultMe** is a template project for Jetpack Compose applications, featuring integrated tools for code quality and automation. It includes:
 
 - **Spotless:** Automated code formatting and linting
 - **Detect:** Static code analysis
