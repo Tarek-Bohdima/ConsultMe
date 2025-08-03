@@ -1,6 +1,10 @@
+// Copyright 2025 MyCompany
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.gradle) // <-- ENSURED/ADDED
+    alias(libs.plugins.ksp) // <-- ENSURED/ADDED
+    alias(libs.plugins.compose.compiler) // <-- ENSURED/ADDED
 }
 
 kotlin {
@@ -12,19 +16,18 @@ kotlin {
 }
 
 android {
-    namespace = "com.thecompany.consultme.feature.chat"
+    namespace = "com.thecompany.consultme.feature.chat" // <-- VERIFIED
     compileSdk = 36
 
     defaultConfig {
         minSdk = 25
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner" // <-- CHANGED
         consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = false // As per other modules
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -37,18 +40,21 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    buildFeatures {
+        // <-- ENSURED/ADDED
+        compose = true // Feature module provides UI
+        aidl = false
+        buildConfig = false // Usually false for feature modules
+        renderScript = false
+        shaders = false
+    }
+
     lint {
+        // Kept your existing lint configuration
         baseline = file("lint-baseline.xml")
-        // --- Add these lines to be more explicit ---
         quiet = true
         checkAllWarnings = true
-
-        // This is a strict setting that will elevate all warnings to errors.
-        // This will force them to appear in the report.
-        // You may want to set this to 'false' again later.
         warningsAsErrors = false
-
-        // --- Keep the previous settings ---
         textReport = true
         htmlReport = true
         xmlReport = false
@@ -59,15 +65,38 @@ android {
 }
 
 dependencies {
+    // Module dependencies
+    implementation(project(":core-data")) // <-- ADDED (Features usually need data)
+    // implementation(project(":core-ui")) // Usually not a direct dependency for features; app module composes
 
-    implementation(project(":core-data"))
-    implementation(project(":core-ui"))
-    androidTestImplementation(project(":core-testing"))
-
+    // Core & Hilt
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    // Arch Components (ViewModels, Lifecycle for the feature)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+
+    // Testing - Now using :core-testing
+    testImplementation(project(":core-testing")) // <-- ADDED/ENSURED
+    androidTestImplementation(project(":core-testing")) // <-- ADDED/ENSURED
+
+    // Compose specific testing
+    androidTestImplementation(platform(libs.androidx.compose.bom)) // BOM for test artifacts
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // implementation(libs.androidx.appcompat) // <-- REMOVED
+    // testImplementation(libs.junit) // <-- REMOVED
+    // androidTestImplementation(libs.androidx.test.ext.junit) // <-- REMOVED
+    // androidTestImplementation(libs.androidx.espresso.core) // <-- REMOVED
 }

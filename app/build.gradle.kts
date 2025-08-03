@@ -32,7 +32,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner" // <-- CHANGED
 
         vectorDrawables {
             useSupportLibrary = true
@@ -99,11 +99,11 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
+    ksp(libs.hilt.compiler) // Correct: Hilt KSP
 
     // Arch Components
-    implementation(libs.androidx.lifecycle.runtime.compose) // Ensure this alias exists in your libs.versions.toml
-    implementation(libs.androidx.lifecycle.viewmodel.compose) // Ensure this alias exists in your libs.versions.toml
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -114,12 +114,19 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Tooling
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // Testing - Now using :core-testing
+    testImplementation(project(":core-testing")) // <-- CORRECTED
+    androidTestImplementation(project(":core-testing")) // <-- CORRECTED
+
+    // androidTestImplementation(libs.androidx.test.ext.junit) // <-- REMOVED (provided by :core-testing)
+    // androidTestImplementation(libs.androidx.espresso.core) // <-- REMOVED (provided by :core-testing)
+    // testImplementation(libs.junit) // <-- REMOVED (provided by :core-testing)
+
+    // Compose specific testing - Stays here
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
+    // Tooling
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
