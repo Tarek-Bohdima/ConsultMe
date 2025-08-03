@@ -1,6 +1,9 @@
+// Copyright 2025 MyCompany
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.gradle) // <-- ADDED
+    alias(libs.plugins.ksp) // <-- ADDED
 }
 
 kotlin {
@@ -17,9 +20,14 @@ android {
 
     defaultConfig {
         minSdk = 25
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner" // <-- CHANGED
         consumerProguardFiles("consumer-rules.pro")
+
+        // KSP argument for Room schema location
+        ksp {
+            // <-- ADDED
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
@@ -37,18 +45,21 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    buildFeatures {
+        // <-- ADDED
+        compose = false // Database modules typically don't need Compose
+        aidl = false
+        buildConfig = false
+        renderScript = false
+        shaders = false
+    }
+
     lint {
+        // Assuming you want to keep the lint configuration as is
         baseline = file("lint-baseline.xml")
-        // --- Add these lines to be more explicit ---
         quiet = true
         checkAllWarnings = true
-
-        // This is a strict setting that will elevate all warnings to errors.
-        // This will force them to appear in the report.
-        // You may want to set this to 'false' again later.
         warningsAsErrors = false
-
-        // --- Keep the previous settings ---
         textReport = true
         htmlReport = true
         xmlReport = false
@@ -59,12 +70,24 @@ android {
 }
 
 dependencies {
-
+    // Core & Hilt
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.hilt.android) // <-- ADDED
+    ksp(libs.hilt.compiler) // <-- ADDED
+
+    // Room
+    implementation(libs.androidx.room.runtime) // <-- ADDED
+    implementation(libs.androidx.room.ktx) // <-- ADDED
+    ksp(libs.androidx.room.compiler) // <-- ADDED (KSP for Room)
+
+    // Testing - Now using :core-testing
+    testImplementation(project(":core-testing")) // <-- ADDED
+    androidTestImplementation(project(":core-testing")) // <-- ADDED
+
+    // implementation(libs.androidx.appcompat) // <-- REMOVED
+    // implementation(platform(libs.androidx.compose.bom)) // <-- REMOVED
+    // implementation(libs.androidx.compose.material3) // <-- REMOVED
+    // testImplementation(libs.junit) // <-- REMOVED
+    // androidTestImplementation(libs.androidx.test.ext.junit) // <-- REMOVED
+    // androidTestImplementation(libs.androidx.espresso.core) // <-- REMOVED
 }

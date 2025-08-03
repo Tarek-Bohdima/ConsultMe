@@ -19,6 +19,9 @@ hilt = "2.57"
 junit = "4.13.2"
 kotlin = "2.2.0"
 ksp = "2.2.0-2.0.2"
+mockk = "1.14.5" # A recent stable version of MockK
+turbine = "1.2.1"  # A recent stable version of Turbine
+truth = "1.4.4"    # A recent stable version of Google's Truth
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
@@ -53,6 +56,16 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 ktlint = "com.pinterest.ktlint:ktlint-cli:1.7.1" # Used in build.gradle.kts
+
+# MockK
+mockk-core = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
+
+# Turbine (for testing Flows)
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+
+# Truth (for fluent assertions)
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
