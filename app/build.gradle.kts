@@ -2,11 +2,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.gradle)
+//    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.compose.compiler)
 }
-
+// ADDED Hilt configuration block
+hilt {
+    enableAggregatingTask = true
+}
 // Enable room auto-migrations
 // Configure KSP arguments, including androidx . room . Room schema location
 // ksp {
@@ -100,6 +104,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler) // Correct: Hilt KSP
+//    kapt(libs.hilt.compiler)
 
     // Arch Components
     implementation(libs.androidx.lifecycle.runtime.compose)

@@ -2,8 +2,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt.gradle) // <-- ADDED
     alias(libs.plugins.ksp) // <-- ADDED
+    alias(libs.plugins.hilt.gradle) // <-- ADDED
     alias(libs.plugins.compose.compiler) // <-- ADDED/ENSURED
 }
 
@@ -13,6 +13,10 @@ kotlin {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         freeCompilerArgs.set(listOf("-Xcontext-receivers"))
     }
+}
+
+hilt {
+    enableAggregatingTask = true
 }
 
 android {
