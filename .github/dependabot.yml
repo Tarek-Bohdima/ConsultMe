@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "gradle" # For Android dependencies
+    directory: "/" # Location of your build.gradle files
+    schedule:
+      interval: "weekly" # Or "daily" / "monthly"
+    open-pull-requests-limit: 10 # Manage PR volume
+    reviewers:
+      - "Tarek-Bohdima" # Optional: assign reviewers
+    assignees:
+      - "Tarek-Bohdima" # Optional: assign someone
+    commit-message:
+      prefix: "chore"
+      include: "scope"
