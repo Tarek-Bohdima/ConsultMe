@@ -16,14 +16,10 @@
 !.idea/vcs.xml
 # For shared code styles (e.g., for Spotless/ktlint integration in IDE)
 !.idea/codeStyles/
-# For shared copyright profiles
-!.idea/copyright/
 # For shared inspection profiles (can be used by Detekt IDE plugin)
 !.idea/inspectionProfiles/
 # Project structure and compiler settings (if your team shares these for IDE consistency)
 !.idea/compiler.xml
-!.idea/kotlinc.xml
-!.idea/modules.xml
 !.idea/misc.xml
 !.idea/migrations.xml
 !.idea/gradle.xml
