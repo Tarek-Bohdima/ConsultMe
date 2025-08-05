@@ -1,25 +1,133 @@
-*.iml
-.gradle
+# =========================================================================
+# === General project files, IDE, OS, and build system specific ignores ===
+# =========================================================================
+# Created by combining project specifics, best practices, and community templates.
+
+# Local configuration - Never commit
+# Contains machine-specific paths (SDK, NDK) and potentially sensitive info.
 /local.properties
-/.idea/androidTestResultsUserPreferences.xml
-/.idea/caches
-/.idea/compiler.xml
-/.idea/kotlinc.xml
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/.idea/deploymentTargetDropDown.xml
-/.idea/deploymentTargetSelector.xml
-/.idea/misc.xml
-/.idea/migrations.xml
-/.idea/gradle.xml
+
+# === IntelliJ IDEA / Android Studio ===
+# Ignore the entire .idea directory by default...
+.idea/
+
+# ...but UN-ignore specific files and directories that should be shared:
+# For Version Control System settings
+!.idea/vcs.xml
+# For shared code styles (e.g., for Spotless/ktlint integration in IDE)
+!.idea/codeStyles/
+# For shared inspection profiles (can be used by Detekt IDE plugin)
+!.idea/inspectionProfiles/
+# Project structure and compiler settings (if your team shares these for IDE consistency)
+!.idea/compiler.xml
+!.idea/misc.xml
+!.idea/migrations.xml
+!.idea/gradle.xml
+# Note: Other files from your original .gitignore that were within .idea and explicitly ignored
+# (like androidTestResultsUserPreferences.xml, caches, workspace.xml, navEditor.xml, etc.)
+# are now covered by the general .idea/ ignore.
+
+# Module files (often re-generated or user-specific)
+*.iml
+
+# === Gradle ===
+# Gradle build system files and caches
+.gradle/
+/build/
+
+# Avoid ignoring Gradle wrapper jar file (as .jar files are usually ignored below)
+!gradle/wrapper/gradle-wrapper.jar
+!gradle-wrapper.jar # In case it's at the root
+
+# Cache of project tasks
+.gradletasknamecache
+
+# === Kotlin ===
+# Kotlin build artifacts and session files
+.kotlin/
+
+# === Build Output & Artifacts ===
+# Android Studio generated files and folders
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# Built application files (APKs, AABs, etc.)
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Output of build analysis
+output.json
+
+# Signing files - CRITICAL TO IGNORE
+*.jks
+*.keystore
+.signing/ # If you have a .signing directory for config
+
+# Google Services (Firebase, Google Cloud APIs) - CRITICAL TO IGNORE
+google-services.json
+
+# Android Profiling & Debugging
+*.hprof # Java heap dump
+*.log   # Log files
+# Android Studio's navigation editor (user-specific state)
+.navigation/
+
+# === OS-specific files ===
+# macOS
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-/.idea/vcs.xml
-/.kotlin/sessions/kotlin-compiler-16705911744538807944.salive
+.AppleDouble
+.LSOverride
+Icon\r
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+*.icloud # iCloud generated files
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# === Other common ignores (review if needed) ===
+# Package Files (generally handled by Gradle dependencies, but can prevent accidental commits)
+# *.jar  # Be cautious: if you have local JARs that *must* be in VCS, refine this.
+# *.war
+# *.nar
+# *.ear
+# *.zip
+# *.tar.gz
+# *.rar
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
