@@ -1,3 +1,4 @@
+// Copyright 2025 MyCompany
 package com.thecompany.consultme.ui.theme
 
 import androidx.compose.ui.graphics.Color

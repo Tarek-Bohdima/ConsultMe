@@ -1,3 +1,4 @@
+// Copyright 2025 MyCompany
 package com.thecompany.consultme.feature.chat.ui
 
 import org.junit.Assert.assertEquals

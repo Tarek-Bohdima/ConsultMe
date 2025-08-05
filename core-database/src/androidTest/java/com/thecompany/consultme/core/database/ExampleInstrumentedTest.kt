@@ -1,3 +1,4 @@
+// Copyright 2025 MyCompany
 package com.thecompany.consultme.core.database
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
