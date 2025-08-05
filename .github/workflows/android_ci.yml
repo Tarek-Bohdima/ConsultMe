@@ -36,6 +36,3 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew test # Runs unit tests for all modules
-
-      - name: Build debug APK for app module
-        run: ./gradlew :app:assembleDebug # Builds the debug APK for your :app module
