@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.hilt.gradle) apply false
+//    alias(libs.plugins.kotlin.kapt) apply false
 
     // Both should have apply false here.
     alias(libs.plugins.spotless) apply false
