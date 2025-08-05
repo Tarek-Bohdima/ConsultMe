@@ -1,3 +1,4 @@
+// Copyright 2025 MyCompany
 package com.thecompany.consultme.core.testing
 
 import android.app.Application

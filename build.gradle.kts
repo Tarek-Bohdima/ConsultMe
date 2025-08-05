@@ -27,9 +27,32 @@ subprojects {
         kotlin {
             target("**/*.kt")
             targetExclude("**/camera/viewfinder/**")
+
+            // Define and apply the license header for Kotlin files
+            // This is the robust, correct way to apply the license header.
+            // It places the header AFTER the package declaration.
+            licenseHeader(
+                """
+                // Copyright ${'$'}YEAR MyCompany
+                """.trimIndent(),
+                "package " // The delimiter tells Spotless to look for the line starting with "package "
+            )
+
             ktlint(libs.ktlint.get().version)
         }
         kotlinGradle {
+            target("*.gradle.kts")
+
+            // Define and apply the license header for Gradle files
+            // For Gradle files, there's no package declaration, so we don't need a delimiter.
+            // It will be placed at the top of the file.
+            licenseHeader(
+                """
+                // Copyright ${'$'}YEAR MyCompany
+                """.trimIndent(),
+                  "/*"
+            )
+
             ktlint(libs.ktlint.get().version)
         }
     }
