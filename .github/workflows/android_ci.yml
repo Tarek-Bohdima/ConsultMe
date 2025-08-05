@@ -8,16 +8,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@b5418f5a58f5fd2eb486dd7efb368fe7be7eae45
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
         with:
           java-version: '17'
           distribution: 'temurin' # Using Temurin distribution of JDK
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3 # This action handles Gradle caching
+        uses: gradle/actions/setup-gradle@d0a116fff52a680bc1541b7c4c87ca37d30abf00 # This action handles Gradle caching
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -28,11 +31,8 @@ jobs:
       - name: Run Detekt
         run: ./gradlew detekt
 
-      - name: Run Lint for app module
-        run: ./gradlew :app:lintDebug # Runs Android Lint for the debug variant of your :app module
+      - name: Run Lint Release Checks
+        run: ./gradlew lintRelease
 
       - name: Run unit tests
         run: ./gradlew test # Runs unit tests for all modules
-
-      - name: Build debug APK for app module
-        run: ./gradlew :app:assembleDebug # Builds the debug APK for your :app module
