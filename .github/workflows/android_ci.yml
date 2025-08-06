@@ -1,4 +1,6 @@
 name: Android CI
+permissions:
+  contents: read
 
 on:
   pull_request: # Triggers on any pull request
