@@ -41,6 +41,7 @@ After creating your new repository, you need to update the project's identity. U
 4.  **App Display Name:** In `app/src/main/res/values/strings.xml`, change the `app_name` string.
 5.  **Update License File:** Open the `LICENSE` file in the root directory and replace `[year]` and `[your name or organization]` with your own information.
 6.  **Clean Up:** Delete the example code in the `:feature-chat` module to start building your own features and fix MainActivity in app module accordingly.
+7.  **Remove Template Funding File:** Delete the `.github/FUNDING.yml` file, or replace it with your own sponsorship information.
 
 ## Code Quality
 
