@@ -1,14 +1,59 @@
 version: 2
 updates:
-  - package-ecosystem: "gradle" # For Android dependencies
-    directory: "/" # Location of your build.gradle files
+  - package-ecosystem: "gradle"
+    directory: "/"
     schedule:
-      interval: "weekly" # Or "daily" / "monthly"
-    open-pull-requests-limit: 10 # Manage PR volume
+      interval: "weekly"
+    open-pull-requests-limit: 10
     reviewers:
-      - "Tarek-Bohdima" # Optional: assign reviewers
+      - "Tarek-Bohdima"
     assignees:
-      - "Tarek-Bohdima" # Optional: assign someone
+      - "Tarek-Bohdima"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+    # Group related dependency updates into single pull requests
+    groups:
+      # Group all Gradle and build plugin updates
+      gradle-and-plugins:
+        patterns:
+          - "com.android.application"
+          - "com.android.library"
+          - "com.google.devtools.ksp"
+          - "com.google.dagger.hilt.android"
+          - "com.diffplug.spotless"
+          - "io.gitlab.arturbosch.detekt"
+
+      # Group all AndroidX updates
+      androidx:
+        patterns:
+          - "androidx.*"
+          - "com.google.android.material:material"
+
+      # Group all Jetpack Compose updates
+      jetpack-compose:
+        patterns:
+          - "androidx.compose.*"
+
+      # Group all Kotlin and Coroutines updates
+      kotlin-and-coroutines:
+        patterns:
+          - "org.jetbrains.kotlin.*"
+          - "org.jetbrains.kotlinx.*"
+
+      # Group common testing libraries
+      testing-libs:
+        patterns:
+          - "junit:junit"
+          - "androidx.test.*"
+          - "org.mockito.*"
+          - "app.cash.turbine:turbine"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
     commit-message:
       prefix: "chore"
       include: "scope"
