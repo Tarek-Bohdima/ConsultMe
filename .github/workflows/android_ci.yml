@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin' # Using Temurin distribution of JDK
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@d0a116fff52a680bc1541b7c4c87ca37d30abf00 # This action handles Gradle caching
+        uses: gradle/actions/setup-gradle@44b6df6376c4d17b026d3ccbed93a0899607a247 # This action handles Gradle caching
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
