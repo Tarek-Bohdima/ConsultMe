@@ -1,10 +1,10 @@
 [versions]
 androidGradlePlugin = "8.12.2"
 androidxActivity = "1.10.1"
-androidxComposeBom = "2025.08.00"
+androidxComposeBom = "2025.08.01"
 androidxCore = "1.17.0"
 androidxHilt = "1.2.0"
-androidxLifecycle = "2.9.2"
+androidxLifecycle = "2.9.3"
 androidxNavigation = "2.9.3"
 androidxRoom = "2.7.2"
 androidxTestCore = "1.7.0"
