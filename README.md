@@ -7,6 +7,8 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 
+[![GitHub stars](https://img.shields.io/github/stars/Tarek-Bohdima/ConsultMe)](https://github.com/Tarek-Bohdima/ConsultMe/stargazers) [![GitHub forks](https://img.shields.io/github/forks/Tarek-Bohdima/ConsultMe)](https://github.com/Tarek-Bohdima/ConsultMe/network)
+
 **ConsultMe** is a template project for Jetpack Compose applications, featuring integrated tools for code quality and automation. It includes:
 
 - **Spotless:** Automated code formatting and linting
