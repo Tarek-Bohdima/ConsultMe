@@ -25,7 +25,7 @@ jobs:
       - name: Setup Gradle
         # This action automatically handles Gradle caching and dependency submission.
         # As of v4, it also includes Gradle Wrapper validation.
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
