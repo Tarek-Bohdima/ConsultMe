@@ -19,7 +19,7 @@ hilt = "2.57.1"
 junit = "4.13.2"
 kotlin = "2.2.20"
 ksp = "2.2.20-2.0.3"
-mockk = "1.14.5" # A recent stable version of MockK
+mockk = "1.14.6" # A recent stable version of MockK
 turbine = "1.2.1"  # A recent stable version of Turbine
 truth = "1.4.5"    # A recent stable version of Google's Truth
 
