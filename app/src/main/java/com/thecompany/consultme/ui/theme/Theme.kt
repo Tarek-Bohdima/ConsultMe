@@ -47,6 +47,7 @@ fun ConsultMeTheme(
         }
 
         darkTheme -> DarkColorScheme
+
         else -> LightColorScheme
     }
 

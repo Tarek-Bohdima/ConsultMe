@@ -58,7 +58,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-ktlint = "com.pinterest.ktlint:ktlint-cli:1.7.1" # Used in build.gradle.kts
+ktlint = "com.pinterest.ktlint:ktlint-cli:1.8.0" # Used in build.gradle.kts
 
 # MockK
 mockk-core = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
