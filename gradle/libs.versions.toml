@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.13.2"
+androidGradlePlugin = "9.0.0"
 androidxActivity = "1.12.3"
 androidxComposeBom = "2026.01.01"
 androidxCore = "1.17.0"
@@ -13,12 +13,12 @@ androidxTestRunner = "1.7.0"
 coroutines = "1.10.2"
 espressoCore = "3.7.0"
 appcompat = "1.7.1"
-spotless = "8.1.0"
+spotless = "8.2.1"
 detekt = "1.23.8"
-hilt = "2.58"
+hilt = "2.59.1"
 junit = "4.13.2"
 kotlin = "2.2.21"
-ksp = "2.3.4"
+ksp = "2.3.5"
 mockk = "1.14.7" # A recent stable version of MockK
 turbine = "1.2.1"  # A recent stable version of Turbine
 truth = "1.4.5"    # A recent stable version of Google's Truth
