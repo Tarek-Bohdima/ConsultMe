@@ -69,31 +69,16 @@ android {
 }
 
 dependencies {
-    // Dependencies required by this module's own code (e.g., HiltTestRunner which needs AndroidJUnitRunner)
-    implementation(libs.androidx.test.runner)
+    api(libs.bundles.test.unit)
 
-    // Common test dependencies exposed to other modules using 'api'
+    api(libs.androidx.test.core)
+    api(libs.androidx.test.ext.junit)
+    api(libs.androidx.test.runner)
+    api(libs.androidx.espresso.core)
+    api(libs.hilt.android.testing)
 
-    // Core Android & JUnit testing libraries
-    api(libs.junit) // For JUnit 4
-    api(libs.androidx.test.core) // For ApplicationProvider, ActivityScenario, etc.
-    api(libs.androidx.test.ext.junit) // For AndroidX Test - JUnit4 integration
-    api(libs.androidx.test.runner) // For AndroidJUnitRunner (also useful for consumers)
-    api(libs.androidx.espresso.core) // For Espresso UI testing
-
-    // Hilt for testing
-    api(libs.hilt.android.testing) // For HiltTestApplication, HiltAndroidRule, @HiltAndroidTest
-
-    // Coroutines testing
-    api(libs.kotlinx.coroutines.test) // For TestCoroutineDispatcher, runTest, etc.
-
-    // MockK (for Kotlin-friendly mocking in unit tests)
-    api(libs.mockk.core)
-    api(libs.mockk.android) // For using MockK in AndroidTest
-
-    // Turbine (for testing Kotlin Flows)
-    api(libs.turbine)
-
-    // Truth (for fluent assertions)
-    api(libs.truth)
+    api(libs.mockk.android) {
+        exclude(group = "io.mockk", module = "mockk-agent-jvm")
+        exclude(group = "io.mockk", module = "mockk-agent")
+    }
 }

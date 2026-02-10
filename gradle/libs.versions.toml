@@ -70,6 +70,10 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 # Truth (for fluent assertions)
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
+[bundles]
+test-unit = ["junit", "mockk-core", "kotlinx-coroutines-test", "turbine", "truth"]
+test-android = ["androidx-test-core", "androidx-test-ext-junit", "androidx-test-runner", "androidx-espresso-core", "mockk-android", "hilt-android-testing"]
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
