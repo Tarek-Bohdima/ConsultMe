@@ -13,6 +13,23 @@ updates:
       prefix: "chore"
       include: "scope"
 
+    ignore:
+      # AGP 9.x removes the kotlin-android plugin requirement and bumps Gradle
+      # to 9.4+. Defer until that migration is done in a dedicated change.
+      - dependency-name: "com.android.application"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "com.android.library"
+        update-types: ["version-update:semver-major"]
+      # Hilt 2.59+ requires AGP 9. Hold at 2.58.x until the AGP 9 migration.
+      - dependency-name: "com.google.dagger.hilt.android"
+        versions: [">=2.59"]
+      # Kotlin 2.3.20 produced compilation errors in core-testing/feature-chat.
+      # Hold this specific version; later patch versions can be retried.
+      - dependency-name: "org.jetbrains.kotlin.android"
+        versions: ["2.3.20"]
+      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
+        versions: ["2.3.20"]
+
     # Group related dependency updates into single pull requests
     groups:
       # Group all Gradle and build plugin updates
