@@ -131,3 +131,7 @@ $RECYCLE.BIN/
 # Virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# === AI tooling ===
+# Claude Code local state (settings, scheduled task locks)
+.claude/
