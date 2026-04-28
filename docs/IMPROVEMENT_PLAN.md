@@ -78,7 +78,7 @@ Goal: replace the empty `ExampleUnitTest` shells with code that doubles as docum
 
 Goal: a fork from this template should be one signing config away from a Play release.
 
-- Flip `isMinifyEnabled = true` for release in `:app`. Add starter `proguard-rules.pro` with the Hilt + Compose + Room rules every project needs (most are already in the AGP defaults; document the few that aren't).
+- Flip `isMinifyEnabled = true` for release in `:app`. Add starter `proguard-rules.pro` with the Hilt + Compose + Room rules every project needs (most are already in the AGP defaults; document the few that aren't). The official [`r8-analyzer`](https://github.com/android/skills) Claude Code skill helps surface missing keep rules from a release build.
 - CI additions in `.github/workflows/android_ci.yml`:
   - `./gradlew assembleRelease` (catches APK build regressions that `test` misses).
   - Upload `*/build/reports/lint-results-*.html` and `*/build/reports/tests/**` as artifacts.
@@ -89,7 +89,7 @@ Goal: a fork from this template should be one signing config away from a Play re
 
 Currently silenced in `.github/dependabot.yml`. Each is its own dedicated PR, not a passive bot bump:
 
-- **AGP 8.x → 9.x.** Drops the `kotlin-android` plugin requirement and forces Gradle ≥ 9.4. Touches every module's plugin block. Requires removing `alias(libs.plugins.kotlin.android)` and verifying Compose/KSP/Hilt all play nicely with AGP 9's bundled Kotlin support.
+- **AGP 8.x → 9.x.** Drops the `kotlin-android` plugin requirement and forces Gradle ≥ 9.4. Touches every module's plugin block. Requires removing `alias(libs.plugins.kotlin.android)` and verifying Compose/KSP/Hilt all play nicely with AGP 9's bundled Kotlin support. The official [`agp-9-upgrade`](https://github.com/android/skills) Claude Code skill is a ready-made playbook for this migration.
 - **Hilt 2.59+.** Hard-requires AGP 9; do this in the same PR or a follow-up to the AGP 9 migration.
 - **Kotlin 2.3.20+.** Promotes `-Xcontext-receivers` from a warning to a hard error in release variants — `compileReleaseKotlin` fails in `:core-testing` and the feature module. Both 2.3.20 and 2.3.21 hit this. Unpinning is gated on the `-Xcontext-receivers` → `-Xcontext-parameters` migration below.
 
@@ -106,6 +106,19 @@ These are valuable but don't fit cleanly into the above. Worth deciding on befor
 - **Baseline profiles + macrobenchmark module** for startup performance.
 - **`dependency-analysis-android-gradle-plugin`** to flag unused/misplaced dependencies — high signal for multi-module hygiene.
 - **Gradle build scans** opt-in via `develocity { server = ... }` if there's a Develocity instance available.
+- **Edge-to-edge layouts.** Modern Android (16+) effectively requires opt-in; the template currently doesn't enforce it. The official [`edge-to-edge`](https://github.com/android/skills) Claude Code skill is a ready-made adoption guide.
+
+## Recommended Claude Code skills
+
+Google maintains official AI-optimized skills for Android at <https://github.com/android/skills>. Skills relevant to this template's roadmap:
+
+| Skill | Use when |
+|---|---|
+| [`agp-9-upgrade`](https://github.com/android/skills) | Working on Phase 5 (AGP 8 → 9 migration) |
+| [`r8-analyzer`](https://github.com/android/skills) | Working on Phase 4 (release minification, keep rules) |
+| [`edge-to-edge`](https://github.com/android/skills) | Adopting edge-to-edge (see Quality bets) |
+
+Skills are not vendored into the template — they're maintained upstream by Google. Install them locally when starting the matching phase.
 
 ## How to use this document
 
