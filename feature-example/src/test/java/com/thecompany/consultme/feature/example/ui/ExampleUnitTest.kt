@@ -1,5 +1,5 @@
 // Copyright 2025 MyCompany
-package com.thecompany.consultme.feature.chat.ui
+package com.thecompany.consultme.feature.example.ui
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

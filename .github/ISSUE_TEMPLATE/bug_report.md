@@ -1,38 +1,31 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Report a bug in the template or generated build
 title: ''
-labels: ''
+labels: bug
 assignees: ''
-
 ---
 
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Steps to reproduce**
+1. ...
+2. ...
+3. ...
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+What you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Actual behavior**
+What actually happened (logs, stack trace, screenshots).
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Environment**
+- Device / emulator: [e.g. Pixel 7, API 34 emulator]
+- Android version: [e.g. Android 14]
+- Android Studio version: [e.g. Hedgehog 2023.1.1]
+- AGP / Kotlin / JDK: [output of `./gradlew --version` is fine]
+- Branch / commit: [e.g. main @ abc1234]
 
 **Additional context**
-Add any other context about the problem here.
+Anything else relevant — recent dependency bumps, changes to `libs.versions.toml`, etc.

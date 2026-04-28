@@ -49,16 +49,9 @@ android {
 
     lint {
         baseline = file("lint-baseline.xml")
-        // --- Add these lines to be more explicit ---
         quiet = true
         checkAllWarnings = true
-
-        // This is a strict setting that will elevate all warnings to errors.
-        // This will force them to appear in the report.
-        // You may want to set this to 'false' again later.
         warningsAsErrors = false
-
-        // --- Keep the previous settings ---
         textReport = true
         htmlReport = true
         xmlReport = false
@@ -69,31 +62,23 @@ android {
 }
 
 dependencies {
-    // Dependencies required by this module's own code (e.g., HiltTestRunner which needs AndroidJUnitRunner)
+    // Required for HiltTestRunner; not exposed because consumers don't extend AndroidJUnitRunner.
     implementation(libs.androidx.test.runner)
 
-    // Common test dependencies exposed to other modules using 'api'
+    // Re-exported via api() so consumers don't redeclare these in every module.
+    api(libs.junit)
+    api(libs.androidx.test.core)
+    api(libs.androidx.test.ext.junit)
+    api(libs.androidx.test.runner)
+    api(libs.androidx.espresso.core)
 
-    // Core Android & JUnit testing libraries
-    api(libs.junit) // For JUnit 4
-    api(libs.androidx.test.core) // For ApplicationProvider, ActivityScenario, etc.
-    api(libs.androidx.test.ext.junit) // For AndroidX Test - JUnit4 integration
-    api(libs.androidx.test.runner) // For AndroidJUnitRunner (also useful for consumers)
-    api(libs.androidx.espresso.core) // For Espresso UI testing
+    api(libs.hilt.android.testing)
 
-    // Hilt for testing
-    api(libs.hilt.android.testing) // For HiltTestApplication, HiltAndroidRule, @HiltAndroidTest
+    api(libs.kotlinx.coroutines.test)
 
-    // Coroutines testing
-    api(libs.kotlinx.coroutines.test) // For TestCoroutineDispatcher, runTest, etc.
-
-    // MockK (for Kotlin-friendly mocking in unit tests)
     api(libs.mockk.core)
-    api(libs.mockk.android) // For using MockK in AndroidTest
+    api(libs.mockk.android)
 
-    // Turbine (for testing Kotlin Flows)
     api(libs.turbine)
-
-    // Truth (for fluent assertions)
     api(libs.truth)
 }

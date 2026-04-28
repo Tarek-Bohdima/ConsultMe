@@ -1,5 +1,5 @@
 // Copyright 2025 MyCompany
-package com.thecompany.consultme.feature.chat.ui
+package com.thecompany.consultme.feature.example.ui
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -18,6 +18,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.thecompany.consultme.feature.chat.ui.test", appContext.packageName)
+        assertEquals("com.thecompany.consultme.feature.example.test", appContext.packageName)
     }
 }
