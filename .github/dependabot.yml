@@ -23,12 +23,14 @@ updates:
       # Hilt 2.59+ requires AGP 9. Hold at 2.58.x until the AGP 9 migration.
       - dependency-name: "com.google.dagger.hilt.android"
         versions: [">=2.59"]
-      # Kotlin 2.3.20 produced compilation errors in core-testing/feature-chat.
-      # Hold this specific version; later patch versions can be retried.
+      # Kotlin 2.3.20+ promotes -Xcontext-receivers from warning to a hard
+      # error in release variants, breaking compileReleaseKotlin in
+      # :core-testing and the feature module. Hold until the migration to
+      # -Xcontext-parameters is done (tracked in docs/IMPROVEMENT_PLAN.md).
       - dependency-name: "org.jetbrains.kotlin.android"
-        versions: ["2.3.20"]
+        versions: [">=2.3.20"]
       - dependency-name: "org.jetbrains.kotlin.plugin.compose"
-        versions: ["2.3.20"]
+        versions: [">=2.3.20"]
 
     # Group related dependency updates into single pull requests
     groups:
