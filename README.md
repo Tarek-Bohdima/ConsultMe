@@ -12,7 +12,7 @@
 **ConsultMe** is a template project for Jetpack Compose applications, featuring integrated tools for code quality and automation. It includes:
 
 - **Spotless:** Automated code formatting and linting
-- **Detect:** Static code analysis
+- **Detekt:** Static code analysis
 - **Lint:** Kotlin and Compose code linting
 
 ## Features
@@ -42,13 +42,13 @@ After creating your new repository, you need to update the project's identity. U
 3.  **Package Name:** Use Android Studio's refactoring tool to rename the `com.thecompany.consultme` package.
 4.  **App Display Name:** In `app/src/main/res/values/strings.xml`, change the `app_name` string.
 5.  **Update License File:** Open the `LICENSE` file in the root directory and replace `[year]` and `[your name or organization]` with your own information.
-6.  **Clean Up:** Delete the example code in the `:feature-chat` module to start building your own features and fix MainActivity in app module accordingly.
+6.  **Clean Up:** Replace the placeholder content in `:feature-example` (start with `ExampleScreen.kt`) with your real feature code, and update the corresponding import in `app/.../MainActivity.kt`. Rename the module itself (`:feature-example` → `:feature-yourname`) once you know what you're building.
 7.  **Remove Template Funding File:** Delete the `.github/FUNDING.yml` file, or replace it with your own sponsorship information.
 
 ## Code Quality
 
 - **Spotless**: Ensures consistent code formatting.
-- **Detect**: Finds common code issues.
+- **Detekt**: Finds common code issues.
 - **Lint**: Enforces Kotlin and Compose best practices.
 
 ## License

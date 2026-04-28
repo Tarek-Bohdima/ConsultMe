@@ -2,9 +2,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.ksp) // <-- ADDED
-    alias(libs.plugins.hilt.gradle) // <-- ADDED
-    alias(libs.plugins.compose.compiler) // <-- ADDED/ENSURED
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.gradle)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -25,7 +25,7 @@ android {
 
     defaultConfig {
         minSdk = 25
-        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner" // <-- CHANGED
+        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -45,7 +45,6 @@ android {
     }
 
     buildFeatures {
-        // <-- ADDED/ENSURED
         compose = true
         aidl = false
         buildConfig = false
@@ -54,11 +53,10 @@ android {
     }
 
     lint {
-        // Assuming you want to keep the lint configuration as is
         baseline = file("lint-baseline.xml")
         quiet = true
         checkAllWarnings = true
-        warningsAsErrors = false // As per your other files
+        warningsAsErrors = false
         textReport = true
         htmlReport = true
         xmlReport = false
@@ -69,25 +67,16 @@ android {
 }
 
 dependencies {
-    // Core & Hilt
     implementation(libs.androidx.core.ktx)
-    implementation(libs.hilt.android) // <-- ADDED
-    ksp(libs.hilt.compiler) // <-- ADDED
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
-    // Compose
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui) // <-- ADDED
-    implementation(libs.androidx.ui.graphics) // <-- Assuming needed if UI module provides graphics elements
-    implementation(libs.androidx.compose.ui.tooling.preview) // <-- ADDED
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Testing - Now using :core-testing
-    testImplementation(project(":core-testing")) // <-- ADDED
-    androidTestImplementation(project(":core-testing")) // <-- ADDED
-
-    // androidTestImplementation(libs.androidx.test.ext.junit) // <-- REMOVED
-    // androidTestImplementation(libs.androidx.espresso.core) // <-- REMOVED
-    // testImplementation(libs.junit) // <-- REMOVED
-
-    // implementation(libs.androidx.appcompat) // <-- REMOVED (likely not needed for a pure Compose module)
+    testImplementation(project(":core-testing"))
+    androidTestImplementation(project(":core-testing"))
 }

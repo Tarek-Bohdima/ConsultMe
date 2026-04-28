@@ -11,7 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.thecompany.consultme.feature.chat.ui.ChatScreen
+import com.thecompany.consultme.feature.example.ui.ExampleScreen
 import com.thecompany.consultme.ui.theme.ConsultMeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ConsultMeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ChatScreen(modifier = Modifier.padding(innerPadding))
+                    ExampleScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -32,8 +32,8 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainActivityPreview() {
     ConsultMeTheme {
-        ChatScreen()
+        ExampleScreen()
     }
 }

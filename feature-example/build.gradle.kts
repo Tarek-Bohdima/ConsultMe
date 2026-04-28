@@ -2,9 +2,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.ksp) // <-- ENSURED/ADDED
-    alias(libs.plugins.hilt.gradle) // <-- ENSURED/ADDED
-    alias(libs.plugins.compose.compiler) // <-- ENSURED/ADDED
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.gradle)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -20,18 +20,18 @@ hilt {
 }
 
 android {
-    namespace = "com.thecompany.consultme.feature.chat" // <-- VERIFIED
+    namespace = "com.thecompany.consultme.feature.example"
     compileSdk = 36
 
     defaultConfig {
         minSdk = 25
-        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner" // <-- CHANGED
+        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false // As per other modules
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -45,16 +45,14 @@ android {
     }
 
     buildFeatures {
-        // <-- ENSURED/ADDED
-        compose = true // Feature module provides UI
+        compose = true
         aidl = false
-        buildConfig = false // Usually false for feature modules
+        buildConfig = false
         renderScript = false
         shaders = false
     }
 
     lint {
-        // Kept your existing lint configuration
         baseline = file("lint-baseline.xml")
         quiet = true
         checkAllWarnings = true
@@ -69,38 +67,26 @@ android {
 }
 
 dependencies {
-    // Module dependencies
-    implementation(project(":core-data")) // <-- ADDED (Features usually need data)
-    // implementation(project(":core-ui")) // Usually not a direct dependency for features; app module composes
+    implementation(project(":core-data"))
 
-    // Core & Hilt
     implementation(libs.androidx.core.ktx)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
-    // Arch Components (ViewModels, Lifecycle for the feature)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Testing - Now using :core-testing
-    testImplementation(project(":core-testing")) // <-- ADDED/ENSURED
-    androidTestImplementation(project(":core-testing")) // <-- ADDED/ENSURED
+    testImplementation(project(":core-testing"))
+    androidTestImplementation(project(":core-testing"))
 
-    // Compose specific testing
-    androidTestImplementation(platform(libs.androidx.compose.bom)) // BOM for test artifacts
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-    // implementation(libs.androidx.appcompat) // <-- REMOVED
-    // testImplementation(libs.junit) // <-- REMOVED
-    // androidTestImplementation(libs.androidx.test.ext.junit) // <-- REMOVED
-    // androidTestImplementation(libs.androidx.espresso.core) // <-- REMOVED
 }

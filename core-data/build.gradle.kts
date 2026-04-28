@@ -2,8 +2,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt.gradle) // <-- ADDED
-    alias(libs.plugins.ksp) // <-- ADDED
+    alias(libs.plugins.hilt.gradle)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -14,13 +14,17 @@ kotlin {
     }
 }
 
+hilt {
+    enableAggregatingTask = true
+}
+
 android {
     namespace = "com.thecompany.consultme.core.data"
     compileSdk = 36
 
     defaultConfig {
         minSdk = 25
-        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner" // <-- CHANGED
+        testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -40,8 +44,7 @@ android {
     }
 
     buildFeatures {
-        // <-- ADDED
-        compose = false // Data modules typically don't need Compose
+        compose = false
         aidl = false
         buildConfig = false
         renderScript = false
@@ -49,11 +52,10 @@ android {
     }
 
     lint {
-        // Assuming you want to keep the lint configuration as is
         baseline = file("lint-baseline.xml")
         quiet = true
         checkAllWarnings = true
-        warningsAsErrors = false // As per your other files
+        warningsAsErrors = false
         textReport = true
         htmlReport = true
         xmlReport = false
@@ -64,23 +66,12 @@ android {
 }
 
 dependencies {
-    // Module dependencies
     implementation(project(":core-database"))
 
-    // Core & Hilt
     implementation(libs.androidx.core.ktx)
-    implementation(libs.hilt.android) // <-- ADDED
-    ksp(libs.hilt.compiler) // <-- ADDED
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 
-    // Testing - Now using :core-testing
-    testImplementation(project(":core-testing")) // <-- ADDED
-    androidTestImplementation(project(":core-testing")) // <-- ADDED
-
-    // androidTestImplementation(libs.androidx.test.ext.junit) // <-- REMOVED
-    // androidTestImplementation(libs.androidx.espresso.core) // <-- REMOVED
-    // testImplementation(libs.junit) // <-- REMOVED
-
-    // implementation(libs.androidx.appcompat) // <-- REMOVED (likely not needed)
-    // implementation(platform(libs.androidx.compose.bom)) // <-- REMOVED (data module usually doesn't need compose)
-    // implementation(libs.androidx.compose.material3) // <-- REMOVED (data module usually doesn't need compose)
+    testImplementation(project(":core-testing"))
+    androidTestImplementation(project(":core-testing"))
 }
