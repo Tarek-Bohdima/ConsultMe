@@ -91,11 +91,11 @@ Currently silenced in `.github/dependabot.yml`. Each is its own dedicated PR, no
 
 - **AGP 8.x → 9.x.** Drops the `kotlin-android` plugin requirement and forces Gradle ≥ 9.4. Touches every module's plugin block. Requires removing `alias(libs.plugins.kotlin.android)` and verifying Compose/KSP/Hilt all play nicely with AGP 9's bundled Kotlin support.
 - **Hilt 2.59+.** Hard-requires AGP 9; do this in the same PR or a follow-up to the AGP 9 migration.
-- **Kotlin 2.3.20.** Currently produces compilation errors in `:core-testing` and `:feature-example`. Investigate whether it's a kapt/KSP processor mismatch or a real source incompatibility before unpinning.
+- **Kotlin 2.3.20+.** Promotes `-Xcontext-receivers` from a warning to a hard error in release variants — `compileReleaseKotlin` fails in `:core-testing` and the feature module. Both 2.3.20 and 2.3.21 hit this. Unpinning is gated on the `-Xcontext-receivers` → `-Xcontext-parameters` migration below.
 
 ## Known follow-ups not yet phased
 
-- **`-Xcontext-receivers` is deprecated** (every module sets this in `freeCompilerArgs`). Kotlin compiler warns: replace with `-Xcontext-parameters` and migrate to the new syntax. Will become an error. Worth a one-shot PR — the migration is mechanical, but worth verifying nothing in Compose/Hilt-generated code uses receivers.
+- **`-Xcontext-receivers` is deprecated** (every module sets this in `freeCompilerArgs`). Kotlin compiler warns: replace with `-Xcontext-parameters` and migrate to the new syntax. Already a hard error on Kotlin 2.3.20+ release variants — **this migration is what unblocks the Kotlin 2.3.20+ pin in `dependabot.yml`**. The migration is mechanical, but worth verifying nothing in Compose/Hilt-generated code uses receivers.
 - **KSP `2.3.4` lags Kotlin `2.3.10`.** Dependabot will likely propose a bump on the next run; let it.
 
 ## Quality bets to consider (no phase yet)
