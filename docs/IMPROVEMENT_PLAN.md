@@ -94,7 +94,7 @@ Goal: a fork from this template should be one signing config away from a Play re
 - CI additions in `.github/workflows/android_ci.yml`:
   - `./gradlew assembleRelease` (catches APK build regressions that `test` misses).
   - Upload `*/build/reports/lint-results-*.html` and `*/build/reports/tests/**` as artifacts.
-  - Add a Gradle Managed Devices step for `connectedCheck` (cheaper and more reliable than self-hosted emulators).
+  - Add a Gradle Managed Devices step for `connectedCheck` (cheaper and more reliable than self-hosted emulators). The device profile (`pixel6api30`, `aosp-atd`) is already registered by the library + application convention plugins as of #105 — Phase 4's job is to enable the corresponding workflow step (`./gradlew pixel6api30DebugAndroidTest`) and make sure KVM is available on the runner.
 - Add `CONTRIBUTING.md`, `PULL_REQUEST_TEMPLATE.md`, and a polished `CODE_OF_CONDUCT.md` (Contributor Covenant).
 
 ## Phase 5 — Deferred migrations

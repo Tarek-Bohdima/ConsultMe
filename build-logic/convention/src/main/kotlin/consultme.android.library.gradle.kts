@@ -3,6 +3,7 @@ import com.android.build.gradle.LibraryExtension
 import com.thecompany.consultme.buildlogic.configureBuildFeatures
 import com.thecompany.consultme.buildlogic.configureKotlinAndroid
 import com.thecompany.consultme.buildlogic.configureLint
+import com.thecompany.consultme.buildlogic.configureManagedDevices
 
 plugins {
     id("com.android.library")
@@ -26,4 +27,5 @@ extensions.configure<LibraryExtension> {
     }
     configureBuildFeatures()
     configureLint(this)
+    configureManagedDevices()
 }

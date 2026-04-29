@@ -3,6 +3,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.thecompany.consultme.buildlogic.configureBuildFeatures
 import com.thecompany.consultme.buildlogic.configureKotlinAndroid
 import com.thecompany.consultme.buildlogic.configureLint
+import com.thecompany.consultme.buildlogic.configureManagedDevices
 
 plugins {
     id("com.android.application")
@@ -26,4 +27,5 @@ extensions.configure<ApplicationExtension> {
     }
     configureBuildFeatures()
     configureLint(this)
+    configureManagedDevices()
 }
