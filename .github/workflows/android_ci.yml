@@ -1,31 +1,37 @@
 name: Android CI
 
-# This permission is a good security practice, limiting the workflow's access to read-only.
+# Read-only token; no fork PR can write back to the repo via this workflow.
 permissions:
   contents: read
 
 on:
   pull_request: # Triggers on any pull request
 
+# Cancel in-progress runs when a new commit lands on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Third-party actions are pinned to commit SHAs (with the version tag in a
+# trailing comment) to neutralize supply-chain risk: a compromised upstream
+# action can't silently swap behavior under us. Dependabot's `github-actions`
+# ecosystem auto-bumps these on a weekly cadence.
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        # Using a major version tag (@v4) is convenient and receives security updates.
-        # For maximum security, you can pin this to a specific commit hash instead.
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        # This action automatically handles Gradle caching and dependency submission.
-        # As of v4, it also includes Gradle Wrapper validation.
-        uses: gradle/actions/setup-gradle@v6
+        # Auto-handles Gradle caching, dependency submission, and Wrapper validation.
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -41,3 +47,72 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew test
+
+      - name: Assemble release APK
+        # Catches release-only build regressions (resource shrinking, R8 keep
+        # rules, etc.) that the unit-test path can't surface.
+        run: ./gradlew assembleRelease
+
+      - name: Upload lint + unit test reports
+        # Always upload reports — they're most useful when the build above fails.
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: build-reports
+          path: |
+            **/build/reports/lint-results-*.html
+            **/build/reports/tests/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+  instrumented_tests:
+    # Runs the Gradle Managed Device (pixel6api30, aosp-atd) registered by the
+    # convention plugins. Not yet wired into branch protection — opt in via the
+    # repo's required-checks settings once GMD has run a few times reliably.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Enable KVM for emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Accept Android SDK licenses
+        # The runner has the emulator license accepted but not aosp_atd system
+        # images. Pre-accept everything so AGP can install the missing package.
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+
+      - name: Cache AVD system image
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-pixel6api30-${{ hashFiles('build-logic/**/*.kt', 'build-logic/**/*.gradle.kts') }}
+
+      - name: Run instrumented tests on pixel6api30
+        run: ./gradlew pixel6api30DebugAndroidTest
+
+      - name: Upload instrumented test reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: instrumented-test-reports
+          path: '**/build/reports/androidTests/**'
+          if-no-files-found: ignore
+          retention-days: 7
