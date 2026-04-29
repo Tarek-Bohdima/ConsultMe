@@ -34,6 +34,8 @@
 # Gradle build system files and caches
 .gradle/
 /build/
+# Per-module Gradle build directories (modules + build-logic).
+**/build/
 
 # Avoid ignoring Gradle wrapper jar file (as .jar files are usually ignored below)
 !gradle/wrapper/gradle-wrapper.jar

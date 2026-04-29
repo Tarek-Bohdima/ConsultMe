@@ -6,8 +6,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 
 | Phase | Theme | State |
 |---|---|---|
-| 0 | Cleanup & flexibility | **In progress** (this PR) |
-| 1 | Convention plugins (`build-logic/`) | Not started |
+| 0 | Cleanup & flexibility | **Done** (#97) |
+| 1 | Convention plugins (`build-logic/`) | **Done** (this PR) |
 | 2 | Template ergonomics (bootstrap script, parameterized header) | Not started |
 | 3 | Real example tests | Not started |
 | 4 | Production-readiness (R8, CI artifacts, instrumented tests) | Not started |
@@ -17,9 +17,9 @@ Tick the table when phases land. Each phase below lists scope, rationale, and a 
 
 ---
 
-## Phase 0 — Cleanup & flexibility (this PR)
+## Phase 0 — Cleanup & flexibility (done)
 
-Goal: strip migration-era cruft and make the placeholder feature module agnostic so the template doesn't ship as "ChatApp."
+Shipped in #97. Goal was to strip migration-era cruft and make the placeholder feature module agnostic so the template doesn't ship as "ChatApp."
 
 - **Rename `:feature-chat` → `:feature-example`.** "Chat" is a domain; "example" is scaffolding intent. Touches `settings.gradle.kts`, `app/build.gradle.kts`, the module dir, the source package (`feature.chat` → `feature.example`), `ChatScreen.kt` → `ExampleScreen.kt`, the import in `MainActivity.kt`, and the README rename steps.
 - **Strip migration comments from every `build.gradle.kts`.** The `// <-- ADDED`, `// <-- ENSURED/ADDED`, `// <-- REMOVED (likely not needed)`, `// As per your other files`, etc., are artifacts from when this template was being assembled. They don't describe behavior, only history — and the template's lineage will diverge from forks anyway.
@@ -34,26 +34,29 @@ Goal: strip migration-era cruft and make the placeholder feature module agnostic
 
 Out of scope for Phase 0 (intentionally): restructuring build scripts, parameterizing the license header, ProGuard, CI changes. Those each have their own phase.
 
-## Phase 1 — Convention plugins
+## Phase 1 — Convention plugins (done)
 
-Goal: eliminate the ~70 lines of identical Gradle config in every library module so that adding a feature is a one-liner.
+Goal: eliminate the duplicated Gradle config in every module so adding a feature is a near-one-liner.
 
-Create a `build-logic/` included build with precompiled script plugins:
-- `consultme.android.application` — applies AGP-app + kotlin + ksp + hilt + compose-compiler; sets compileSdk/minSdk/JVM 17/buildFeatures defaults/lint.
-- `consultme.android.library` — same set minus app concerns; flag for `withCompose`.
-- `consultme.android.feature` — depends on `library` + Compose; auto-includes `:core-ui` and `:core-testing`.
-- `consultme.android.hilt` — applied where DI is wanted.
+Shipped as a `build-logic/` included build with four precompiled script plugins, composed per module:
 
-After this, a feature module's build script collapses to:
-```kotlin
-plugins { id("consultme.android.feature") }
-android { namespace = "com.thecompany.consultme.feature.foo" }
-```
+- `consultme.android.application` — AGP-app + kotlin + JVM 17 / `-Xcontext-receivers` + compileSdk/minSdk/lint defaults + Hilt test runner + release proguard wiring.
+- `consultme.android.library` — same scope minus app concerns + `consumerProguardFiles`.
+- `consultme.android.compose` — compose-compiler plugin + `buildFeatures.compose = true` + Compose BOM + ui/graphics/tooling-preview/material3 deps.
+- `consultme.android.hilt` — hilt-gradle + ksp plugins + `enableAggregatingTask = true` + `hilt-android` impl + `hilt-compiler` ksp.
 
-Notes for whoever picks this up:
-- Use precompiled script plugins (`build-logic/convention/src/main/kotlin/*.gradle.kts`), not `buildSrc`. `buildSrc` invalidates the entire build cache on edit; an included build doesn't.
-- Reference `gradle/libs.versions.toml` from the convention plugins via the version catalog accessor (`libs` is available).
-- Resist the urge to over-parameterize. Two or three plugins beat one mega-plugin with twelve flags.
+How modules compose them:
+- `:core-testing` — `library` only.
+- `:core-data`, `:core-database` — `library + hilt`.
+- `:core-ui`, `:feature-example` — `library + compose + hilt`.
+- `:app` — `application + compose + hilt`.
+
+A feature module's build script now reads ~20 lines: `plugins {}`, `namespace`, module-specific dependencies. Total scripts shrunk from ~530 to ~190 lines.
+
+Notes for the next contributor:
+- Plugin sources live under `build-logic/convention/src/main/kotlin/`. Shared helpers (`configureKotlinAndroid`, `configureBuildFeatures`, `configureLint`) live in `com.thecompany.consultme.buildlogic`.
+- The version catalog (`libs`) is exposed inside precompiled script plugins via the workaround documented on `build-logic/convention/build.gradle.kts` (Gradle issue #15383).
+- Resist a `feature` mega-plugin — two or three composable plugins beat one with twelve flags.
 
 ## Phase 2 — Template ergonomics
 
