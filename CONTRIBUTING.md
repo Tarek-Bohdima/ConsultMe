@@ -7,6 +7,11 @@ that adopters replace). PRs that improve the template's ergonomics, tooling,
 or documentation are very welcome; PRs that add product features should usually
 land in a fork instead.
 
+## Code of conduct
+
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+By participating you agree to uphold it.
+
 ## Before you start
 
 1. Open an issue for non-trivial changes (anything beyond a doc/typo fix or a
