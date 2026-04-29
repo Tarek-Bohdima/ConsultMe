@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Roadmap and planned phases
+    url: https://github.com/Tarek-Bohdima/ConsultMe/blob/main/docs/IMPROVEMENT_PLAN.md
+    about: Before filing a feature request, check the roadmap — your idea may already be tracked under an upcoming phase or intentionally deferred.
+  - name: Reporting a security issue
+    url: https://github.com/Tarek-Bohdima/ConsultMe/blob/main/CONTRIBUTING.md#reporting-bugs-and-security-issues
+    about: Please don't open a public issue for security vulnerabilities — see CONTRIBUTING.md for the disclosure path.
