@@ -35,15 +35,96 @@ Do not clone this repository directly. The recommended way to use this template 
 
 ## How to Rename and Refactor
 
-After creating your new repository, you need to update the project's identity. Use Android Studio's **Refactor > Rename** tool for safety and reliability.
+After creating your new repository, run the bootstrap script — it does the package, namespace, `applicationId`, project name, theme/application class, manifest, and `app_name` rewrites in one pass:
 
-1.  **Project Name:** In `settings.gradle.kts`, change `rootProject.name`.
-2.  **Application ID & Namespaces:** In `app/build.gradle.kts` and the `build.gradle.kts` of each library module, change the `namespace` and `applicationId` from `com.thecompany.consultme` to your new ID.
-3.  **Package Name:** Use Android Studio's refactoring tool to rename the `com.thecompany.consultme` package.
-4.  **App Display Name:** In `app/src/main/res/values/strings.xml`, change the `app_name` string.
-5.  **Update License File:** Open the `LICENSE` file in the root directory and replace `[year]` and `[your name or organization]` with your own information.
-6.  **Clean Up:** Replace the placeholder content in `:feature-example` (start with `ExampleScreen.kt`) with your real feature code, and update the corresponding import in `app/.../MainActivity.kt`. Rename the module itself (`:feature-example` → `:feature-yourname`) once you know what you're building.
-7.  **Remove Template Funding File:** Delete the `.github/FUNDING.yml` file, or replace it with your own sponsorship information.
+```bash
+python3 scripts/rename-template.py com.acme.myapp "My App Name"
+```
+
+The first argument is the new package (also used as `applicationId`). The second is the user-facing app name; its PascalCase form (`MyAppName`) becomes `rootProject.name`, the theme name, and the `Application` class name. The four convention plugin IDs under `build-logic/` are also rewritten (`consultme.android.*` → `myappname.android.*`). Re-running with the same arguments is a no-op.
+
+After the script completes, finish the bootstrap by hand:
+
+1. **License header company name:** open `gradle.properties` and set `template.company` (consumed by the root `build.gradle.kts` Spotless config). Then run `./gradlew spotlessApply` to rewrite every header.
+2. **License file:** open `LICENSE.md` and replace `[year]` and the placeholder name with your own.
+3. **README and docs:** update the badges (CI, stars, forks) to point at your repo, and replace the project description in this file. The script intentionally skips `*.md` so it doesn't break upstream-template links.
+4. **Feature module:** replace the placeholder content in `:feature-example` (start with `ExampleScreen.kt`), and rename the module (`:feature-example` → `:feature-yourname`) once you know what you're building.
+5. **Remove template funding file:** delete `.github/FUNDING.yml`, or replace it with your own sponsorship info.
+
+If you'd rather rename by hand, expand the manual fallback below.
+
+<details>
+<summary>Manual rename fallback</summary>
+
+Use Android Studio's **Refactor > Rename** for the package step.
+
+1. **Project name:** in `settings.gradle.kts`, change `rootProject.name`.
+2. **Application ID & namespaces:** in `app/build.gradle.kts` and every library module's `build.gradle.kts`, change `namespace` (and `applicationId` in `:app`) from `com.thecompany.consultme` to your new ID.
+3. **Package name:** rename the `com.thecompany.consultme` package via Android Studio refactor — that handles source file moves, package declarations, and imports.
+4. **Theme + application class:** rename `ConsultMeTheme`, `Theme.ConsultMe` (in `app/src/main/res/values/themes.xml`), and `ConsultMeApplication` (class + filename + `AndroidManifest.xml` reference) to match your new project name.
+5. **App display name:** in `app/src/main/res/values/strings.xml`, change `app_name`.
+6. **Convention plugin IDs:** rename the four files under `build-logic/convention/src/main/kotlin/consultme.android.*.gradle.kts` and update every `id("consultme.android.*")` reference in module build scripts.
+7. Then continue with the post-script steps above (license header, LICENSE file, README badges, feature module, FUNDING.yml).
+
+</details>
+
+## How to add a new feature module
+
+Convention plugins (`build-logic/`) make a new feature module ~20 lines of Gradle. Create `feature-<name>/build.gradle.kts`:
+
+```kotlin
+plugins {
+    id("consultme.android.library")
+    id("consultme.android.compose")
+    id("consultme.android.hilt")
+}
+
+android {
+    namespace = "com.thecompany.consultme.feature.<name>"
+}
+
+dependencies {
+    implementation(projects.coreUi)
+    testImplementation(projects.coreTesting)
+    androidTestImplementation(projects.coreTesting)
+}
+```
+
+Add `include(":feature-<name>")` to `settings.gradle.kts` and depend on it from `:app` via `implementation(projects.feature<NameInPascalCase>)`. The conventions handle `compileSdk`/`minSdk`, JVM toolchain, Compose BOM, Hilt + KSP, and the Hilt test runner.
+
+## How to write a Hilt-aware test
+
+Every module declares `:core-testing` for both unit and instrumented tests, so JUnit/Turbine/MockK/Hilt-testing/Espresso are already on the classpath:
+
+```kotlin
+testImplementation(projects.coreTesting)
+androidTestImplementation(projects.coreTesting)
+```
+
+For an instrumented test that needs Hilt injection, annotate with `@HiltAndroidTest` and use the runner that the convention plugins already wire in (`com.thecompany.consultme.core.testing.HiltTestRunner`):
+
+```kotlin
+@HiltAndroidTest
+class MyFeatureTest {
+    @get:Rule val hilt = HiltAndroidRule(this)
+
+    @Before fun setUp() { hilt.inject() }
+
+    @Test fun feature_does_something() { /* ... */ }
+}
+```
+
+No need to redeclare JUnit/Hilt-testing dependencies in the module's `build.gradle.kts` — `:core-testing` re-exports them with `api(...)`.
+
+## How to regenerate lint baselines
+
+Each module ships its own `lint-baseline.xml`. Regenerate after adding code that introduces new lint warnings (rather than hand-editing):
+
+```bash
+./gradlew :feature-example:updateLintBaseline
+```
+
+Replace `:feature-example` with the module you're updating. CI runs `lintRelease` and fails on any non-baselined violation.
 
 ## Code Quality
 

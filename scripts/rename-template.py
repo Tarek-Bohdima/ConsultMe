@@ -1,0 +1,185 @@
+#!/usr/bin/env python3
+# Copyright 2026 MyCompany
+"""Rename the ConsultMe template to a new package and app name.
+
+Usage:
+    scripts/rename-template.py com.acme.myapp "My App Name"
+
+Performs in one pass:
+- Package rename (com.thecompany.consultme -> <new-package>): namespace,
+  applicationId, source directory paths, package/import statements, the
+  build-logic plugin group, and the testInstrumentationRunner reference.
+- Project identifier rename (ConsultMe -> PascalCase of the app name):
+  rootProject.name, Theme.<name>, <name>Theme composable, <name>Application
+  class and its filename. Manifest activity references update automatically
+  because they're already namespace-relative (".MainActivity",
+  ".ConsultMeApplication").
+- Convention plugin slug rename (consultme.android.* -> <lowercase>.android.*):
+  the four precompiled-script-plugin filenames under build-logic/ and every
+  `id("consultme.android.*")` reference in module build scripts.
+- App display name rename (Consult Me -> <new app name>): app_name string.
+
+Scope: rewrites .kt, .kts, .xml, .toml, .properties files only. README,
+CLAUDE.md, LICENSE.md, and docs/ are intentionally skipped — they contain
+upstream-template references (badge URLs, etc.) that adopters update by hand.
+
+Run from the repo root. Re-running with the same args is a no-op.
+"""
+
+from __future__ import annotations
+
+import os
+import re
+import shutil
+import sys
+from pathlib import Path
+
+OLD_PACKAGE = "com.thecompany.consultme"
+OLD_PROJECT = "ConsultMe"
+OLD_APP_NAME = "Consult Me"
+OLD_PLUGIN_SLUG = "consultme"  # leading segment of the convention plugin IDs
+
+TEXT_SUFFIXES = {".kt", ".kts", ".xml", ".toml", ".properties"}
+SKIP_DIRS = {".git", "build", ".gradle", ".idea", "node_modules"}
+
+
+def fail(msg: str) -> None:
+    print(f"error: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+def to_pascal(name: str) -> str:
+    parts = re.findall(r"[A-Za-z0-9]+", name)
+    if not parts:
+        fail(f"app name '{name}' has no alphanumeric characters")
+    return "".join(p[:1].upper() + p[1:] for p in parts)
+
+
+def validate_package(pkg: str) -> None:
+    if not re.fullmatch(r"[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+", pkg):
+        fail(f"invalid package '{pkg}'; expected lowercase, dot-separated, e.g. com.acme.myapp")
+
+
+def iter_files(root: Path):
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+        for fname in filenames:
+            yield Path(dirpath, fname)
+
+
+def rewrite_text(path: Path, replacements: list[tuple[str, str]]) -> bool:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (UnicodeDecodeError, OSError):
+        return False
+    new_text = text
+    for old, new in replacements:
+        new_text = new_text.replace(old, new)
+    if new_text == text:
+        return False
+    path.write_text(new_text, encoding="utf-8")
+    return True
+
+
+def move_package_dirs(root: Path, old_path: str, new_path: str) -> None:
+    if old_path == new_path:
+        return
+    sep = os.sep
+    old_suffix = sep + old_path.replace("/", sep)
+    matches = []
+    for dirpath, _, _ in os.walk(root):
+        if any(part in SKIP_DIRS for part in Path(dirpath).parts):
+            continue
+        if dirpath.endswith(old_suffix):
+            matches.append(Path(dirpath))
+    for src in matches:
+        anchor = Path(str(src)[: -len(old_suffix)])
+        dst = anchor / new_path.replace("/", sep)
+        if dst.exists():
+            for child in src.iterdir():
+                target = dst / child.name
+                if not target.exists():
+                    shutil.move(str(child), str(target))
+            if not any(src.iterdir()):
+                src.rmdir()
+        else:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(src), str(dst))
+        # Prune empty parent dirs left behind (e.g. com/thecompany after consultme moves).
+        parent = src.parent
+        while parent != anchor and parent.exists() and not any(parent.iterdir()):
+            parent.rmdir()
+            parent = parent.parent
+
+
+def rename_project_files(root: Path, old: str, new: str) -> None:
+    if old == new:
+        return
+    for path in iter_files(root):
+        if path.suffix == ".kt" and old in path.name:
+            path.rename(path.with_name(path.name.replace(old, new)))
+
+
+def rename_plugin_files(root: Path, old_slug: str, new_slug: str) -> None:
+    if old_slug == new_slug:
+        return
+    prefix = f"{old_slug}.android."
+    for path in iter_files(root):
+        if path.name.startswith(prefix) and path.name.endswith(".gradle.kts"):
+            path.rename(path.with_name(path.name.replace(old_slug, new_slug, 1)))
+
+
+def main() -> int:
+    if len(sys.argv) != 3:
+        print(__doc__, file=sys.stderr)
+        return 2
+    new_package = sys.argv[1].strip()
+    new_app_name = " ".join(sys.argv[2].split())
+    if not new_app_name:
+        fail("app name cannot be empty")
+    validate_package(new_package)
+
+    root = Path.cwd().resolve()
+    if not (root / "settings.gradle.kts").exists():
+        fail(f"settings.gradle.kts not found in {root}; run from the repo root")
+
+    new_project = to_pascal(new_app_name)
+    new_plugin_slug = new_project.lower()
+    old_pkg_path = OLD_PACKAGE.replace(".", "/")
+    new_pkg_path = new_package.replace(".", "/")
+
+    print(f"Package:      {OLD_PACKAGE} -> {new_package}")
+    print(f"Project name: {OLD_PROJECT} -> {new_project}")
+    print(f"Plugin slug:  {OLD_PLUGIN_SLUG}.android.* -> {new_plugin_slug}.android.*")
+    print(f"App name:     '{OLD_APP_NAME}' -> '{new_app_name}'")
+
+    # Order matters: the package replacement runs first so that the lowercase
+    # 'consultme' slug replacement that follows only touches plugin IDs, not
+    # the package suffix.
+    replacements = [
+        (OLD_PACKAGE, new_package),
+        (OLD_PROJECT, new_project),
+        (f"{OLD_PLUGIN_SLUG}.android.", f"{new_plugin_slug}.android."),
+        (OLD_APP_NAME, new_app_name),
+    ]
+    changed = 0
+    for path in iter_files(root):
+        if path.suffix not in TEXT_SUFFIXES:
+            continue
+        if rewrite_text(path, replacements):
+            changed += 1
+
+    move_package_dirs(root, old_pkg_path, new_pkg_path)
+    rename_project_files(root, OLD_PROJECT, new_project)
+    rename_plugin_files(root, OLD_PLUGIN_SLUG, new_plugin_slug)
+
+    print(f"\nRewrote {changed} file(s); moved package directories; renamed project files.")
+    print("Next steps:")
+    print("  - Update README badges and docs/ references by hand.")
+    print("  - ./gradlew spotlessApply   # rewrite license header (set template.company first)")
+    print("  - ./gradlew test            # confirm everything compiles")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

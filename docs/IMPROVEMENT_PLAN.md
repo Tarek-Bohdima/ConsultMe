@@ -7,8 +7,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | Phase | Theme | State |
 |---|---|---|
 | 0 | Cleanup & flexibility | **Done** (#97) |
-| 1 | Convention plugins (`build-logic/`) | **Done** (this PR) |
-| 2 | Template ergonomics (bootstrap script, parameterized header) | Not started |
+| 1 | Convention plugins (`build-logic/`) | **Done** (#101) |
+| 2 | Template ergonomics (bootstrap script, parameterized header) | **In progress** (this PR) |
 | 3 | Real example tests | Not started |
 | 4 | Production-readiness (R8, CI artifacts, instrumented tests) | Not started |
 | 5 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
@@ -65,13 +65,15 @@ Two ergonomic wins layered onto the convention plugins, both from [Modexa, "7 Gr
 - **Type-safe project accessors** — `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` in `settings.gradle.kts`; modules now use `projects.coreUi` etc. instead of `project(":core-ui")`. Required renaming `rootProject.name` from `"Consult Me"` to `"ConsultMe"` (build identifier; user-facing app name in `strings.xml` is unchanged).
 - **Bundles for Compose + testing dependencies** — `[bundles]` entries in `gradle/libs.versions.toml`: `androidx-compose`, `androidx-compose-debug`, `test-shared`. The compose convention plugin's dep list shrunk from 10 lines to 6; `:core-testing`'s 11 `api()` lines collapsed to one `api(libs.bundles.test.shared)`. The Compose BOM stays unbundled because `platform(...)` can't wrap a bundle.
 
-## Phase 2 — Template ergonomics
+## Phase 2 — Template ergonomics (in progress)
 
 Goal: turn the manual "find/replace these 8 places" rename ritual into one command and parameterize the company name.
 
-- **`scripts/rename-template.sh com.acme.myapp "My App Name"`** that does the package rename, namespace updates, `applicationId` change, manifest activity references, `app_name`, and `rootProject.name` in one pass. Cross-shell-safe (use POSIX `sh` or python).
-- **Parameterize the Spotless license header** via `gradle.properties` (`template.company=MyCompany`, `template.licenseYear=$YEAR`). Read in the root `build.gradle.kts` Spotless config.
-- **Rewrite README's "How to Rename" section** to point at the script as the primary path, keep the manual fallback as an appendix. Add new sections: "How to add a new feature module" (after Phase 1, this is one line), "How to write a Hilt-aware test" (snippet using `:core-testing`'s `HiltTestRunner`), "How to regenerate lint baselines" (`./gradlew :module:updateLintBaseline`).
+Shipped in this PR:
+
+- **`scripts/rename-template.py com.acme.myapp "My App Name"`** — single-pass rewrite of package (namespace, applicationId, source dirs, package/import statements), project identifier (rootProject.name, `Theme.<name>`, `<name>Theme` composable, `<name>Application` class + filename), convention plugin slug (`consultme.android.*` → `<lower>.android.*`), and app display name. Implemented in Python 3 for cross-platform `sed -i` safety; the file is `.py` rather than `.sh` because the spec explicitly endorsed either. Re-running with the same args is a no-op.
+- **Parameterized Spotless license header** via two `gradle.properties` keys (`template.company`, `template.licenseYear`). Defaults preserve existing `// Copyright $YEAR MyCompany` output; adopters override `template.company` once per fork.
+- **README rewrite** — the rename section now points at the script first; manual steps are an appendix (`#manual-rename-fallback`). Added "How to add a new feature module," "How to write a Hilt-aware test," and "How to regenerate lint baselines" sections.
 
 ## Phase 3 — Real example tests
 
