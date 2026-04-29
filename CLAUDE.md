@@ -42,10 +42,11 @@ Lint baselines (`<module>/lint-baseline.xml`) exist per module — regenerate wi
 ## Conventions enforced by tooling
 
 - **License header**: Spotless (configured in root `build.gradle.kts`) requires `// Copyright $YEAR MyCompany` on every `.kt` and `.gradle.kts` file. Placement is delimiter-driven: above the `package` line for Kotlin, above the first `/*` for Gradle Kotlin scripts. New files without the header fail `spotlessCheck`. The "MyCompany" / `$YEAR` literals get rewritten by `spotlessApply`.
-- **Toolchain**: Every module sets `jvmToolchain(17)`, JVM target 17, and `freeCompilerArgs = ["-Xcontext-receivers"]`. Match this when adding modules.
-- **DI**: Hilt + KSP. `kapt` is intentionally left commented out across build scripts — use `ksp(libs.hilt.compiler)`. Modules that need DI must apply both `libs.plugins.hilt.gradle` and `libs.plugins.ksp` (see `:core-data` for the canonical pattern).
-- **Compose**: BOM-managed (`libs.androidx.compose.bom`). Library modules disable `buildFeatures.compose` unless they actually emit composables. `buildConfig`, `aidl`, `renderScript`, `shaders` are turned off everywhere.
-- **SDKs**: `compileSdk = 36`, `targetSdk = 36`, `minSdk = 25`.
+- **Convention plugins**: Module build scripts compose plugins from `build-logic/` instead of redeclaring AGP/Kotlin/JVM/lint config. Available: `consultme.android.application`, `consultme.android.library`, `consultme.android.compose`, `consultme.android.hilt`. Shared helpers live in `build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/AndroidExtensions.kt` — extend those rather than duplicating config in module scripts.
+- **Toolchain**: `jvmToolchain(17)`, JVM target 17, `freeCompilerArgs = ["-Xcontext-receivers"]` — set by the convention plugins.
+- **DI**: Hilt + KSP, applied via `consultme.android.hilt`. The convention adds `hilt-android` impl + `hilt-compiler` ksp; don't redeclare them per module.
+- **Compose**: BOM-managed via `consultme.android.compose` (Compose BOM + ui/graphics/tooling-preview/material3). The convention enables `buildFeatures.compose`. `buildConfig`, `aidl`, `renderScript`, `shaders` are turned off everywhere by the library/application conventions.
+- **SDKs**: `compileSdk = 36`, `targetSdk = 36`, `minSdk = 25` (set by the conventions).
 
 ## Dependency management
 
