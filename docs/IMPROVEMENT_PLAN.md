@@ -9,8 +9,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 0 | Cleanup & flexibility | **Done** (#97) |
 | 1 | Convention plugins (`build-logic/`) | **Done** (#101) |
 | 2 | Template ergonomics (bootstrap script, parameterized header) | **Done** (#104) |
-| 3 | Real example tests | **In progress** (this PR) |
-| 4 | Production-readiness (R8, CI artifacts, instrumented tests) | Not started |
+| 3 | Real example tests | **Done** (#105) |
+| 4 | Production-readiness (R8, CI artifacts, instrumented tests) | **In progress** — CI sub-piece in this PR; R8 + docs follow-ups still open |
 | 5 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
 
 Tick the table when phases land. Each phase below lists scope, rationale, and a rough size; sub-bullets are the concrete deltas.
@@ -86,15 +86,18 @@ Goal: replace the empty `ExampleUnitTest` shells with code that doubles as docum
   - A Compose UI test asserting the screen renders.
 - Each test stays small (≤ 30 lines) — the goal is exemplification, not coverage.
 
-## Phase 4 — Production-readiness
+## Phase 4 — Production-readiness (in progress)
 
-Goal: a fork from this template should be one signing config away from a Play release.
+Goal: a fork from this template should be one signing config away from a Play release. Splitting this phase across multiple PRs so each piece can be tuned independently.
 
+**CI sub-piece (this PR):**
+- `assembleRelease` step in `build_and_test` (catches APK build regressions `test` misses).
+- Upload `*/build/reports/lint-results-*.html` and `*/build/reports/tests/**` after every run (`if: always()` so they survive failures).
+- New parallel `instrumented_tests` job runs the GMD profile registered in #105 (`./gradlew pixel6api30DebugAndroidTest`). Includes KVM enable, AVD cache, and instrumented-test report upload. Not yet wired into branch protection — opt in via the repo's required-checks settings once the job has run a few times reliably.
+- Workflow now uses a `concurrency` group so superseded commits cancel mid-flight.
+
+**Still open (follow-up PRs):**
 - Flip `isMinifyEnabled = true` for release in `:app`. Add starter `proguard-rules.pro` with the Hilt + Compose + Room rules every project needs (most are already in the AGP defaults; document the few that aren't). The official [`r8-analyzer`](https://github.com/android/skills) Claude Code skill helps surface missing keep rules from a release build.
-- CI additions in `.github/workflows/android_ci.yml`:
-  - `./gradlew assembleRelease` (catches APK build regressions that `test` misses).
-  - Upload `*/build/reports/lint-results-*.html` and `*/build/reports/tests/**` as artifacts.
-  - Add a Gradle Managed Devices step for `connectedCheck` (cheaper and more reliable than self-hosted emulators). The device profile (`pixel6api30`, `aosp-atd`) is already registered by the library + application convention plugins as of #105 — Phase 4's job is to enable the corresponding workflow step (`./gradlew pixel6api30DebugAndroidTest`) and make sure KVM is available on the runner.
 - Add `CONTRIBUTING.md`, `PULL_REQUEST_TEMPLATE.md`, and a polished `CODE_OF_CONDUCT.md` (Contributor Covenant).
 
 ## Phase 5 — Deferred migrations
