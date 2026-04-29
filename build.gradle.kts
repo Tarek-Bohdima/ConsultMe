@@ -12,6 +12,12 @@ plugins {
     alias(libs.plugins.detekt) apply false
 }
 
+// Adopters override these in gradle.properties (template.company / template.licenseYear).
+// $YEAR is a Spotless token resolved at apply time; keep it as the default.
+val templateCompany = (findProperty("template.company") as? String)?.takeIf { it.isNotBlank() } ?: "MyCompany"
+val templateLicenseYear = (findProperty("template.licenseYear") as? String)?.takeIf { it.isNotBlank() } ?: "\$YEAR"
+val licenseHeaderText = "// Copyright $templateLicenseYear $templateCompany"
+
 subprojects {
     plugins.apply(rootProject.libs.plugins.spotless.get().pluginId)
     plugins.apply(rootProject.libs.plugins.detekt.get().pluginId)
@@ -20,23 +26,13 @@ subprojects {
         kotlin {
             target("**/*.kt")
             // Header is placed AFTER the `package` declaration via the delimiter.
-            licenseHeader(
-                """
-                // Copyright ${'$'}YEAR MyCompany
-                """.trimIndent(),
-                "package ",
-            )
+            licenseHeader(licenseHeaderText, "package ")
             ktlint(libs.ktlint.get().version)
         }
         kotlinGradle {
             target("*.gradle.kts")
             // No `package` line in Gradle scripts; place header above the first `/*`.
-            licenseHeader(
-                """
-                // Copyright ${'$'}YEAR MyCompany
-                """.trimIndent(),
-                "/*",
-            )
+            licenseHeader(licenseHeaderText, "/*")
             ktlint(libs.ktlint.get().version)
         }
     }
