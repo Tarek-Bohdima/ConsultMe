@@ -12,6 +12,6 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
 
-    testImplementation(project(":core-testing"))
-    androidTestImplementation(project(":core-testing"))
+    testImplementation(projects.coreTesting)
+    androidTestImplementation(projects.coreTesting)
 }

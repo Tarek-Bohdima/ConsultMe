@@ -75,6 +75,34 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 # Truth (for fluent assertions)
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
+[bundles]
+# Compose UI deps applied via the consultme.android.compose convention plugin.
+# `androidx.compose.bom` is intentionally NOT bundled — `platform(...)` can't be wrapped around a bundle.
+androidx-compose = [
+    "androidx-compose-ui",
+    "androidx-ui-graphics",
+    "androidx-compose-ui-tooling-preview",
+    "androidx-compose-material3",
+]
+androidx-compose-debug = [
+    "androidx-compose-ui-tooling",
+    "androidx-compose-ui-test-manifest",
+]
+# Re-exported from :core-testing via api() so consumers don't redeclare per module.
+test-shared = [
+    "junit",
+    "androidx-test-core",
+    "androidx-test-ext-junit",
+    "androidx-test-runner",
+    "androidx-espresso-core",
+    "hilt-android-testing",
+    "kotlinx-coroutines-test",
+    "mockk-core",
+    "mockk-android",
+    "turbine",
+    "truth",
+]
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
