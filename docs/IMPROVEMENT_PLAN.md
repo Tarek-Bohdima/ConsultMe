@@ -58,6 +58,13 @@ Notes for the next contributor:
 - The version catalog (`libs`) is exposed inside precompiled script plugins via the workaround documented on `build-logic/convention/build.gradle.kts` (Gradle issue #15383).
 - Resist a `feature` mega-plugin — two or three composable plugins beat one with twelve flags.
 
+## Phase 1 polish (small follow-ups)
+
+Bite-sized ergonomic wins to layer onto the convention plugins. Each is independently shippable; both come from [Modexa, "7 Gradle Kotlin DSL Tricks"](https://medium.com/@Modexa/7-gradle-kotlin-dsl-tricks-for-human-friendly-builds-68506270906f) (tricks #3 and #6).
+
+- **Type-safe project accessors.** Add `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` in `settings.gradle.kts`, then replace `project(":core-ui")` with `projects.coreUi` etc. across module scripts. Stable since Gradle 7; gives autocomplete and refactor-safety with ~20 lines of diff.
+- **Bundles for Compose + testing dependencies.** Group the 7 Compose UI deps and the `:core-testing` `api()` list into `[bundles]` entries in `gradle/libs.versions.toml`. Shrinks `consultme.android.compose` from 9 declarations to 2 (one `implementation` bundle + the BOM `platform(...)`, which can't be bundled). Same for `core-testing`'s test-fixture re-exports.
+
 ## Phase 2 — Template ergonomics
 
 Goal: turn the manual "find/replace these 8 places" rename ritual into one command and parameterize the company name.
