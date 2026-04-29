@@ -26,8 +26,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":core-ui"))
-    implementation(project(":feature-example"))
+    implementation(projects.coreUi)
+    implementation(projects.featureExample)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -38,6 +38,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    testImplementation(project(":core-testing"))
-    androidTestImplementation(project(":core-testing"))
+    testImplementation(projects.coreTesting)
+    androidTestImplementation(projects.coreTesting)
 }

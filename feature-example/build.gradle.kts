@@ -10,13 +10,13 @@ android {
 }
 
 dependencies {
-    implementation(project(":core-data"))
+    implementation(projects.coreData)
 
     implementation(libs.androidx.core.ktx)
 
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    testImplementation(project(":core-testing"))
-    androidTestImplementation(project(":core-testing"))
+    testImplementation(projects.coreTesting)
+    androidTestImplementation(projects.coreTesting)
 }

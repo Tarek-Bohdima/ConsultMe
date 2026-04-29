@@ -58,12 +58,12 @@ Notes for the next contributor:
 - The version catalog (`libs`) is exposed inside precompiled script plugins via the workaround documented on `build-logic/convention/build.gradle.kts` (Gradle issue #15383).
 - Resist a `feature` mega-plugin — two or three composable plugins beat one with twelve flags.
 
-## Phase 1 polish (small follow-ups)
+## Phase 1 polish (done)
 
-Bite-sized ergonomic wins to layer onto the convention plugins. Each is independently shippable; both come from [Modexa, "7 Gradle Kotlin DSL Tricks"](https://medium.com/@Modexa/7-gradle-kotlin-dsl-tricks-for-human-friendly-builds-68506270906f) (tricks #3 and #6).
+Two ergonomic wins layered onto the convention plugins, both from [Modexa, "7 Gradle Kotlin DSL Tricks"](https://medium.com/@Modexa/7-gradle-kotlin-dsl-tricks-for-human-friendly-builds-68506270906f) (tricks #3 and #6):
 
-- **Type-safe project accessors.** Add `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` in `settings.gradle.kts`, then replace `project(":core-ui")` with `projects.coreUi` etc. across module scripts. Stable since Gradle 7; gives autocomplete and refactor-safety with ~20 lines of diff.
-- **Bundles for Compose + testing dependencies.** Group the 7 Compose UI deps and the `:core-testing` `api()` list into `[bundles]` entries in `gradle/libs.versions.toml`. Shrinks `consultme.android.compose` from 9 declarations to 2 (one `implementation` bundle + the BOM `platform(...)`, which can't be bundled). Same for `core-testing`'s test-fixture re-exports.
+- **Type-safe project accessors** — `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` in `settings.gradle.kts`; modules now use `projects.coreUi` etc. instead of `project(":core-ui")`. Required renaming `rootProject.name` from `"Consult Me"` to `"ConsultMe"` (build identifier; user-facing app name in `strings.xml` is unchanged).
+- **Bundles for Compose + testing dependencies** — `[bundles]` entries in `gradle/libs.versions.toml`: `androidx-compose`, `androidx-compose-debug`, `test-shared`. The compose convention plugin's dep list shrunk from 10 lines to 6; `:core-testing`'s 11 `api()` lines collapsed to one `api(libs.bundles.test.shared)`. The Compose BOM stays unbundled because `platform(...)` can't wrap a bundle.
 
 ## Phase 2 — Template ergonomics
 

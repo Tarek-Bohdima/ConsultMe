@@ -18,19 +18,6 @@ dependencies {
     implementation(libs.androidx.test.runner)
 
     // Re-exported via api() so consumers don't redeclare these in every module.
-    api(libs.junit)
-    api(libs.androidx.test.core)
-    api(libs.androidx.test.ext.junit)
-    api(libs.androidx.test.runner)
-    api(libs.androidx.espresso.core)
-
-    api(libs.hilt.android.testing)
-
-    api(libs.kotlinx.coroutines.test)
-
-    api(libs.mockk.core)
-    api(libs.mockk.android)
-
-    api(libs.turbine)
-    api(libs.truth)
+    // Bundle definition lives in gradle/libs.versions.toml under [bundles].test-shared.
+    api(libs.bundles.test.shared)
 }
