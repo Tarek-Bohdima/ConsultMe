@@ -107,8 +107,8 @@ Goal: a fork from this template should be one signing config away from a Play re
 - `.github/ISSUE_TEMPLATE/config.yml` — disables blank issues and surfaces two contact links (the roadmap, and the security-disclosure path documented in `CONTRIBUTING.md`).
 
 **Code of conduct sub-piece (this PR):**
-- `CODE_OF_CONDUCT.md` at the repo root — verbatim Contributor Covenant v2.1, fetched from the canonical source. The enforcement-contact slot is left as the standard `[INSERT CONTACT METHOD]` placeholder for the maintainer to swap in (a project-specific email is planned).
-- `CONTRIBUTING.md` re-links the CoC under a "Code of conduct" section that points at the new file.
+- `CODE_OF_CONDUCT.md` at the repo root — verbatim Contributor Covenant v2.1, fetched from the canonical source. The enforcement-contact slot routes to GitHub's "Report a vulnerability" private flow (the same channel `SECURITY.md` documents in #116) — no email is required anywhere in the project.
+- `CONTRIBUTING.md` re-links the CoC under a "Code of conduct" section, and the "Reporting bugs and security issues" section drops the prior "email the maintainer" wording in favor of the same private Security-tab flow.
 
 ## Phase 5 — Deferred migrations
 

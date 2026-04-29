@@ -100,9 +100,10 @@ it when contributing back upstream.
 ## Reporting bugs and security issues
 
 - **Bugs** — use the [bug report issue template](.github/ISSUE_TEMPLATE/bug_report.md).
-- **Security issues** — please don't open a public issue. Email the maintainer
-  privately (see the GitHub profile linked in `LICENSE.md`) so a fix can ship
-  before disclosure.
+- **Security issues** — please don't open a public issue. Use the **Report a
+  vulnerability** option in the repository's Security tab; that opens a private
+  channel visible only to the maintainer. See [`SECURITY.md`](SECURITY.md) for
+  what to expect after submitting.
 
 Thanks again — every PR that makes the template easier to fork helps the next
 adopter.
