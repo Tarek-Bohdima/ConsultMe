@@ -101,8 +101,13 @@ Goal: a fork from this template should be one signing config away from a Play re
 - `:app/proguard-rules.pro` rewritten as a slim starter — the only project-specific rule is `-keepattributes SourceFile,LineNumberTable` (with the matching `-renamesourcefileattribute SourceFile`) so production crashes symbolicate via the `mapping.txt` AGP writes under `build/outputs/mapping/release/`. The platform defaults (`proguard-android-optimize.txt`) plus AAR-shipped consumer rules from Hilt, Compose, Room, and kotlinx.coroutines cover the rest. Comments document when adopters need to add their own keeps (reflective serializers, `Class.forName`, etc.) and point at the [`r8-analyzer`](https://github.com/android/skills) Claude Code skill.
 - Validated locally: `:app:assembleRelease` ships a 896 KB unsigned release APK; `:app:lintRelease` and `./gradlew test` are clean.
 
+**Community docs sub-piece (this PR):**
+- `CONTRIBUTING.md` at the repo root — scope statement, local setup, the local CI loop, PR conventions (Conventional Commits, branch protection, one-scope-per-PR), license-header note, repo layout, bug/security reporting paths.
+- `.github/PULL_REQUEST_TEMPLATE.md` — Summary / Test plan / Reviewer notes / Refs sections, mirroring the format the recent PR queue has been using.
+- `.github/ISSUE_TEMPLATE/config.yml` — disables blank issues and surfaces two contact links (the roadmap, and the security-disclosure path documented in `CONTRIBUTING.md`).
+
 **Still open (follow-up PR):**
-- Add `CONTRIBUTING.md`, `PULL_REQUEST_TEMPLATE.md`, and a polished `CODE_OF_CONDUCT.md` (Contributor Covenant).
+- Add a polished `CODE_OF_CONDUCT.md` (Contributor Covenant v2.1). Deferred from this PR because the canonical text needs a real enforcement contact filled in, and that's a maintainer decision rather than a template default.
 
 ## Phase 5 — Deferred migrations
 
