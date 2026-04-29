@@ -10,7 +10,7 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 1 | Convention plugins (`build-logic/`) | **Done** (#101) |
 | 2 | Template ergonomics (bootstrap script, parameterized header) | **Done** (#104) |
 | 3 | Real example tests | **Done** (#105) |
-| 4 | Production-readiness (R8, CI artifacts, instrumented tests) | **In progress** — CI sub-piece in this PR; R8 + docs follow-ups still open |
+| 4 | Production-readiness (R8, CI artifacts, instrumented tests) | **Done** (#107, #113, #114, #115) |
 | 5 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
 
 Tick the table when phases land. Each phase below lists scope, rationale, and a rough size; sub-bullets are the concrete deltas.
@@ -86,9 +86,9 @@ Goal: replace the empty `ExampleUnitTest` shells with code that doubles as docum
   - A Compose UI test asserting the screen renders.
 - Each test stays small (≤ 30 lines) — the goal is exemplification, not coverage.
 
-## Phase 4 — Production-readiness (in progress)
+## Phase 4 — Production-readiness (done)
 
-Goal: a fork from this template should be one signing config away from a Play release. Splitting this phase across multiple PRs so each piece can be tuned independently.
+Goal: a fork from this template should be one signing config away from a Play release. Split across four PRs so each piece could be tuned independently.
 
 **CI sub-piece (#107):**
 - `assembleRelease` step in `build_and_test` (catches APK build regressions `test` misses).
@@ -101,13 +101,14 @@ Goal: a fork from this template should be one signing config away from a Play re
 - `:app/proguard-rules.pro` rewritten as a slim starter — the only project-specific rule is `-keepattributes SourceFile,LineNumberTable` (with the matching `-renamesourcefileattribute SourceFile`) so production crashes symbolicate via the `mapping.txt` AGP writes under `build/outputs/mapping/release/`. The platform defaults (`proguard-android-optimize.txt`) plus AAR-shipped consumer rules from Hilt, Compose, Room, and kotlinx.coroutines cover the rest. Comments document when adopters need to add their own keeps (reflective serializers, `Class.forName`, etc.) and point at the [`r8-analyzer`](https://github.com/android/skills) Claude Code skill.
 - Validated locally: `:app:assembleRelease` ships a 896 KB unsigned release APK; `:app:lintRelease` and `./gradlew test` are clean.
 
-**Community docs sub-piece (this PR):**
+**Community docs sub-piece (#114):**
 - `CONTRIBUTING.md` at the repo root — scope statement, local setup, the local CI loop, PR conventions (Conventional Commits, branch protection, one-scope-per-PR), license-header note, repo layout, bug/security reporting paths.
 - `.github/PULL_REQUEST_TEMPLATE.md` — Summary / Test plan / Reviewer notes / Refs sections, mirroring the format the recent PR queue has been using.
 - `.github/ISSUE_TEMPLATE/config.yml` — disables blank issues and surfaces two contact links (the roadmap, and the security-disclosure path documented in `CONTRIBUTING.md`).
 
-**Still open (follow-up PR):**
-- Add a polished `CODE_OF_CONDUCT.md` (Contributor Covenant v2.1). Deferred from this PR because the canonical text needs a real enforcement contact filled in, and that's a maintainer decision rather than a template default.
+**Code of conduct sub-piece (this PR):**
+- `CODE_OF_CONDUCT.md` at the repo root — verbatim Contributor Covenant v2.1, fetched from the canonical source. The enforcement-contact slot routes to GitHub's "Report a vulnerability" private flow (the same channel `SECURITY.md` documents in #116) — no email is required anywhere in the project.
+- `CONTRIBUTING.md` re-links the CoC under a "Code of conduct" section, and the "Reporting bugs and security issues" section drops the prior "email the maintainer" wording in favor of the same private Security-tab flow.
 
 ## Phase 5 — Deferred migrations
 
