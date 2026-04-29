@@ -90,14 +90,18 @@ Goal: replace the empty `ExampleUnitTest` shells with code that doubles as docum
 
 Goal: a fork from this template should be one signing config away from a Play release. Splitting this phase across multiple PRs so each piece can be tuned independently.
 
-**CI sub-piece (this PR):**
+**CI sub-piece (#107):**
 - `assembleRelease` step in `build_and_test` (catches APK build regressions `test` misses).
 - Upload `*/build/reports/lint-results-*.html` and `*/build/reports/tests/**` after every run (`if: always()` so they survive failures).
 - New parallel `instrumented_tests` job runs the GMD profile registered in #105 (`./gradlew pixel6api30DebugAndroidTest`). Includes KVM enable, AVD cache, and instrumented-test report upload. Not yet wired into branch protection — opt in via the repo's required-checks settings once the job has run a few times reliably.
 - Workflow now uses a `concurrency` group so superseded commits cancel mid-flight.
 
-**Still open (follow-up PRs):**
-- Flip `isMinifyEnabled = true` for release in `:app`. Add starter `proguard-rules.pro` with the Hilt + Compose + Room rules every project needs (most are already in the AGP defaults; document the few that aren't). The official [`r8-analyzer`](https://github.com/android/skills) Claude Code skill helps surface missing keep rules from a release build.
+**R8 sub-piece (this PR):**
+- `isMinifyEnabled = true` and `isShrinkResources = true` for the release build type in the `consultme.android.application` convention plugin. Every adopter inherits R8 + resource shrinking on release without having to touch their app module.
+- `:app/proguard-rules.pro` rewritten as a slim starter — the only project-specific rule is `-keepattributes SourceFile,LineNumberTable` (with the matching `-renamesourcefileattribute SourceFile`) so production crashes symbolicate via the `mapping.txt` AGP writes under `build/outputs/mapping/release/`. The platform defaults (`proguard-android-optimize.txt`) plus AAR-shipped consumer rules from Hilt, Compose, Room, and kotlinx.coroutines cover the rest. Comments document when adopters need to add their own keeps (reflective serializers, `Class.forName`, etc.) and point at the [`r8-analyzer`](https://github.com/android/skills) Claude Code skill.
+- Validated locally: `:app:assembleRelease` ships a 896 KB unsigned release APK; `:app:lintRelease` and `./gradlew test` are clean.
+
+**Still open (follow-up PR):**
 - Add `CONTRIBUTING.md`, `PULL_REQUEST_TEMPLATE.md`, and a polished `CODE_OF_CONDUCT.md` (Contributor Covenant).
 
 ## Phase 5 — Deferred migrations
