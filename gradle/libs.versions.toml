@@ -89,10 +89,6 @@ androidx-compose-debug = [
     "androidx-compose-ui-test-manifest",
 ]
 # Re-exported from :core-testing via api() so consumers don't redeclare per module.
-# mockk-android is intentionally not bundled — its minSdk (26) clashes with the
-# template's minSdk (25), and JVM mockk-core covers most use cases. Consumers
-# that need to mock final Android classes on a device should pull it in
-# directly via `androidTestImplementation(libs.mockk.android)`.
 test-shared = [
     "junit",
     "androidx-test-core",
@@ -102,6 +98,7 @@ test-shared = [
     "hilt-android-testing",
     "kotlinx-coroutines-test",
     "mockk-core",
+    "mockk-android",
     "turbine",
     "truth",
 ]

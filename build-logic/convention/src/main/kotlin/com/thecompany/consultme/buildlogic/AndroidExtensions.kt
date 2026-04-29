@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *, *, *>) {
     commonExtension.apply {
         compileSdk = 36
-        defaultConfig.minSdk = 25
+        defaultConfig.minSdk = 26
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
