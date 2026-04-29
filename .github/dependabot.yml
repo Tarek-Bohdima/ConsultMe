@@ -73,6 +73,17 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Tarek-Bohdima"
+    assignees:
+      - "Tarek-Bohdima"
     commit-message:
       prefix: "chore"
       include: "scope"
+    # Bundle all action SHA bumps into a single weekly PR so the workflow gets
+    # reviewed atomically rather than five PRs each touching one line.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
