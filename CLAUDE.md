@@ -73,5 +73,24 @@ Skills are not vendored — install locally when starting the matching phase. Se
 `main` is protected:
 - Direct pushes rejected — every change goes through a PR.
 - `build_and_test` (the workflow in `.github/workflows/android_ci.yml`) is a required check.
+- `instrumented_tests` (Gradle Managed Device job) is **not yet required** — let it bake for a few PRs, then promote it via Repo → Settings → Branches → main.
 - GitHub auto-merge is **disabled** at the repo level. Merging requires `gh pr merge --admin --squash --delete-branch` (admin override) or clicking merge in the UI.
-- Dependabot opens grouped PRs weekly; they get squash-merged like any other PR.
+- Dependabot opens grouped PRs weekly (Gradle deps + workflow action SHAs); they get squash-merged like any other PR.
+- **Fork PR approval**: Repo → Settings → Actions → General → "Require approval for first-time contributors" should stay enabled. Without it, anyone forking can spam workflow runs through unlimited public-repo Action minutes. (No $ cost on a public repo, but GitHub may rate-limit the org under abuse.)
+- Third-party actions in workflows are **pinned to commit SHAs** (with the version tag in a trailing comment). Dependabot's `github-actions` ecosystem auto-bumps them weekly. When reviewing those PRs, glance at the upstream changelog before merging — that's the value SHA-pinning gives you.
+
+## Versioning and tags
+
+Tags follow SemVer with a template-adopter lens: a "breaking change" is one that affects a downstream fork, not just an internal refactor.
+
+| Bump | When |
+|------|------|
+| **MAJOR** (`vX.0.0`) | Breaking changes for adopters — `minSdk` bump, AGP/Kotlin/Hilt major migration, convention-plugin API renames, removing or renaming a module |
+| **MINOR** (`v1.X.0`) | A phase landing, new convention plugin, new feature module template, additive opt-in tooling |
+| **PATCH** (`v1.0.X`) | Bug fixes, doc-only changes, dep bumps from Dependabot |
+
+**Conventions:**
+- **Tag at phase boundaries** from `docs/IMPROVEMENT_PLAN.md`, not arbitrarily. So Phase 0+1+1polish+2+3 collapse into a single tag; Phase 4 into the next; etc.
+- **Every tag is a GitHub Release** with auto-generated notes, not just a bare git tag. Use `gh release create vX.Y.Z --generate-notes`.
+- **Pre-release suffixes** (`v2.0.0-rc.1`) for the Phase 5 deferred migrations (AGP 9 / Hilt 2.59 / Kotlin 2.3.20+) so adopters can preview before promotion.
+- Old `v1.0.0`–`v1.4.0` tags from August 2025 are pre-roadmap and immutable; they don't map to any current phase. The next tag after Phase 4 wraps will be **`v2.0.0`** (the `minSdk` 25→26 in #105 is breaking for any fork from `v1.4.0`).

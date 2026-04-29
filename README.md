@@ -132,6 +132,10 @@ Replace `:feature-example` with the module you're updating. CI runs `lintRelease
 - **Detekt**: Finds common code issues.
 - **Lint**: Enforces Kotlin and Compose best practices.
 
+## Versioning
+
+Tags follow SemVer with a template-adopter lens: **MAJOR** = breaking change for downstream forks (`minSdk` bump, AGP/Kotlin major migration, convention-plugin API rename), **MINOR** = a phase landing or new opt-in tooling, **PATCH** = bug fixes and dep bumps. Tags align with phase boundaries in [`docs/IMPROVEMENT_PLAN.md`](docs/IMPROVEMENT_PLAN.md), and every tag ships as a GitHub Release. See [`CLAUDE.md`](CLAUDE.md#versioning-and-tags) for the full policy.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
