@@ -92,6 +92,11 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Accept Android SDK licenses
+        # The runner has the emulator license accepted but not aosp_atd system
+        # images. Pre-accept everything so AGP can install the missing package.
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+
       - name: Cache AVD system image
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
