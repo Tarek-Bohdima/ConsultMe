@@ -8,8 +8,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 |---|---|---|
 | 0 | Cleanup & flexibility | **Done** (#97) |
 | 1 | Convention plugins (`build-logic/`) | **Done** (#101) |
-| 2 | Template ergonomics (bootstrap script, parameterized header) | **In progress** (this PR) |
-| 3 | Real example tests | Not started |
+| 2 | Template ergonomics (bootstrap script, parameterized header) | **Done** (#104) |
+| 3 | Real example tests | **In progress** (this PR) |
 | 4 | Production-readiness (R8, CI artifacts, instrumented tests) | Not started |
 | 5 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
 
@@ -65,7 +65,7 @@ Two ergonomic wins layered onto the convention plugins, both from [Modexa, "7 Gr
 - **Type-safe project accessors** — `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` in `settings.gradle.kts`; modules now use `projects.coreUi` etc. instead of `project(":core-ui")`. Required renaming `rootProject.name` from `"Consult Me"` to `"ConsultMe"` (build identifier; user-facing app name in `strings.xml` is unchanged).
 - **Bundles for Compose + testing dependencies** — `[bundles]` entries in `gradle/libs.versions.toml`: `androidx-compose`, `androidx-compose-debug`, `test-shared`. The compose convention plugin's dep list shrunk from 10 lines to 6; `:core-testing`'s 11 `api()` lines collapsed to one `api(libs.bundles.test.shared)`. The Compose BOM stays unbundled because `platform(...)` can't wrap a bundle.
 
-## Phase 2 — Template ergonomics (in progress)
+## Phase 2 — Template ergonomics (done)
 
 Goal: turn the manual "find/replace these 8 places" rename ritual into one command and parameterize the company name.
 
@@ -94,7 +94,7 @@ Goal: a fork from this template should be one signing config away from a Play re
 - CI additions in `.github/workflows/android_ci.yml`:
   - `./gradlew assembleRelease` (catches APK build regressions that `test` misses).
   - Upload `*/build/reports/lint-results-*.html` and `*/build/reports/tests/**` as artifacts.
-  - Add a Gradle Managed Devices step for `connectedCheck` (cheaper and more reliable than self-hosted emulators).
+  - Add a Gradle Managed Devices step for `connectedCheck` (cheaper and more reliable than self-hosted emulators). The device profile (`pixel6api30`, `aosp-atd`) is already registered by the library + application convention plugins as of #105 — Phase 4's job is to enable the corresponding workflow step (`./gradlew pixel6api30DebugAndroidTest`) and make sure KVM is available on the runner.
 - Add `CONTRIBUTING.md`, `PULL_REQUEST_TEMPLATE.md`, and a polished `CODE_OF_CONDUCT.md` (Contributor Covenant).
 
 ## Phase 5 — Deferred migrations

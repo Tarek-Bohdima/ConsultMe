@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.thecompany.consultme.feature.example.ui.ExampleScreen
+import com.thecompany.consultme.feature.example.ui.ExampleUiState
 import com.thecompany.consultme.ui.theme.ConsultMeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,6 +35,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainActivityPreview() {
     ConsultMeTheme {
-        ExampleScreen()
+        ExampleScreen(uiState = ExampleUiState.Idle, onClick = {})
     }
 }

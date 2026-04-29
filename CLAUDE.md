@@ -46,7 +46,7 @@ Lint baselines (`<module>/lint-baseline.xml`) exist per module — regenerate wi
 - **Toolchain**: `jvmToolchain(17)`, JVM target 17, `freeCompilerArgs = ["-Xcontext-receivers"]` — set by the convention plugins.
 - **DI**: Hilt + KSP, applied via `consultme.android.hilt`. The convention adds `hilt-android` impl + `hilt-compiler` ksp; don't redeclare them per module.
 - **Compose**: BOM-managed via `consultme.android.compose` (Compose BOM + ui/graphics/tooling-preview/material3). The convention enables `buildFeatures.compose`. `buildConfig`, `aidl`, `renderScript`, `shaders` are turned off everywhere by the library/application conventions.
-- **SDKs**: `compileSdk = 36`, `targetSdk = 36`, `minSdk = 25` (set by the conventions).
+- **SDKs**: `compileSdk = 36`, `targetSdk = 36`, `minSdk = 26` (set by the conventions).
 
 ## Dependency management
 

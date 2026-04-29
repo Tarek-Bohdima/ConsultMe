@@ -3,7 +3,7 @@
 [![Android CI](https://github.com/Tarek-Bohdima/ConsultMe/actions/workflows/android_ci.yml/badge.svg)](https://github.com/Tarek-Bohdima/ConsultMe/actions/workflows/android_ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Platform](https://img.shields.io/badge/platform-android-green.svg)
-![Min API](https://img.shields.io/badge/Min%20API-25-purple)
+![Min API](https://img.shields.io/badge/Min%20API-26-purple)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 
