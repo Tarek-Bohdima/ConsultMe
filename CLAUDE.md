@@ -56,7 +56,6 @@ Active ignore rules in `.github/dependabot.yml` — leave these alone unless doi
 
 - `com.android.application` / `com.android.library` major versions blocked. AGP 9.x removes the `kotlin-android` plugin requirement and forces Gradle ≥ 9.4 — handle as a dedicated migration PR, not a bot bump.
 - `com.google.dagger.hilt.android` `>=2.59` blocked. Hilt 2.59 hard-requires AGP 9.
-- `org.jetbrains.kotlin.android` and `org.jetbrains.kotlin.plugin.compose` `>=2.3.20` blocked. Kotlin 2.3.20+ promotes `-Xcontext-receivers` from a warning to a hard error in release variants — unblocking is gated on the `-Xcontext-receivers` → `-Xcontext-parameters` migration tracked in `docs/IMPROVEMENT_PLAN.md` "Known follow-ups."
 
 ## Recommended Claude Code skills
 

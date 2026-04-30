@@ -38,19 +38,6 @@ updates:
         versions: [">=2.59"]
       - dependency-name: "com.google.dagger:hilt-android-gradle-plugin"
         versions: [">=2.59"]
-      # Kotlin 2.3.20+ promotes -Xcontext-receivers from warning to a hard
-      # error in release variants, breaking compileReleaseKotlin in
-      # :core-testing and the feature module. Hold until the migration to
-      # -Xcontext-parameters is done (tracked in docs/IMPROVEMENT_PLAN.md).
-      - dependency-name: "org.jetbrains.kotlin.android"
-        versions: [">=2.3.20"]
-      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
-        versions: [">=2.3.20"]
-      - dependency-name: "org.jetbrains.kotlin:kotlin-gradle-plugin"
-        versions: [">=2.3.20"]
-      - dependency-name: "org.jetbrains.kotlin:compose-compiler-gradle-plugin"
-        versions: [">=2.3.20"]
-
     # Group related dependency updates into single pull requests
     groups:
       # Group all Gradle and build plugin updates

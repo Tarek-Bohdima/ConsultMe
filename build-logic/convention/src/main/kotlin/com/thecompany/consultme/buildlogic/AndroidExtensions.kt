@@ -22,7 +22,7 @@ internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, 
         jvmToolchain(17)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
-            freeCompilerArgs.set(listOf("-Xcontext-receivers"))
+            freeCompilerArgs.set(listOf("-Xcontext-parameters"))
         }
     }
 }
