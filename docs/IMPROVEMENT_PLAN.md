@@ -14,8 +14,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 5 | NIA-alignment slice 1 (convention plugins expansion, drop Detekt) | **Done** (#123) |
 | 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | **Done** (#124) |
 | 7 | NIA-alignment slice 3 (quality tooling: Kover + module-graph) | **Done** (#126) |
-| 8 | NIA-alignment slice 4 (`:baselineprofile` macrobenchmark + baseline profile) | In progress (#122) |
-| 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | In progress (#131) |
+| 8 | NIA-alignment slice 4 (`:baselineprofile` macrobenchmark + baseline profile) | **Done** (#129, `v3.1.0`) |
+| 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | **Done** (#132, `v4.0.0-rc.1`) |
 
 Tick the table when phases land. Each phase below lists scope, rationale, and a rough size; sub-bullets are the concrete deltas.
 
@@ -184,7 +184,7 @@ Tracking: #122.
 
 - Initial baseline profile bytes need to be generated locally before forks see startup benefits. The `app/src/main/baseline-prof.txt` file is committed as a stub on the first run after a real device run. Document in CONTRIBUTING.md.
 
-## Phase 9 — Deferred migrations (in progress)
+## Phase 9 — Deferred migrations (done)
 
 Goal: pull the template onto the AGP 9 / Hilt 2.59+ tooling line. Kotlin 2.3.20+ already unpinned in #118.
 
