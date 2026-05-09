@@ -16,6 +16,7 @@ dependencies {
     compileOnly(libs.hilt.gradle.plugin)
     compileOnly(libs.ksp.gradle.plugin)
     compileOnly(libs.kover.gradle.plugin)
+    compileOnly(libs.androidx.baselineprofile.gradle.plugin)
 
     // Expose the `libs` version-catalog accessor inside precompiled script plugins.
     // See https://github.com/gradle/gradle/issues/15383

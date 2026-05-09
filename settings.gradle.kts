@@ -29,6 +29,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "ConsultMe"
 include(":app")
+include(":baselineprofile")
 include(":core-common")
 include(":core-data")
 include(":core-database")

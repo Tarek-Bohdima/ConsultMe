@@ -40,6 +40,15 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // Runtime side of the baseline-profile pipeline. Without this dep, the
+    // committed `baseline-prof.txt` ships in the APK but is never installed
+    // on user devices.
+    implementation(libs.androidx.profileinstaller)
+
+    // Producer module that generates `baseline-prof.txt`. Regenerate via
+    // `./gradlew :app:generateReleaseBaselineProfile`.
+    "baselineProfile"(projects.baselineprofile)
+
     testImplementation(projects.coreTesting)
     androidTestImplementation(projects.coreTesting)
 }

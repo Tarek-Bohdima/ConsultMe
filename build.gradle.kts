@@ -5,9 +5,14 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.test) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.gradle) apply false
     alias(libs.plugins.spotless) apply false
+    // Adds the baselineprofile plugin to the root buildscript classpath so the
+    // `consultme.android.application` and `consultme.android.baselineprofile`
+    // convention plugins can apply it.
+    alias(libs.plugins.androidx.baselineprofile) apply false
     // Kover applied at root aggregates coverage from every module that also
     // applies the consultme.kover convention. `./gradlew koverHtmlReport`
     // produces a project-wide report under `build/reports/kover/`.

@@ -13,8 +13,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 4 | Production-readiness (R8, CI artifacts, instrumented tests) | **Done** (#107, #113, #114, #115) |
 | 5 | NIA-alignment slice 1 (convention plugins expansion, drop Detekt) | **Done** (#123) |
 | 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | **Done** (#124) |
-| 7 | NIA-alignment slice 3 (quality tooling: Kover + module-graph) | In progress (#122) |
-| 8 | NIA-alignment slice 4 (`:benchmarks` macrobenchmark + baseline profile) | Planned (#122) |
+| 7 | NIA-alignment slice 3 (quality tooling: Kover + module-graph) | **Done** (#126) |
+| 8 | NIA-alignment slice 4 (`:baselineprofile` macrobenchmark + baseline profile) | In progress (#122) |
 | 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
 
 Tick the table when phases land. Each phase below lists scope, rationale, and a rough size; sub-bullets are the concrete deltas.
@@ -162,7 +162,27 @@ Tracking: #122.
 
 ## Phase 8 — NIA-alignment slice 4 (baseline profile + macrobenchmark)
 
-Planned. New `:benchmarks` module using `consultme.android.test` + the `androidx.baselineprofile` plugin, generating a startup baseline profile that ships with the release APK. Tracking: #122.
+Goal: every fork of the template starts with a baseline-profile pipeline pre-wired, so adopters get the AOT-compilation startup win (~15–30% on cold launches) without reading the AndroidX docs first.
+
+Shipped:
+
+- **`:baselineprofile` module** — `com.android.test` producer that owns:
+  - [`BaselineProfileGenerator`](../baselineprofile/src/main/kotlin/com/thecompany/consultme/baselineprofile/BaselineProfileGenerator.kt) — runs once via `BaselineProfileRule` to produce `app/src/main/baseline-prof.txt`.
+  - [`StartupBenchmarks`](../baselineprofile/src/main/kotlin/com/thecompany/consultme/baselineprofile/StartupBenchmarks.kt) — cold-start macrobenchmark with two compilation modes (`None` vs `Partial(Require)`); the delta is the win the profile buys.
+- **`consultme.android.baselineprofile` convention plugin** — composes the existing `consultme.android.test` (Phase 5) with `androidx.baselineprofile` and the macro+uiautomator deps. New benchmark modules become a one-liner.
+- **`:app` consumer wiring** — `consultme.android.application` applies the `androidx.baselineprofile` plugin, and `:app/build.gradle.kts` declares `baselineProfile(projects.baselineprofile)` plus the `androidx.profileinstaller` runtime dep so the profile actually loads on user devices.
+- **Shared GMD** — `consultme.android.test` now calls `configureManagedDevices()`, so the same `pixel6api30 / aosp-atd` device used by the existing instrumented-test job runs the profile generator and macrobenchmarks. One AVD entry-point to install/cache.
+- **Module-graph plugin** now treats `baselineProfile` as a graphable configuration so the producer→consumer link shows up in `docs/MODULE_GRAPH.md`.
+
+Generation strategy: profile is regenerated **on demand** by adopters (`./gradlew :app:generateReleaseBaselineProfile`), not on every CI run. The committed `app/src/main/baseline-prof.txt` is the canonical artifact. Same trade-off as `MODULE_GRAPH.md` but in reverse: deterministic enough to commit, expensive enough to regenerate sparingly. CI just verifies the module compiles.
+
+Note on design patterns: the AndroidX `BaselineProfileRule` already plays a Template Method role internally (collect → measure → write profile); adding a parallel abstraction on top would only obscure it. The convention plugin provides the only abstraction worth having here, by composing `consultme.android.test` with the AndroidX plugin.
+
+Tracking: #122.
+
+## Phase 8 follow-ups not yet phased
+
+- Initial baseline profile bytes need to be generated locally before forks see startup benefits. The `app/src/main/baseline-prof.txt` file is committed as a stub on the first run after a real device run. Document in CONTRIBUTING.md.
 
 ## Phase 9 — Deferred migrations
 

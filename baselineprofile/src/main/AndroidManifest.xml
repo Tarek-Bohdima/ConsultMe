@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      Macrobenchmark needs legacy storage to write profile + metric output.
+    -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <!--
+      AGP defaults `com.android.test` variants to `android:debuggable="true"`.
+      Macrobenchmark explicitly recommends overriding to `false` so timings
+      reflect a realistic (release-like) build. The `tools:replace` clears
+      AGP's injected default; without it the merger keeps `debuggable=true`,
+      which CodeQL also flags as a security issue.
+    -->
+    <application android:debuggable="false"
+        tools:ignore="HardcodedDebugMode"
+        tools:replace="android:debuggable" />
+</manifest>

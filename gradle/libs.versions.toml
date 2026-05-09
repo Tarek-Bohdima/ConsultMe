@@ -1,15 +1,19 @@
 [versions]
 androidGradlePlugin = "8.13.2"
 androidxActivity = "1.13.0"
+androidxBaselineprofile = "1.4.1"
+androidxBenchmark = "1.4.1"
 androidxComposeBom = "2026.04.01"
 androidxCore = "1.18.0"
 androidxHilt = "1.3.0"
 androidxLifecycle = "2.10.0"
 androidxNavigation = "2.9.8"
+androidxProfileinstaller = "1.4.0"
 androidxRoom = "2.8.4"
 androidxTestCore = "1.7.0"
 androidxTestExt = "1.3.0"
 androidxTestRunner = "1.7.0"
+androidxUiautomator = "2.3.0"
 coroutines = "1.10.2"
 espressoCore = "3.7.0"
 appcompat = "1.7.1"
@@ -44,6 +48,9 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-test-core  = { module = "androidx.test:core", version.ref = "androidxTestCore" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
+androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidxUiautomator" }
+androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "androidxBenchmark" }
+androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidxProfileinstaller" }
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
@@ -58,6 +65,7 @@ kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-p
 compose-compiler-gradle-plugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
 ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 kover-gradle-plugin = { group = "org.jetbrains.kotlinx.kover", name = "org.jetbrains.kotlinx.kover.gradle.plugin", version.ref = "kover" }
+androidx-baselineprofile-gradle-plugin = { group = "androidx.baselineprofile", name = "androidx.baselineprofile.gradle.plugin", version.ref = "androidxBaselineprofile" }
 
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -116,4 +124,5 @@ hilt-gradle = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidxBaselineprofile" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

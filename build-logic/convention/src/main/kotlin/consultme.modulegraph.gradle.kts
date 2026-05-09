@@ -5,8 +5,16 @@ import org.gradle.api.artifacts.ProjectDependency
 // Configurations whose declared `project(...)` deps belong on the graph.
 // Variant-specific (`releaseImplementation`, `debugImplementation`) and
 // test-only ones are intentionally excluded — they clutter the picture
-// without adding signal for adopters reading the file.
-val graphableConfigurations = setOf("api", "implementation", "compileOnly", "runtimeOnly")
+// without adding signal for adopters reading the file. `baselineProfile`
+// is included because the producer→consumer link is structural (it's
+// what makes the profile ship with `:app`), not a test detail.
+val graphableConfigurations = setOf(
+    "api",
+    "implementation",
+    "compileOnly",
+    "runtimeOnly",
+    "baselineProfile",
+)
 
 // Collected lazily after every subproject has finished evaluating, so we
 // don't fight other plugins' `afterEvaluate` registrations.
