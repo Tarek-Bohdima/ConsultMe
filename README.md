@@ -79,13 +79,24 @@ plugins {
 android {
     namespace = "com.thecompany.consultme.feature.<name>"
 }
-
-dependencies {
-    implementation(projects.coreUi)
-}
 ```
 
-Add `include(":feature-<name>")` to `settings.gradle.kts` and depend on it from `:app` via `implementation(projects.feature<NameInPascalCase>)`. The `feature` convention composes `library + compose + hilt` and pulls in the standard feature deps (lifecycle-runtime-compose, lifecycle-viewmodel-compose, hilt-navigation-compose, `:core-testing` for unit + instrumented tests).
+Add `include(":feature-<name>")` to `settings.gradle.kts` and depend on it from `:app` via `implementation(projects.feature<NameInPascalCase>)`. The `feature` convention composes `library + compose + hilt` and pulls in the standard feature deps: lifecycle-runtime-compose, lifecycle-viewmodel-compose, hilt-navigation-compose, `:core-designsystem`, `:core-ui`, and `:core-testing` for unit + instrumented tests.
+
+### Module layout
+
+The template ships these modules (NIA-aligned):
+
+- `:app` — application module, Compose root + nav.
+- `:feature-example` — placeholder feature module; replace with your own and rename.
+- `:core-designsystem` — Compose theme (`ConsultMeTheme`), color/typography tokens.
+- `:core-ui` — shared Compose composables (loading/empty/error states). Scaffold.
+- `:core-model` — pure-Kotlin data classes (no Android). Scaffold.
+- `:core-common` — pure-Kotlin shared utilities; ships the `Dispatcher` qualifier + `AppDispatchers` enum.
+- `:core-domain` — pure-Kotlin use-cases; depends on `:core-model`. Scaffold.
+- `:core-data` — repository layer.
+- `:core-database` — Room database (uses `consultme.android.room`).
+- `:core-testing` — re-exports JUnit/Truth/Turbine/MockK/Hilt-testing/Espresso via `api(...)`, plus `HiltTestRunner`.
 
 ### Other available convention plugins
 

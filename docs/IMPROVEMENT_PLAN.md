@@ -11,8 +11,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 2 | Template ergonomics (bootstrap script, parameterized header) | **Done** (#104) |
 | 3 | Real example tests | **Done** (#105) |
 | 4 | Production-readiness (R8, CI artifacts, instrumented tests) | **Done** (#107, #113, #114, #115) |
-| 5 | NIA-alignment slice 1 (convention plugins expansion, drop Detekt) | In progress (#122) |
-| 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | Planned (#122) |
+| 5 | NIA-alignment slice 1 (convention plugins expansion, drop Detekt) | **Done** (#123) |
+| 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | In progress (#122) |
 | 7 | NIA-alignment slice 3 (quality tooling: Kover, dependency-analysis, module-graph) | Planned (#122) |
 | 8 | NIA-alignment slice 4 (`:benchmarks` macrobenchmark + baseline profile) | Planned (#122) |
 | 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
@@ -133,7 +133,17 @@ Tracking: #122.
 
 ## Phase 6 — NIA-alignment slice 2 (module scaffolding)
 
-Planned. Split `:core-ui` into `:core-designsystem` (theme/colors/typography/icons) + `:core-ui` (shared composables); add empty `:core-model` (pure Kotlin), `:core-common` (dispatchers/qualifiers), `:core-domain` (use-cases) scaffolds. Mirrors NIA's canonical layout. Tracking: #122.
+Goal: introduce the canonical NIA module split so adopters know where each kind of code belongs without reinventing the layout.
+
+Shipped:
+
+- **`:core-designsystem`** — owns the Compose theme. `ConsultMeTheme`, `Color.kt`, `Type.kt` moved out of `:app/ui/theme/` into `com.thecompany.consultme.core.designsystem.theme`. The `consultme.android.feature` convention plugin adds it as `implementation` so every feature module gets the theme without re-wiring.
+- **`:core-model`** — pure-Kotlin module via `consultme.jvm.library`, scaffold for domain data classes. No Android, no Hilt.
+- **`:core-common`** — pure-Kotlin module shipping NIA's `Dispatcher` qualifier + `AppDispatchers` enum. Adopters provide the `@Provides` binding wherever they apply Hilt (typically `:app` or a data-layer module).
+- **`:core-domain`** — pure-Kotlin module via `consultme.jvm.library`, scaffold for use-cases. Depends on `:core-model`.
+- **Convention plugin update** — `consultme.android.feature` now adds `:core-designsystem` and `:core-ui` as `implementation`, mirroring NIA's `AndroidFeatureConventionPlugin`.
+
+`:app` now depends on `:core-designsystem` directly (so `MainActivity` can `import …core.designsystem.theme.ConsultMeTheme`). Tracking: #122.
 
 ## Phase 7 — NIA-alignment slice 3 (quality tooling)
 

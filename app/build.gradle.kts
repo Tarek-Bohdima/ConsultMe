@@ -9,6 +9,7 @@ android {
     namespace = "com.thecompany.consultme"
 
     defaultConfig {
+
         applicationId = "com.thecompany.consultme"
         versionCode = 1
         versionName = "1.0"
@@ -26,6 +27,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.coreDesignsystem)
     implementation(projects.coreUi)
     implementation(projects.featureExample)
 
