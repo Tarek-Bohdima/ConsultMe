@@ -28,7 +28,7 @@ Running one test:
 ./gradlew :feature-example:testDebugUnitTest --tests "*ExampleUnitTest.someMethod"
 ```
 
-`spotlessApply` is the autofix; the license header gets injected with the current year and the literal `MyCompany` string. Adopters of the template should rename `MyCompany` in the root `build.gradle.kts` Spotless config (planned to be parameterized in Phase 2 — see `docs/IMPROVEMENT_PLAN.md`).
+`spotlessApply` is the autofix; the license header gets injected with the current year and the value of `template.company` from `gradle.properties` (defaults to `MyCompany`). Adopters override `template.company` once per fork; the bootstrap script (`scripts/rename-template.py`) handles this automatically.
 
 Lint baselines (`<module>/lint-baseline.xml`) exist per module — regenerate with `./gradlew :<module>:updateLintBaseline` rather than hand-editing.
 
@@ -66,7 +66,7 @@ Active ignore rules in `.github/dependabot.yml` — leave these alone unless doi
 
 Google's official Android Claude Code skills live at <https://github.com/android/skills>. Skills relevant to this template:
 
-- `agp-9-upgrade` — playbook for the Phase 5 AGP 8 → 9 migration.
+- `agp-9-upgrade` — playbook for the Phase 9 AGP 8 → 9 migration (shipped in `v4.0.0-rc.1`; the local copy at `.claude/skills/agp-9-upgrade/` stays useful for AGP 10 prep).
 - `r8-analyzer` — helps analyze keep rules when ramping Phase 4 (release minification).
 - `edge-to-edge` — adoption guide if/when the template adopts edge-to-edge.
 
@@ -96,5 +96,5 @@ Tags follow SemVer with a template-adopter lens: a "breaking change" is one that
 **Conventions:**
 - **Tag at phase boundaries** from `docs/IMPROVEMENT_PLAN.md`, not arbitrarily. So Phase 0+1+1polish+2+3 collapse into a single tag; Phase 4 into the next; etc.
 - **Every tag is a GitHub Release** with auto-generated notes, not just a bare git tag. Use `gh release create vX.Y.Z --generate-notes`.
-- **Pre-release suffixes** (`v2.0.0-rc.1`) for the Phase 5 deferred migrations (AGP 9 / Hilt 2.59 / Kotlin 2.3.20+) so adopters can preview before promotion.
+- **Pre-release suffixes** (e.g. `v4.0.0-rc.1`) for the Phase 9 deferred migrations (AGP 9 / Hilt 2.59 / Kotlin 2.3.20+) so adopters can preview before promotion.
 - Old `v1.0.0`–`v1.4.0` tags from August 2025 are pre-roadmap and immutable; they don't map to any current phase. The next tag after Phase 4 wraps will be **`v2.0.0`** (the `minSdk` 25→26 in #105 is breaking for any fork from `v1.4.0`).

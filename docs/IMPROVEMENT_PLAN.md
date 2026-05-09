@@ -235,7 +235,7 @@ Google maintains official AI-optimized skills for Android at <https://github.com
 
 | Skill | Use when |
 |---|---|
-| [`agp-9-upgrade`](https://github.com/android/skills) | Working on Phase 5 (AGP 8 → 9 migration) |
+| [`agp-9-upgrade`](https://github.com/android/skills) | Working on Phase 9 (AGP 8 → 9 migration) |
 | [`r8-analyzer`](https://github.com/android/skills) | Working on Phase 4 (release minification, keep rules) |
 | [`edge-to-edge`](https://github.com/android/skills) | Adopting edge-to-edge (see Quality bets) |
 
@@ -247,4 +247,10 @@ When starting a phase, change its row in the status table to **In progress**, li
 
 ## Releases
 
-Cut a GitHub Release at every phase boundary, not arbitrarily. Phase 0–3 collapse into one MAJOR (`v2.0.0`, because Phase 3's `minSdk` 25→26 is breaking for adopters); Phase 4 ships as `v2.1.0` (or another MAJOR if R8 introduces required keep-rule changes for forks); Phase 5 ships as `v3.0.0` since AGP 9 / Hilt 2.59 / Kotlin 2.3.20+ each force adopter migrations. See `CLAUDE.md` "Versioning and tags" for the full policy.
+Cut a GitHub Release at every phase boundary, not arbitrarily. Actual phase → release mapping:
+
+- **Phases 5–7** (NIA-alignment slices 1–3) bundled into `v3.0.0`. MAJOR because slice 2 moved the theme package (`com.thecompany.consultme.ui.theme` → `core.designsystem.theme`) — breaking for forks at v2.x.
+- **Phase 8** (`:baselineprofile` macrobenchmark + pipeline) shipped as `v3.1.0` (additive, non-breaking).
+- **Phase 9** (deferred migrations: AGP 9.2.1 / Hilt 2.59.2) shipped as `v4.0.0-rc.1` (pre-release; promotion to `v4.0.0` blocked on `androidx.baselineprofile` 1.5.x stable).
+
+See `CLAUDE.md` "Versioning and tags" for the full policy.
