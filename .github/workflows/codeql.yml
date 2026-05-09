@@ -55,8 +55,12 @@ jobs:
           changed=$(gh api --paginate "repos/${REPO}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
           echo "Changed files in PR #${PR_NUMBER}:"
           printf '  %s\n' "$changed"
+          # Defense-in-depth: same tightened classifier as `android_ci.yml`.
+          # Skips by extension + path, not path prefix alone, so an attacker-
+          # named `LICENSE.kt` / `docs/exploit.kts` / non-yaml file under
+          # `.github/ISSUE_TEMPLATE/` runs the full analyze matrix.
           code=$(printf '%s\n' "$changed" \
-            | grep -vE '(\.md$|^LICENSE|^docs/|^\.github/ISSUE_TEMPLATE/)' \
+            | grep -vE '(\.md$|^LICENSE(\.md|\.txt)?$|^\.github/ISSUE_TEMPLATE/.*\.ya?ml$)' \
             || true)
           if [ -n "$code" ]; then
             echo "code=true" >> "$GITHUB_OUTPUT"
