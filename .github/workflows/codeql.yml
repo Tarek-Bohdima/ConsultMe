@@ -1,0 +1,116 @@
+name: CodeQL
+
+# Custom override of GitHub's default code scanning. Reuses the same
+# `gh api .../files` paths-classifier as `android_ci.yml` so docs-only PRs
+# skip the (~10-minute) java-kotlin analysis. Code/build PRs and pushes
+# to `main` run the full matrix; a weekly schedule is the safety net for
+# new dependency vulnerabilities surfacing without code changes.
+#
+# This file replaces the GitHub-managed default code-scanning workflow.
+# Adopters who fork inherit the same gating without configuring their
+# repo's Code security & analysis settings.
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  pull-requests: read   # for the `changes` job's paths classifier
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 14 * * 1'  # Monday 14:00 UTC, weekly
+
+# Cancel superseded runs on the same ref so a quick follow-up commit
+# doesn't keep two CodeQL runs in flight.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    # Runs on every event. For PR events, classifies the diff against the
+    # docs-only filter. For push/schedule, sets `code=true` unconditionally
+    # so the analysis matrix runs.
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - name: Classify diff (code vs docs-only)
+        id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" != "pull_request" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Non-PR event ($EVENT) — CodeQL analyze will run."
+            exit 0
+          fi
+          changed=$(gh api --paginate "repos/${REPO}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
+          echo "Changed files in PR #${PR_NUMBER}:"
+          printf '  %s\n' "$changed"
+          code=$(printf '%s\n' "$changed" \
+            | grep -vE '(\.md$|^LICENSE|^docs/|^\.github/ISSUE_TEMPLATE/)' \
+            || true)
+          if [ -n "$code" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Code/build changes detected — CodeQL analyze will run."
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Docs-only PR — CodeQL analyze will be skipped."
+          fi
+
+  analyze:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        # Mirrors what GitHub's default auto-detection picked up before
+        # this override (visible on previous PRs' check lists).
+        language: [actions, java-kotlin, python]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up JDK 17
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        if: matrix.language == 'java-kotlin'
+        uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6
+
+      - name: Make gradlew executable
+        if: matrix.language == 'java-kotlin'
+        run: chmod +x ./gradlew
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4.35.4
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        # codeql-action's autobuild invokes gradle for `java-kotlin`; for
+        # `actions` and `python` it's a no-op.
+        uses: github/codeql-action/autobuild@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4.35.4
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4.35.4
+        with:
+          category: "/language:${{ matrix.language }}"
