@@ -12,8 +12,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 3 | Real example tests | **Done** (#105) |
 | 4 | Production-readiness (R8, CI artifacts, instrumented tests) | **Done** (#107, #113, #114, #115) |
 | 5 | NIA-alignment slice 1 (convention plugins expansion, drop Detekt) | **Done** (#123) |
-| 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | In progress (#122) |
-| 7 | NIA-alignment slice 3 (quality tooling: Kover, dependency-analysis, module-graph) | Planned (#122) |
+| 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | **Done** (#124) |
+| 7 | NIA-alignment slice 3 (quality tooling: Kover + module-graph) | In progress (#122) |
 | 8 | NIA-alignment slice 4 (`:benchmarks` macrobenchmark + baseline profile) | Planned (#122) |
 | 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
 
@@ -147,7 +147,18 @@ Shipped:
 
 ## Phase 7 — NIA-alignment slice 3 (quality tooling)
 
-Planned. Add **Kover** for coverage (HTML/XML reports), **`dependency-analysis-gradle-plugin`** to flag unused/misplaced deps, and a **module-graph generation** convention (Mermaid `.md` per module). Tracking: #122.
+Goal: ship the quality-reporting layer adopters expect from a modern modular project.
+
+Shipped:
+
+- **Kover** for aggregated test coverage. Convention plugin `consultme.kover` is auto-applied by every Android (`application`, `library`) and JVM (`jvm.library`) convention. Generated Hilt/Room/Compose code is excluded so the metric reflects real coverage, not noise. `./gradlew koverHtmlReport` and `./gradlew koverXmlReport` produce project-wide reports under `build/reports/kover/`. CI uploads the reports as artifacts.
+- **Module-graph generation** with a **Strategy-pattern renderer**. `:moduleGraph` walks every subproject's `api` / `implementation` / `compileOnly` / `runtimeOnly` configurations to build a [`ModuleGraph`](../build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/ModuleGraph.kt), then delegates rendering to a [`ModuleGraphRenderer`](../build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/ModuleGraphRenderer.kt). A [`MermaidModuleGraphRenderer`](../build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/MermaidModuleGraphRenderer.kt) ships by default; adopters wanting DOT/ASCII/JSON drop in their own implementation. Output lands at [`docs/MODULE_GRAPH.md`](MODULE_GRAPH.md). CI runs the task and fails the build if the committed graph is stale.
+
+Deferred from this slice (tracked separately):
+
+- **`dependency-analysis-gradle-plugin`** — both 2.x and 3.x lines fail on the current Kotlin 2.3 + AGP 8.13 combo (2.x errors on Kotlin 2.3 metadata; 3.x errors on Android-test-runtime graph resolution for `:core-testing`). Will reland once an upstream version supports both. The `consultme.modulegraph` Strategy seam already covers part of dep-analysis's value (visualizing inter-module deps). Tracking: #122.
+
+Tracking: #122.
 
 ## Phase 8 — NIA-alignment slice 4 (baseline profile + macrobenchmark)
 

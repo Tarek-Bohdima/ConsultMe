@@ -17,6 +17,8 @@ CI runs these in order; locally you typically want the same gates before opening
 ./gradlew spotlessApply     # autofix
 ./gradlew lintRelease       # Android lint, release variant
 ./gradlew test              # all unit tests
+./gradlew koverHtmlReport   # aggregated coverage at build/reports/kover/html/
+./gradlew moduleGraph       # regenerate docs/MODULE_GRAPH.md (CI fails if stale)
 ./gradlew connectedAndroidTest  # instrumented tests (needs device/emulator)
 ```
 
@@ -45,7 +47,7 @@ Lint baselines (`<module>/lint-baseline.xml`) exist per module — regenerate wi
 ## Conventions enforced by tooling
 
 - **License header**: Spotless (configured in root `build.gradle.kts`) requires `// Copyright $YEAR MyCompany` on every `.kt` and `.gradle.kts` file. Placement is delimiter-driven: above the `package` line for Kotlin, above the first `/*` for Gradle Kotlin scripts. New files without the header fail `spotlessCheck`. The "MyCompany" / `$YEAR` literals get rewritten by `spotlessApply`.
-- **Convention plugins**: Module build scripts compose plugins from `build-logic/` instead of redeclaring AGP/Kotlin/JVM/lint config. Available: `consultme.android.application`, `consultme.android.library`, `consultme.android.compose`, `consultme.android.hilt`, `consultme.android.feature` (library + compose + hilt + standard feature deps + `:core-testing`), `consultme.android.room` (KSP + Room runtime/ktx/compiler + schema export), `consultme.android.test` (`com.android.test`, for benchmark modules), `consultme.android.lint` (custom-Lint-check modules), `consultme.jvm.library` (pure Kotlin, no AGP). Shared helpers live in `build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/AndroidExtensions.kt` — extend those rather than duplicating config in module scripts.
+- **Convention plugins**: Module build scripts compose plugins from `build-logic/` instead of redeclaring AGP/Kotlin/JVM/lint config. Available: `consultme.android.application`, `consultme.android.library`, `consultme.android.compose`, `consultme.android.hilt`, `consultme.android.feature` (library + compose + hilt + standard feature deps + `:core-testing`), `consultme.android.room` (KSP + Room runtime/ktx/compiler + schema export), `consultme.android.test` (`com.android.test`, for benchmark modules), `consultme.android.lint` (custom-Lint-check modules), `consultme.jvm.library` (pure Kotlin, no AGP), `consultme.kover` (coverage; auto-applied by every Android/JVM convention), `consultme.modulegraph` (root-only; registers the `:moduleGraph` task that emits `docs/MODULE_GRAPH.md` via a Strategy-pattern renderer). Shared helpers live in `build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/AndroidExtensions.kt` — extend those rather than duplicating config in module scripts.
 - **Toolchain**: `jvmToolchain(17)`, JVM target 17, `freeCompilerArgs = ["-Xcontext-parameters"]` — set by the convention plugins.
 - **DI**: Hilt + KSP, applied via `consultme.android.hilt`. The convention adds `hilt-android` impl + `hilt-compiler` ksp; don't redeclare them per module.
 - **Compose**: BOM-managed via `consultme.android.compose` (Compose BOM + ui/graphics/tooling-preview/material3). The convention enables `buildFeatures.compose`. `buildConfig`, `aidl`, `renderScript`, `shaders` are turned off everywhere by the library/application conventions.

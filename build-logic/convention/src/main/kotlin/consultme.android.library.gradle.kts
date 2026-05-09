@@ -8,6 +8,7 @@ import com.thecompany.consultme.buildlogic.configureManagedDevices
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("consultme.kover")
 }
 
 extensions.configure<LibraryExtension> {
