@@ -51,10 +51,19 @@ jobs:
           changed=$(gh api --paginate "repos/${REPO}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
           echo "Changed files in PR #${PR_NUMBER}:"
           printf '  %s\n' "$changed"
-          # Anything that's NOT a .md file, NOT under docs/ or
-          # .github/ISSUE_TEMPLATE/, and NOT a LICENSE* counts as "code".
+          # Defense-in-depth: classify by *extension* AND path, not path
+          # alone. The previous `^LICENSE`/`^docs/`/`^\.github/ISSUE_TEMPLATE/`
+          # prefix patterns would have skipped CI for an attacker-named
+          # `LICENSE.kt`, `docs/exploit.kts`, or
+          # `.github/ISSUE_TEMPLATE/Foo.gradle.kts`. The tightened regex:
+          #   - Skips any file ending in `.md` (anywhere).
+          #   - Skips bare `LICENSE` / `LICENSE.md` / `LICENSE.txt` only.
+          #   - Skips `.yml`/`.yaml` files only when they live under
+          #     `.github/ISSUE_TEMPLATE/`.
+          # Anything else — including `.kt`/`.kts` masquerading as docs —
+          # runs the full gradle gate.
           code=$(printf '%s\n' "$changed" \
-            | grep -vE '(\.md$|^LICENSE|^docs/|^\.github/ISSUE_TEMPLATE/)' \
+            | grep -vE '(\.md$|^LICENSE(\.md|\.txt)?$|^\.github/ISSUE_TEMPLATE/.*\.ya?ml$)' \
             || true)
           if [ -n "$code" ]; then
             echo "code=true" >> "$GITHUB_OUTPUT"
