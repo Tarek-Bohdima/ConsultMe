@@ -221,6 +221,7 @@ Tags follow SemVer with a template-adopter lens: **MAJOR** = breaking change for
 
 | File | What's in it |
 |---|---|
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Layered module diagram, UDF data-flow sequence, module responsibilities table, navigation/dispatcher conventions. Read this first if you're orienting in the codebase. |
 | [`CLAUDE.md`](CLAUDE.md) | Orientation for AI coding assistants and humans — common commands, module graph, conventions, CI / branch protection, versioning policy. |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Local setup, the local CI loop, PR conventions, license header, where things live, bug/security reporting paths. |
 | [`docs/IMPROVEMENT_PLAN.md`](docs/IMPROVEMENT_PLAN.md) | Living roadmap. Every phase has state, scope, rationale, and concrete deltas. Read before non-trivial work. |
