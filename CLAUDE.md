@@ -60,8 +60,7 @@ All versions live in `gradle/libs.versions.toml`. Dependabot is enabled with gro
 
 Active ignore rules in `.github/dependabot.yml` — leave these alone unless doing the corresponding migration:
 
-- `com.android.application` / `com.android.library` major versions blocked. AGP 9.x removes the `kotlin-android` plugin requirement and forces Gradle ≥ 9.4 — handle as a dedicated migration PR, not a bot bump.
-- `com.google.dagger.hilt.android` `>=2.59` blocked. Hilt 2.59 hard-requires AGP 9.
+- All AGP-major and Hilt 2.59+ ignore entries lifted in Phase 9 (AGP 9.2.1 / Hilt 2.59.2 are live now). Future major-version migrations get their own dedicated-PR pin again on a case-by-case basis.
 
 ## Recommended Claude Code skills
 

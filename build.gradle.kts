@@ -1,8 +1,9 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 
 plugins {
+    // AGP 9+ bundles Kotlin support; `kotlin-android` plugin alias is removed
+    // here and from `[plugins]` in `gradle/libs.versions.toml`.
     alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.android.test) apply false

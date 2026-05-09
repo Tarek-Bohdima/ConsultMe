@@ -5,8 +5,8 @@ import com.thecompany.consultme.buildlogic.configureKotlinAndroid
 import com.thecompany.consultme.buildlogic.configureManagedDevices
 
 plugins {
+    // AGP 9+ bundles Kotlin support — `org.jetbrains.kotlin.android` removed.
     id("com.android.test")
-    id("org.jetbrains.kotlin.android")
 }
 
 extensions.configure<TestExtension> {
