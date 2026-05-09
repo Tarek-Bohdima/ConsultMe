@@ -18,7 +18,7 @@ By participating you agree to uphold it.
    one-line bump). The roadmap lives in [`docs/IMPROVEMENT_PLAN.md`](docs/IMPROVEMENT_PLAN.md);
    if your idea fits an existing phase, link it. If it doesn't, the issue is the
    right place to discuss whether it should.
-2. If you're touching one of the deferred migrations (AGP 9, Hilt 2.59+,
+2. If you're touching one of the migrations that has its own dedicated PR cadence (now: just AGP 10 when it lands; previously AGP 9, Hilt 2.59+,
    Kotlin 2.3.20+), read the "Phase 5" section of `docs/IMPROVEMENT_PLAN.md`
    first — those bumps are pinned in `.github/dependabot.yml` for reasons that
    are documented there. Each is its own dedicated PR, not a passive bump.
@@ -29,7 +29,7 @@ You'll need:
 
 - **JDK 17** (the Gradle toolchain pulls it via `jvmToolchain(17)`, but having
   it on `JAVA_HOME` keeps Android Studio happy).
-- **Android Studio** (any version that supports AGP 8.13). The project opens
+- **Android Studio** (any version that supports AGP 9.2). The project opens
   cleanly with no manual configuration.
 - **Android SDK with API 26+** for `minSdk` and API 36 for `compileSdk` /
   `targetSdk`. AGP will prompt to install missing components on first sync.

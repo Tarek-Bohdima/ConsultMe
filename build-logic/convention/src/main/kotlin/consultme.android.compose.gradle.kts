@@ -8,7 +8,7 @@ plugins {
 
 val libs = the<LibrariesForLibs>()
 
-extensions.findByType<CommonExtension<*, *, *, *, *, *>>()?.apply {
+extensions.findByType<CommonExtension>()?.apply {
     buildFeatures.compose = true
 }
 

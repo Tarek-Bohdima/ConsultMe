@@ -15,7 +15,7 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | **Done** (#124) |
 | 7 | NIA-alignment slice 3 (quality tooling: Kover + module-graph) | **Done** (#126) |
 | 8 | NIA-alignment slice 4 (`:baselineprofile` macrobenchmark + baseline profile) | In progress (#122) |
-| 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
+| 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | In progress (#131) |
 
 Tick the table when phases land. Each phase below lists scope, rationale, and a rough size; sub-bullets are the concrete deltas.
 
@@ -184,7 +184,27 @@ Tracking: #122.
 
 - Initial baseline profile bytes need to be generated locally before forks see startup benefits. The `app/src/main/baseline-prof.txt` file is committed as a stub on the first run after a real device run. Document in CONTRIBUTING.md.
 
-## Phase 9 — Deferred migrations
+## Phase 9 — Deferred migrations (in progress)
+
+Goal: pull the template onto the AGP 9 / Hilt 2.59+ tooling line. Kotlin 2.3.20+ already unpinned in #118.
+
+Shipped (this PR):
+
+- **AGP 8.13.2 → 9.2.1** following Google's [`agp-9-upgrade`](https://github.com/android/skills) skill. Steps applied:
+  1. **Built-in Kotlin** — removed every `id("org.jetbrains.kotlin.android")` apply, the `kotlin-android` plugin alias from `gradle/libs.versions.toml`, and `alias(libs.plugins.kotlin.android) apply false` from the root build script.
+  2. **New AGP DSL** — stripped `<*, *, *, *, *, *>` type parameters from `CommonExtension`; switched library convention's import to `com.android.build.api.dsl.LibraryExtension`; rewrote `lint { … }` block helper to `lint.apply { … }` with the trimmed property surface (only `baseline` and `quiet` survive the AGP 9 cut); rewrote `ManagedVirtualDevice` creation as `allDevices.create<ManagedVirtualDevice>(...)`; replaced `KotlinAndroidProjectExtension` config with `tasks.withType<KotlinCompile>` configuration since built-in Kotlin no longer registers a project-level Kotlin extension.
+  3. **gradle.properties cleanup** — removed `android.builtInKotlin`, `android.newDsl`, `android.uniquePackageNames`, `android.enableAppCompileTimeRClass` per skill Step 6.
+  4. **Library proguard refs** — dropped `consumerProguardFiles("consumer-rules.pro")` and `proguardFiles(..., "proguard-rules.pro")` from `consultme.android.library` since `android.proguard.failOnMissingFiles=true` is the new default; libraries that need consumer rules now declare them in their own build script.
+- **Hilt 2.58 → 2.59.2** — bundled in the same PR per `CLAUDE.md` guidance.
+- **Kover 0.9.1 → 0.9.8** — needed for AGP 9 compatibility.
+- **`androidx.baselineprofile` 1.4.1 → 1.5.0-alpha06** — only line that supports AGP 9; alpha-pinning a template is suboptimal but the alternative (commenting out `:baselineprofile`) regresses Phase 8. Will track 1.5.x stable when it lands.
+
+Catalog cleanup:
+
+- Removed the `kotlin-android = { id = "...", version.ref = "kotlin" }` plugin alias from `[plugins]`.
+- Lifted the AGP semver-major + Hilt 2.59+ ignore entries from `.github/dependabot.yml`. Dependabot is now free to bump these along with the rest of the gradle-and-plugins group.
+
+## Phase 9 — original (kept for history)
 
 Currently silenced in `.github/dependabot.yml`. Each is its own dedicated PR, not a passive bot bump:
 
