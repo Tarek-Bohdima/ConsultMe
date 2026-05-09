@@ -1,8 +1,11 @@
 name: Android CI
 
 # Read-only token; no fork PR can write back to the repo via this workflow.
+# `pull-requests: read` is needed by the `changes` job's paths-filter step
+# (it queries the GitHub API for the PR's changed-file list).
 permissions:
   contents: read
+  pull-requests: read
 
 on:
   pull_request: # Triggers on any pull request
@@ -17,7 +20,31 @@ concurrency:
 # action can't silently swap behavior under us. Dependabot's `github-actions`
 # ecosystem auto-bumps these on a weekly cadence.
 jobs:
+  changes:
+    # Classifies the PR's diff as `code` (anything that affects build output)
+    # or pure docs. Docs-only PRs short-circuit the heavy gradle gates below
+    # via `if: needs.changes.outputs.code == 'true'` — saving ~7 minutes of
+    # CI wall-clock per text-only change. The workflow still triggers so the
+    # required checks report (skipped == pass for branch protection); only
+    # the gradle work is gated.
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+        id: filter
+        with:
+          filters: |
+            code:
+              - '**'
+              - '!**.md'
+              - '!LICENSE*'
+              - '!docs/**'
+              - '!.github/ISSUE_TEMPLATE/**'
+
   build_and_test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -82,6 +109,10 @@ jobs:
     # Runs the Gradle Managed Device (pixel6api30, aosp-atd) registered by the
     # convention plugins. Not yet wired into branch protection — opt in via the
     # repo's required-checks settings once GMD has run a few times reliably.
+    # Same paths-filter gate as `build_and_test` — docs-only PRs skip the GMD
+    # cycle entirely.
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
