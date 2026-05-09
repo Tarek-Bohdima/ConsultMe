@@ -29,8 +29,12 @@ dependencyResolutionManagement {
 
 rootProject.name = "ConsultMe"
 include(":app")
-include(":core-ui")
+include(":core-common")
 include(":core-data")
 include(":core-database")
+include(":core-designsystem")
+include(":core-domain")
+include(":core-model")
 include(":core-testing")
+include(":core-ui")
 include(":feature-example")

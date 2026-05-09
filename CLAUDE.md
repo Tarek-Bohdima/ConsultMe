@@ -32,9 +32,13 @@ Lint baselines (`<module>/lint-baseline.xml`) exist per module — regenerate wi
 
 ## Module graph
 
-- `:app` — Application module. Wires Hilt (`ConsultMeApplication`), Compose root, navigation. Depends on `:core-ui`, `:feature-example`.
-- `:feature-*` — Screen-level features (currently only `:feature-example`, a placeholder for adopters to replace; rename it once you know what you're building).
-- `:core-ui` — Shared Compose UI building blocks.
+- `:app` — Application module. Wires Hilt (`ConsultMeApplication`), Compose root, navigation. Depends on `:core-designsystem`, `:core-ui`, `:feature-example`.
+- `:feature-*` — Screen-level features (currently only `:feature-example`, a placeholder for adopters to replace; rename it once you know what you're building). Get `:core-designsystem` + `:core-ui` + `:core-testing` automatically via the `consultme.android.feature` convention.
+- `:core-designsystem` — Compose theme + design tokens (colors, typography). Owns `ConsultMeTheme`. Adopters extend with icon registries, custom components, etc.
+- `:core-ui` — Shared Compose composables not part of the design system (loading/empty/error states). Currently a scaffold.
+- `:core-model` — Pure-Kotlin data classes (no Android, no Hilt). Built with `consultme.jvm.library`.
+- `:core-common` — Pure-Kotlin shared utilities; ships the NIA-style `Dispatcher` qualifier + `AppDispatchers` enum. Built with `consultme.jvm.library`.
+- `:core-domain` — Pure-Kotlin use-cases. Depends on `:core-model`. Built with `consultme.jvm.library`.
 - `:core-data` → `:core-database` — Repository and persistence layers.
 - `:core-testing` — **Test fixtures shared across every module.** Uses `api(...)` (not `implementation`) to re-export JUnit, Truth, Turbine, MockK, Hilt testing, coroutines-test, Espresso. It also provides `HiltTestRunner`, which every module references as its `testInstrumentationRunner`. Consume it via `testImplementation(project(":core-testing"))` and `androidTestImplementation(project(":core-testing"))` — do **not** add JUnit/Espresso/etc. directly in module build scripts.
 

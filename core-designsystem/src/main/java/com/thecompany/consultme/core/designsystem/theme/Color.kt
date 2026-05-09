@@ -1,5 +1,5 @@
 // Copyright 2025 MyCompany
-package com.thecompany.consultme.ui.theme
+package com.thecompany.consultme.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
