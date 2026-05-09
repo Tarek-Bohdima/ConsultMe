@@ -42,11 +42,14 @@ jobs:
         id: filter
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
-          changed=$(gh pr diff "$PR_NUMBER" --name-only)
-          echo "Changed files in PR #$PR_NUMBER:"
+          # Use the GitHub API directly (no `actions/checkout` needed) —
+          # `gh pr diff` shells out to `git`, which would require a clone.
+          changed=$(gh api --paginate "repos/${REPO}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
+          echo "Changed files in PR #${PR_NUMBER}:"
           printf '  %s\n' "$changed"
           # Anything that's NOT a .md file, NOT under docs/ or
           # .github/ISSUE_TEMPLATE/, and NOT a LICENSE* counts as "code".
