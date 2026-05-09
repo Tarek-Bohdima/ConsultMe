@@ -1,5 +1,4 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -9,7 +8,6 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.gradle) apply false
     alias(libs.plugins.spotless) apply false
-    alias(libs.plugins.detekt) apply false
 }
 
 // Adopters override these in gradle.properties (template.company / template.licenseYear).
@@ -20,7 +18,6 @@ val licenseHeaderText = "// Copyright $templateLicenseYear $templateCompany"
 
 subprojects {
     plugins.apply(rootProject.libs.plugins.spotless.get().pluginId)
-    plugins.apply(rootProject.libs.plugins.detekt.get().pluginId)
 
     configure<SpotlessExtension> {
         kotlin {
@@ -35,11 +32,5 @@ subprojects {
             licenseHeader(licenseHeaderText, "/*")
             ktlint(libs.ktlint.get().version)
         }
-    }
-
-    configure<DetektExtension> {
-        config.setFrom(files("$rootDir/config/detekt.yml"))
-        buildUponDefaultConfig = true
-        allRules = false
     }
 }

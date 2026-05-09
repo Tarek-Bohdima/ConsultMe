@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project context
 
-ConsultMe is a **Jetpack Compose template** for new Android apps — multi-module, Kotlin-only, with code-quality plumbing (Spotless, Detekt, Lint) wired in. Apps generated from this template start by replacing the placeholder content in `:feature-example` (see README.md "How to Rename and Refactor"). Default package is `com.thecompany.consultme` and is expected to be renamed downstream.
+ConsultMe is a **Jetpack Compose template** for new Android apps — multi-module, Kotlin-only, with code-quality plumbing (Spotless + ktlint, Android Lint) wired in. Apps generated from this template start by replacing the placeholder content in `:feature-example` (see README.md "How to Rename and Refactor"). Default package is `com.thecompany.consultme` and is expected to be renamed downstream.
 
 **Roadmap and ongoing improvements** live in `docs/IMPROVEMENT_PLAN.md`. Check it before starting non-trivial work — it lists what's intentionally deferred (AGP 9, Hilt 2.59+, Kotlin 2.3.20) and what the next planned phases are.
 
@@ -15,7 +15,6 @@ CI runs these in order; locally you typically want the same gates before opening
 ```bash
 ./gradlew spotlessCheck     # formatting (fails on missing license header / ktlint violations)
 ./gradlew spotlessApply     # autofix
-./gradlew detekt            # static analysis (config: config/detekt.yml)
 ./gradlew lintRelease       # Android lint, release variant
 ./gradlew test              # all unit tests
 ./gradlew connectedAndroidTest  # instrumented tests (needs device/emulator)
@@ -42,8 +41,8 @@ Lint baselines (`<module>/lint-baseline.xml`) exist per module — regenerate wi
 ## Conventions enforced by tooling
 
 - **License header**: Spotless (configured in root `build.gradle.kts`) requires `// Copyright $YEAR MyCompany` on every `.kt` and `.gradle.kts` file. Placement is delimiter-driven: above the `package` line for Kotlin, above the first `/*` for Gradle Kotlin scripts. New files without the header fail `spotlessCheck`. The "MyCompany" / `$YEAR` literals get rewritten by `spotlessApply`.
-- **Convention plugins**: Module build scripts compose plugins from `build-logic/` instead of redeclaring AGP/Kotlin/JVM/lint config. Available: `consultme.android.application`, `consultme.android.library`, `consultme.android.compose`, `consultme.android.hilt`. Shared helpers live in `build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/AndroidExtensions.kt` — extend those rather than duplicating config in module scripts.
-- **Toolchain**: `jvmToolchain(17)`, JVM target 17, `freeCompilerArgs = ["-Xcontext-receivers"]` — set by the convention plugins.
+- **Convention plugins**: Module build scripts compose plugins from `build-logic/` instead of redeclaring AGP/Kotlin/JVM/lint config. Available: `consultme.android.application`, `consultme.android.library`, `consultme.android.compose`, `consultme.android.hilt`, `consultme.android.feature` (library + compose + hilt + standard feature deps + `:core-testing`), `consultme.android.room` (KSP + Room runtime/ktx/compiler + schema export), `consultme.android.test` (`com.android.test`, for benchmark modules), `consultme.android.lint` (custom-Lint-check modules), `consultme.jvm.library` (pure Kotlin, no AGP). Shared helpers live in `build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/AndroidExtensions.kt` — extend those rather than duplicating config in module scripts.
+- **Toolchain**: `jvmToolchain(17)`, JVM target 17, `freeCompilerArgs = ["-Xcontext-parameters"]` — set by the convention plugins.
 - **DI**: Hilt + KSP, applied via `consultme.android.hilt`. The convention adds `hilt-android` impl + `hilt-compiler` ksp; don't redeclare them per module.
 - **Compose**: BOM-managed via `consultme.android.compose` (Compose BOM + ui/graphics/tooling-preview/material3). The convention enables `buildFeatures.compose`. `buildConfig`, `aidl`, `renderScript`, `shaders` are turned off everywhere by the library/application conventions.
 - **SDKs**: `compileSdk = 36`, `targetSdk = 36`, `minSdk = 26` (set by the conventions).

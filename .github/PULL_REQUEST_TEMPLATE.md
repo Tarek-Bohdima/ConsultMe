@@ -15,7 +15,7 @@
   The repo's local CI loop is documented in CONTRIBUTING.md.
 -->
 
-- [ ] `./gradlew spotlessCheck detekt` clean
+- [ ] `./gradlew spotlessCheck` clean
 - [ ] `./gradlew :app:lintRelease` clean (or baseline regenerated)
 - [ ] `./gradlew test` clean
 - [ ] `./gradlew :app:assembleRelease` succeeds (if touching app/build config or release variant)

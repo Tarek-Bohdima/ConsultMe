@@ -2,24 +2,15 @@
 plugins {
     id("consultme.android.library")
     id("consultme.android.hilt")
+    id("consultme.android.room")
 }
 
 android {
     namespace = "com.thecompany.consultme.core.database"
-
-    defaultConfig {
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
-    }
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
 
     testImplementation(projects.coreTesting)
     androidTestImplementation(projects.coreTesting)

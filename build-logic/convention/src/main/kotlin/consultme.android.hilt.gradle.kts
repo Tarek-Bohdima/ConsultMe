@@ -1,5 +1,4 @@
 // Copyright 2026 MyCompany
-import dagger.hilt.android.plugin.HiltExtension
 import org.gradle.accessors.dm.LibrariesForLibs
 
 plugins {
@@ -8,10 +7,6 @@ plugins {
 }
 
 val libs = the<LibrariesForLibs>()
-
-extensions.configure<HiltExtension> {
-    enableAggregatingTask = true
-}
 
 dependencies {
     "implementation"(libs.hilt.android)
