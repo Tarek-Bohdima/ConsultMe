@@ -229,6 +229,10 @@ Tags follow SemVer with a template-adopter lens: **MAJOR** = breaking change for
 | [`SECURITY.md`](SECURITY.md) | Security disclosure policy. |
 | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Contributor Covenant v2.1. |
 
+## Template origin
+
+Scaffolded from [`Tarek-Bohdima/ConsultMe`](https://github.com/Tarek-Bohdima/ConsultMe) — a Compose multi-module Android template. The upstream tracks plumbing improvements (convention plugins, build infrastructure, dependency migrations, baseline-profile and module-graph tooling) independent of any one fork's product code. If you scaffolded from it, the upstream [Releases](https://github.com/Tarek-Bohdima/ConsultMe/releases) page and [`docs/IMPROVEMENT_PLAN.md`](https://github.com/Tarek-Bohdima/ConsultMe/blob/main/docs/IMPROVEMENT_PLAN.md) are where new tooling and migration playbooks land. The bootstrap script (`scripts/rename-template.py`) skips `.md` files, so this notice survives renames.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
