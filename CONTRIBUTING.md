@@ -40,7 +40,6 @@ CI runs these in order. Run the same gates locally before opening a PR:
 
 ```bash
 ./gradlew spotlessCheck     # formatting + license headers
-./gradlew detekt            # static analysis
 ./gradlew lintRelease       # Android Lint, release variant
 ./gradlew test              # all unit tests
 ./gradlew :app:assembleRelease  # exercises R8 + resource shrinking
@@ -87,9 +86,11 @@ it when contributing back upstream.
 - `:app` — application module, wires Hilt + Compose root + nav.
 - `:feature-*` — screen-level features (currently just `:feature-example`).
 - `:core-ui`, `:core-data`, `:core-database`, `:core-testing` — shared layers.
-- `build-logic/` — convention plugins (`consultme.android.application` /
-  `library` / `compose` / `hilt`). Module build scripts compose these instead
-  of redeclaring AGP/Kotlin/lint config. Shared helpers live in
+- `build-logic/` — convention plugins. Module build scripts compose these
+  instead of redeclaring AGP/Kotlin/lint config. Available:
+  `consultme.android.application` / `library` / `compose` / `hilt` /
+  `feature` / `room` / `test` / `lint`, plus `consultme.jvm.library`.
+  Shared helpers live in
   `build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/`.
 - `gradle/libs.versions.toml` — single source of truth for versions, libraries,
   bundles, and plugins.

@@ -11,9 +11,8 @@
 
 **ConsultMe** is a template project for Jetpack Compose applications, featuring integrated tools for code quality and automation. It includes:
 
-- **Spotless:** Automated code formatting and linting
-- **Detekt:** Static code analysis
-- **Lint:** Kotlin and Compose code linting
+- **Spotless + ktlint:** Automated code formatting and license-header enforcement
+- **Android Lint:** Kotlin and Compose correctness checks (release variant, fail-on-error)
 
 ## Features
 
@@ -70,13 +69,11 @@ Use Android Studio's **Refactor > Rename** for the package step.
 
 ## How to add a new feature module
 
-Convention plugins (`build-logic/`) make a new feature module ~20 lines of Gradle. Create `feature-<name>/build.gradle.kts`:
+The `consultme.android.feature` convention plugin makes a new feature module a one-liner. Create `feature-<name>/build.gradle.kts`:
 
 ```kotlin
 plugins {
-    id("consultme.android.library")
-    id("consultme.android.compose")
-    id("consultme.android.hilt")
+    id("consultme.android.feature")
 }
 
 android {
@@ -85,12 +82,22 @@ android {
 
 dependencies {
     implementation(projects.coreUi)
-    testImplementation(projects.coreTesting)
-    androidTestImplementation(projects.coreTesting)
 }
 ```
 
-Add `include(":feature-<name>")` to `settings.gradle.kts` and depend on it from `:app` via `implementation(projects.feature<NameInPascalCase>)`. The conventions handle `compileSdk`/`minSdk`, JVM toolchain, Compose BOM, Hilt + KSP, and the Hilt test runner.
+Add `include(":feature-<name>")` to `settings.gradle.kts` and depend on it from `:app` via `implementation(projects.feature<NameInPascalCase>)`. The `feature` convention composes `library + compose + hilt` and pulls in the standard feature deps (lifecycle-runtime-compose, lifecycle-viewmodel-compose, hilt-navigation-compose, `:core-testing` for unit + instrumented tests).
+
+### Other available convention plugins
+
+- `consultme.android.application` — the `:app` module.
+- `consultme.android.library` — generic Android library (no Compose).
+- `consultme.android.compose` — adds Compose BOM, ui/material3 deps, enables `buildFeatures.compose`.
+- `consultme.android.hilt` — Hilt + KSP wiring.
+- `consultme.android.feature` — `library + compose + hilt + standard feature deps + :core-testing`.
+- `consultme.android.room` — KSP + Room runtime/ktx/compiler + schema export dir.
+- `consultme.android.test` — `com.android.test`, for benchmark/macrobenchmark modules.
+- `consultme.android.lint` — pure-Kotlin module that contributes custom Lint checks.
+- `consultme.jvm.library` — pure-Kotlin module (no AGP), e.g. for upcoming `:core-model` / `:core-domain`.
 
 ## How to write a Hilt-aware test
 
@@ -128,9 +135,8 @@ Replace `:feature-example` with the module you're updating. CI runs `lintRelease
 
 ## Code Quality
 
-- **Spotless**: Ensures consistent code formatting.
-- **Detekt**: Finds common code issues.
-- **Lint**: Enforces Kotlin and Compose best practices.
+- **Spotless + ktlint**: Consistent formatting and license-header enforcement on every `.kt` / `.gradle.kts` file.
+- **Android Lint**: Kotlin and Compose correctness checks; CI runs `lintRelease` and fails on any non-baselined violation.
 
 ## Versioning
 

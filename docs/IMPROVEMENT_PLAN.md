@@ -11,7 +11,11 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 2 | Template ergonomics (bootstrap script, parameterized header) | **Done** (#104) |
 | 3 | Real example tests | **Done** (#105) |
 | 4 | Production-readiness (R8, CI artifacts, instrumented tests) | **Done** (#107, #113, #114, #115) |
-| 5 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
+| 5 | NIA-alignment slice 1 (convention plugins expansion, drop Detekt) | In progress (#122) |
+| 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | Planned (#122) |
+| 7 | NIA-alignment slice 3 (quality tooling: Kover, dependency-analysis, module-graph) | Planned (#122) |
+| 8 | NIA-alignment slice 4 (`:benchmarks` macrobenchmark + baseline profile) | Planned (#122) |
+| 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | Blocked by upstream pin in `dependabot.yml` |
 
 Tick the table when phases land. Each phase below lists scope, rationale, and a rough size; sub-bullets are the concrete deltas.
 
@@ -110,7 +114,36 @@ Goal: a fork from this template should be one signing config away from a Play re
 - `CODE_OF_CONDUCT.md` at the repo root — verbatim Contributor Covenant v2.1, fetched from the canonical source. The enforcement-contact slot routes to GitHub's "Report a vulnerability" private flow (the same channel `SECURITY.md` documents in #116) — no email is required anywhere in the project.
 - `CONTRIBUTING.md` re-links the CoC under a "Code of conduct" section, and the "Reporting bugs and security issues" section drops the prior "email the maintainer" wording in favor of the same private Security-tab flow.
 
-## Phase 5 — Deferred migrations
+## Phase 5 — NIA-alignment slice 1 (convention plugins, drop Detekt)
+
+Goal: bring the `build-logic/` plugin set up to parity with [android/nowinandroid](https://github.com/android/nowinandroid)'s `build-logic/` so future feature/core modules cost ~5 lines of Gradle, and remove redundant tooling.
+
+Shipped:
+
+- **New convention plugins** under `build-logic/convention/src/main/kotlin/`:
+  - `consultme.android.feature` — composes `library + compose + hilt` and adds the standard feature deps (lifecycle-runtime-compose, lifecycle-viewmodel-compose, hilt-navigation-compose, `:core-testing` for unit + instrumented tests). Drops a feature-module build script from ~25 lines to ~10.
+  - `consultme.android.room` — applies KSP + Room runtime/ktx/compiler + sets `room.schemaLocation` to `$projectDir/schemas`. Migrated `:core-database` to use it.
+  - `consultme.android.test` — `com.android.test`, ready for the upcoming `:benchmarks` module in Phase 8.
+  - `consultme.android.lint` — `com.android.lint` for pure-Kotlin modules contributing custom Lint checks.
+  - `consultme.jvm.library` — pure-Kotlin module (no AGP), ready for upcoming `:core-model` / `:core-domain` modules.
+- **Drop Detekt.** NIA stack is `Spotless + ktlint + Android Lint`; Detekt overlaps ~80% with ktlint and adds a 750-line config to maintain. Removed: `detekt`/`config/detekt.yml`, the root `subprojects` Detekt block, the CI step, the dependabot group entry, and the PR-template checkbox. Gates are now `spotlessCheck` + `lintRelease` + `test`.
+- **Cleanup.** `enableAggregatingTask = true` in `consultme.android.hilt` was redundant — Hilt 2.55+ enables it by default.
+
+Tracking: #122.
+
+## Phase 6 — NIA-alignment slice 2 (module scaffolding)
+
+Planned. Split `:core-ui` into `:core-designsystem` (theme/colors/typography/icons) + `:core-ui` (shared composables); add empty `:core-model` (pure Kotlin), `:core-common` (dispatchers/qualifiers), `:core-domain` (use-cases) scaffolds. Mirrors NIA's canonical layout. Tracking: #122.
+
+## Phase 7 — NIA-alignment slice 3 (quality tooling)
+
+Planned. Add **Kover** for coverage (HTML/XML reports), **`dependency-analysis-gradle-plugin`** to flag unused/misplaced deps, and a **module-graph generation** convention (Mermaid `.md` per module). Tracking: #122.
+
+## Phase 8 — NIA-alignment slice 4 (baseline profile + macrobenchmark)
+
+Planned. New `:benchmarks` module using `consultme.android.test` + the `androidx.baselineprofile` plugin, generating a startup baseline profile that ships with the release APK. Tracking: #122.
+
+## Phase 9 — Deferred migrations
 
 Currently silenced in `.github/dependabot.yml`. Each is its own dedicated PR, not a passive bot bump:
 

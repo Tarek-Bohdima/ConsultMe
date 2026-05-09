@@ -48,7 +48,6 @@ updates:
           - "com.google.devtools.ksp"
           - "com.google.dagger.hilt.android"
           - "com.diffplug.spotless"
-          - "io.gitlab.arturbosch.detekt"
 
       # Group all AndroidX updates
       androidx:

@@ -14,7 +14,6 @@ coroutines = "1.10.2"
 espressoCore = "3.7.0"
 appcompat = "1.7.1"
 spotless = "8.4.0"
-detekt = "1.23.8"
 hilt = "2.58"
 junit = "4.13.2"
 kotlin = "2.3.21"
@@ -112,4 +111,3 @@ hilt-gradle = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
