@@ -42,9 +42,13 @@ CI runs these in order. Run the same gates locally before opening a PR:
 ./gradlew spotlessCheck     # formatting + license headers
 ./gradlew lintRelease       # Android Lint, release variant
 ./gradlew test              # all unit tests
+./gradlew koverHtmlReport   # aggregated coverage at build/reports/kover/html/
+./gradlew moduleGraph       # regenerate docs/MODULE_GRAPH.md if module deps changed
 ./gradlew :app:assembleRelease  # exercises R8 + resource shrinking
 ./gradlew connectedAndroidTest  # instrumented tests (needs device/emulator)
 ```
+
+CI runs `moduleGraph` and fails the build if `docs/MODULE_GRAPH.md` is stale relative to your changes — regenerate and commit it whenever you add or remove an inter-module dependency.
 
 If `spotlessCheck` fails, `./gradlew spotlessApply` autofixes it. If
 `lintRelease` flags something inherent to the variant (rare), regenerate the

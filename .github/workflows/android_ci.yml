@@ -45,12 +45,27 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
 
+      - name: Generate Kover coverage report
+        # Aggregated under root build/reports/kover; XML feeds external coverage
+        # services (Codecov, Coveralls, etc.) when adopters wire one in.
+        run: ./gradlew koverXmlReport koverHtmlReport
+
+      - name: Verify module graph is up to date
+        # `:moduleGraph` is deterministic; if a contributor changed module deps
+        # without committing the regenerated `docs/MODULE_GRAPH.md`, this step
+        # fails with a clear diff.
+        run: |
+          ./gradlew moduleGraph
+          git diff --exit-code -- docs/MODULE_GRAPH.md || (
+            echo "::error::docs/MODULE_GRAPH.md is out of date. Run './gradlew moduleGraph' and commit the result." && exit 1
+          )
+
       - name: Assemble release APK
         # Catches release-only build regressions (resource shrinking, R8 keep
         # rules, etc.) that the unit-test path can't surface.
         run: ./gradlew assembleRelease
 
-      - name: Upload lint + unit test reports
+      - name: Upload lint + unit test + coverage reports
         # Always upload reports — they're most useful when the build above fails.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -59,6 +74,7 @@ jobs:
           path: |
             **/build/reports/lint-results-*.html
             **/build/reports/tests/**
+            build/reports/kover/**
           if-no-files-found: ignore
           retention-days: 7
 

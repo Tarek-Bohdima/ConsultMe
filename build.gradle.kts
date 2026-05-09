@@ -8,6 +8,12 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.gradle) apply false
     alias(libs.plugins.spotless) apply false
+    // Kover applied at root aggregates coverage from every module that also
+    // applies the consultme.kover convention. `./gradlew koverHtmlReport`
+    // produces a project-wide report under `build/reports/kover/`.
+    alias(libs.plugins.kover)
+    // Registers `:moduleGraph` to (re)generate `docs/MODULE_GRAPH.md`.
+    id("consultme.modulegraph")
 }
 
 // Adopters override these in gradle.properties (template.company / template.licenseYear).
@@ -32,5 +38,14 @@ subprojects {
             licenseHeader(licenseHeaderText, "/*")
             ktlint(libs.ktlint.get().version)
         }
+    }
+}
+
+// Auto-aggregate Kover reports: every subproject that applies the
+// `consultme.kover` convention gets pulled into the root report.
+// New modules participate without editing this block.
+subprojects {
+    plugins.withId("org.jetbrains.kotlinx.kover") {
+        rootProject.dependencies.add("kover", this@subprojects)
     }
 }
