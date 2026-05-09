@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      `com.android.test` modules need a self-instrumenting feature flag
+      so the macrobenchmark suite runs in-process and can drive the target
+      app via UiAutomator without a separate test APK.
+    -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage"
+        xmlns:tools="http://schemas.android.com/tools" />
+
+    <application android:debuggable="true"
+        tools:ignore="HardcodedDebugMode"
+        xmlns:tools="http://schemas.android.com/tools" />
+</manifest>
