@@ -9,6 +9,12 @@ kotlin {
     jvmToolchain(17)
 }
 
+// Every `libs.*` accessor below pulls from `gradle/libs.versions.toml` — the
+// same catalog every module uses. Keeping `build-logic`'s plugin classpath
+// in lockstep with the catalog (rather than declaring versions here directly)
+// is what prevents version drift between the conventions and the modules
+// they configure, and is what makes Dependabot's grouped updates affect both
+// layers atomically.
 dependencies {
     compileOnly(libs.android.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
