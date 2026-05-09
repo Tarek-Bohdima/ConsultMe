@@ -1,8 +1,11 @@
 name: Android CI
 
 # Read-only token; no fork PR can write back to the repo via this workflow.
+# `pull-requests: read` is needed by the `changes` job's paths-filter step
+# (it queries the GitHub API for the PR's changed-file list).
 permissions:
   contents: read
+  pull-requests: read
 
 on:
   pull_request: # Triggers on any pull request
@@ -17,7 +20,53 @@ concurrency:
 # action can't silently swap behavior under us. Dependabot's `github-actions`
 # ecosystem auto-bumps these on a weekly cadence.
 jobs:
+  changes:
+    # Classifies the PR's diff as `code` (anything that affects build output)
+    # or pure docs. Docs-only PRs short-circuit the heavy gradle gates below
+    # via `if: needs.changes.outputs.code == 'true'` — saving ~7 minutes of
+    # CI wall-clock per text-only change. The workflow still triggers so the
+    # required checks report (skipped == pass for branch protection); only
+    # the gradle work is gated.
+    #
+    # Implementation note: this uses `gh pr diff --name-only` (built-in GitHub
+    # CLI, preinstalled on runners) rather than a third-party action like
+    # dorny/paths-filter. The repo's GitHub Actions allow-list rejects any
+    # action not from a verified-marketplace creator or the same owner, so
+    # forks of this template inherit the same gating without having to
+    # configure an allow-list exception.
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - name: Classify diff (code vs docs-only)
+        id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          # Use the GitHub API directly (no `actions/checkout` needed) —
+          # `gh pr diff` shells out to `git`, which would require a clone.
+          changed=$(gh api --paginate "repos/${REPO}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
+          echo "Changed files in PR #${PR_NUMBER}:"
+          printf '  %s\n' "$changed"
+          # Anything that's NOT a .md file, NOT under docs/ or
+          # .github/ISSUE_TEMPLATE/, and NOT a LICENSE* counts as "code".
+          code=$(printf '%s\n' "$changed" \
+            | grep -vE '(\.md$|^LICENSE|^docs/|^\.github/ISSUE_TEMPLATE/)' \
+            || true)
+          if [ -n "$code" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Code/build changes detected — gradle gates will run."
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Docs-only PR — gradle gates will be skipped."
+          fi
+
   build_and_test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -82,6 +131,10 @@ jobs:
     # Runs the Gradle Managed Device (pixel6api30, aosp-atd) registered by the
     # convention plugins. Not yet wired into branch protection — opt in via the
     # repo's required-checks settings once GMD has run a few times reliably.
+    # Same paths-filter gate as `build_and_test` — docs-only PRs skip the GMD
+    # cycle entirely.
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
