@@ -18,6 +18,11 @@ Performs in one pass:
   the four precompiled-script-plugin filenames under build-logic/ and every
   `id("consultme.android.*")` reference in module build scripts.
 - App display name rename (Consult Me -> <new app name>): app_name string.
+- Template-maintainer scrub: deletes .github/FUNDING.yml, strips the
+  reviewers/assignees blocks from .github/dependabot.yml, and rewrites
+  .github/ISSUE_TEMPLATE/config.yml contact_links to a commented stub.
+  Each step is gated on the maintainer handle still being present, so
+  re-running after manual customization leaves adopter content alone.
 
 Scope: rewrites .kt, .kts, .xml, .toml, .properties files only. README,
 CLAUDE.md, LICENSE.md, and docs/ are intentionally skipped — they contain
@@ -38,9 +43,19 @@ OLD_PACKAGE = "com.thecompany.consultme"
 OLD_PROJECT = "ConsultMe"
 OLD_APP_NAME = "Consult Me"
 OLD_PLUGIN_SLUG = "consultme"  # leading segment of the convention plugin IDs
+TEMPLATE_OWNER_HANDLE = "Tarek-Bohdima"  # only present in maintainer-personal files
 
 TEXT_SUFFIXES = {".kt", ".kts", ".xml", ".toml", ".properties"}
 SKIP_DIRS = {".git", "build", ".gradle", ".idea", "node_modules"}
+
+ISSUE_TEMPLATE_CONFIG_STUB = """\
+blank_issues_enabled: false
+# Add your own contact links here once the fork has a public URL. Example:
+# contact_links:
+#   - name: Roadmap and planned phases
+#     url: https://github.com/<your-org>/<your-repo>/blob/main/docs/IMPROVEMENT_PLAN.md
+#     about: Before filing a feature request, check the roadmap.
+"""
 
 
 def fail(msg: str) -> None:
@@ -129,6 +144,41 @@ def rename_plugin_files(root: Path, old_slug: str, new_slug: str) -> None:
             path.rename(path.with_name(path.name.replace(old_slug, new_slug, 1)))
 
 
+def scrub_template_owner_files(root: Path) -> list[str]:
+    """Remove the template maintainer's identity from files GitHub copies into every fork.
+
+    Idempotent: each step is gated on the maintainer handle still being present,
+    so re-running after manual customization leaves adopter content alone.
+    """
+    actions: list[str] = []
+
+    funding = root / ".github" / "FUNDING.yml"
+    if funding.exists() and TEMPLATE_OWNER_HANDLE in funding.read_text(encoding="utf-8"):
+        funding.unlink()
+        actions.append("deleted .github/FUNDING.yml")
+
+    dependabot = root / ".github" / "dependabot.yml"
+    if dependabot.exists() and TEMPLATE_OWNER_HANDLE in dependabot.read_text(encoding="utf-8"):
+        text = dependabot.read_text(encoding="utf-8")
+        # Strip the paired reviewers/assignees blocks — they encode the maintainer
+        # as the default Dependabot reviewer for every ecosystem.
+        new_text = re.sub(
+            r"\n    reviewers:\n(?:      - .*\n)+    assignees:\n(?:      - .*\n)+",
+            "\n",
+            text,
+        )
+        if new_text != text:
+            dependabot.write_text(new_text, encoding="utf-8")
+            actions.append("stripped reviewers/assignees from .github/dependabot.yml")
+
+    issue_config = root / ".github" / "ISSUE_TEMPLATE" / "config.yml"
+    if issue_config.exists() and TEMPLATE_OWNER_HANDLE in issue_config.read_text(encoding="utf-8"):
+        issue_config.write_text(ISSUE_TEMPLATE_CONFIG_STUB, encoding="utf-8")
+        actions.append("rewrote .github/ISSUE_TEMPLATE/config.yml contact_links to a commented stub")
+
+    return actions
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print(__doc__, file=sys.stderr)
@@ -172,8 +222,13 @@ def main() -> int:
     move_package_dirs(root, old_pkg_path, new_pkg_path)
     rename_project_files(root, OLD_PROJECT, new_project)
     rename_plugin_files(root, OLD_PLUGIN_SLUG, new_plugin_slug)
+    scrub_actions = scrub_template_owner_files(root)
 
     print(f"\nRewrote {changed} file(s); moved package directories; renamed project files.")
+    if scrub_actions:
+        print("Scrubbed template-maintainer references:")
+        for action in scrub_actions:
+            print(f"  - {action}")
     print("Next steps:")
     print("  - Update README badges and docs/ references by hand.")
     print("  - ./gradlew spotlessApply   # rewrite license header (set template.company first)")
