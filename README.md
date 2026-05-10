@@ -37,7 +37,21 @@ Do not clone this repository directly. The recommended way to use this template 
 
 ## How to Rename and Refactor
 
-After creating your new repository, run the bootstrap script — it does the package, namespace, `applicationId`, project name, theme/application class, manifest, and `app_name` rewrites in one pass:
+There are two equivalent paths — pick whichever fits your workflow. Both run the same `scripts/rename-template.py` under the hood, so they produce the same result.
+
+### Option A: One click in the GitHub UI
+
+After creating your new repo via **Use this template**, a one-shot helper sits in your Actions tab:
+
+1. Open your new repo on GitHub.
+2. Go to **Actions → Bootstrap from template → Run workflow**.
+3. Fill in **package** (e.g. `com.acme.myapp`) and **app name** (e.g. `My App`) and click **Run workflow**.
+
+The workflow runs the rename script with your inputs, commits the result directly to your default branch, and self-deletes itself in the same commit so it doesn't keep haunting your Actions tab. If your repo has branch protection on the default branch, the push will be rejected — use Option B instead, or temporarily relax protection.
+
+### Option B: Locally with Python
+
+If you'd rather rename offline, run the same script on your machine:
 
 ```bash
 python3 scripts/rename-template.py com.acme.myapp "My App Name"
@@ -45,13 +59,14 @@ python3 scripts/rename-template.py com.acme.myapp "My App Name"
 
 The first argument is the new package (also used as `applicationId`). The second is the user-facing app name; its PascalCase form (`MyAppName`) becomes `rootProject.name`, the theme name, and the `Application` class name. The four convention plugin IDs under `build-logic/` are also rewritten (`consultme.android.*` → `myappname.android.*`). Re-running with the same arguments is a no-op.
 
-After the script completes, finish the bootstrap by hand:
+The script also scrubs three template-maintainer-personal files so they don't carry the upstream owner's identity into your repo: `.github/FUNDING.yml` is deleted, the `reviewers`/`assignees` blocks in `.github/dependabot.yml` are stripped, and `.github/ISSUE_TEMPLATE/config.yml` is rewritten to a commented `contact_links` stub. Re-add your own once your fork has a public URL.
+
+### Post-bootstrap steps (both options)
 
 1. **License header company name:** open `gradle.properties` and set `template.company` (consumed by the root `build.gradle.kts` Spotless config). Then run `./gradlew spotlessApply` to rewrite every header.
 2. **License file:** open `LICENSE.md` and replace `[year]` and the placeholder name with your own.
 3. **README and docs:** update the badges (CI, stars, forks) to point at your repo, and replace the project description in this file. The script intentionally skips `*.md` so it doesn't break upstream-template links.
 4. **Feature module:** replace the placeholder content in `:feature-example` (start with `ExampleScreen.kt`), and rename the module (`:feature-example` → `:feature-yourname`) once you know what you're building.
-5. **Remove template funding file:** delete `.github/FUNDING.yml`, or replace it with your own sponsorship info.
 
 If you'd rather rename by hand, expand the manual fallback below.
 
@@ -66,7 +81,11 @@ Use Android Studio's **Refactor > Rename** for the package step.
 4. **Theme + application class:** rename `ConsultMeTheme`, `Theme.ConsultMe` (in `app/src/main/res/values/themes.xml`), and `ConsultMeApplication` (class + filename + `AndroidManifest.xml` reference) to match your new project name.
 5. **App display name:** in `app/src/main/res/values/strings.xml`, change `app_name`.
 6. **Convention plugin IDs:** rename the four files under `build-logic/convention/src/main/kotlin/consultme.android.*.gradle.kts` and update every `id("consultme.android.*")` reference in module build scripts.
-7. Then continue with the post-script steps above (license header, LICENSE file, README badges, feature module, FUNDING.yml).
+7. **Maintainer-personal files** (Options A and B do this for you; manual renamers need to do it explicitly):
+    - Delete `.github/FUNDING.yml`.
+    - Strip the `reviewers`/`assignees` blocks from `.github/dependabot.yml`.
+    - Replace the `contact_links` URLs in `.github/ISSUE_TEMPLATE/config.yml` with your own (or delete them).
+8. Then continue with the post-bootstrap steps above.
 
 </details>
 

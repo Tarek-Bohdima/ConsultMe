@@ -1,0 +1,64 @@
+name: Bootstrap from template
+
+# One-shot rename helper for adopters who created a repo via "Use this template".
+# Mirrors `scripts/rename-template.py`; self-deletes once the rename commit lands so
+# the workflow doesn't keep haunting the adopter's Actions tab. The local script
+# stays available for offline / branch-protected adoption flows.
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'New package (e.g. com.acme.myapp)'
+        required: true
+        type: string
+      app_name:
+        description: 'New app display name (e.g. My App)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      # Guard so a stray click on the upstream template doesn't rewrite it.
+      - name: Refuse to run on the upstream template
+        if: github.repository == 'Tarek-Bohdima/ConsultMe'
+        run: |
+          echo "::error::This is the upstream template repository — Bootstrap is for downstream repos only."
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.x'
+
+      - name: Run rename script
+        env:
+          PACKAGE: ${{ inputs.package }}
+          APP_NAME: ${{ inputs.app_name }}
+        run: python3 scripts/rename-template.py "$PACKAGE" "$APP_NAME"
+
+      - name: Self-delete bootstrap workflow
+        run: git rm .github/workflows/bootstrap-from-template.yml
+
+      - name: Commit and push
+        env:
+          PACKAGE: ${{ inputs.package }}
+          APP_NAME: ${{ inputs.app_name }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::warning::No changes to commit. The script may have already been run."
+            exit 0
+          fi
+          git commit -m "chore: bootstrap from template (package=$PACKAGE, app=$APP_NAME)"
+          git push
