@@ -1,6 +1,7 @@
 # ConsultMe
 
 [![Android CI](https://github.com/Tarek-Bohdima/ConsultMe/actions/workflows/android_ci.yml/badge.svg)](https://github.com/Tarek-Bohdima/ConsultMe/actions/workflows/android_ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/Tarek-Bohdima/ConsultMe?sort=semver)](https://github.com/Tarek-Bohdima/ConsultMe/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Platform](https://img.shields.io/badge/platform-android-green.svg)
 ![Min API](https://img.shields.io/badge/Min%20API-26-purple)
