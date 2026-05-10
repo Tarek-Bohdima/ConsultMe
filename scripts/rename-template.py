@@ -23,6 +23,9 @@ Performs in one pass:
   .github/ISSUE_TEMPLATE/config.yml contact_links to a commented stub.
   Each step is gated on the maintainer handle still being present, so
   re-running after manual customization leaves adopter content alone.
+- One-shot cleanup: removes .github/workflows/bootstrap-from-template.yml
+  if it's still around — that workflow is the UI-equivalent of this
+  script and is no longer needed once the rename has run.
 
 Scope: rewrites .kt, .kts, .xml, .toml, .properties files only. README,
 CLAUDE.md, LICENSE.md, and docs/ are intentionally skipped — they contain
@@ -145,10 +148,11 @@ def rename_plugin_files(root: Path, old_slug: str, new_slug: str) -> None:
 
 
 def scrub_template_owner_files(root: Path) -> list[str]:
-    """Remove the template maintainer's identity from files GitHub copies into every fork.
+    """Remove maintainer-personal files plus one-shot bootstrap helpers.
 
-    Idempotent: each step is gated on the maintainer handle still being present,
-    so re-running after manual customization leaves adopter content alone.
+    Idempotent: each maintainer-handle step is gated on the handle still being
+    present, and the one-shot deletions are gated on file existence. Re-running
+    after manual customization is a no-op.
     """
     actions: list[str] = []
 
@@ -175,6 +179,13 @@ def scrub_template_owner_files(root: Path) -> list[str]:
     if issue_config.exists() and TEMPLATE_OWNER_HANDLE in issue_config.read_text(encoding="utf-8"):
         issue_config.write_text(ISSUE_TEMPLATE_CONFIG_STUB, encoding="utf-8")
         actions.append("rewrote .github/ISSUE_TEMPLATE/config.yml contact_links to a commented stub")
+
+    # The UI bootstrap workflow self-deletes after a successful run; mirror that
+    # behavior here so local-script adopters end up with the same clean state.
+    bootstrap_workflow = root / ".github" / "workflows" / "bootstrap-from-template.yml"
+    if bootstrap_workflow.exists():
+        bootstrap_workflow.unlink()
+        actions.append("deleted .github/workflows/bootstrap-from-template.yml (one-shot helper)")
 
     return actions
 
