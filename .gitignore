@@ -68,7 +68,13 @@ output.json
 *.keystore
 .signing/ # If you have a .signing directory for config
 
-# Google Services (Firebase, Google Cloud APIs) - CRITICAL TO IGNORE
+# Google Services (Firebase, Google Cloud APIs)
+# Blanket rule, conservative by default: Firebase client API keys aren't true
+# secrets (security is enforced server-side via Firebase Rules), but the file
+# also pins your project + client IDs and may include SHAs. Public-repo forks
+# should keep this ignored. Private-repo adopters who need flavor-driven client
+# selection at build time can opt back in by uncommenting the exception below:
+#   !app/google-services.json
 google-services.json
 
 # Android Profiling & Debugging
