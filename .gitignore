@@ -134,6 +134,11 @@ $RECYCLE.BIN/
 hs_err_pid*
 replay_pid*
 
+# === Python ===
+# Bytecode caches from scripts/ helpers
+__pycache__/
+*.pyc
+
 # === AI tooling ===
 # Claude Code local state (settings, scheduled task locks)
 .claude/
