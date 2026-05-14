@@ -40,8 +40,12 @@ subprojects {
         }
         kotlinGradle {
             target("*.gradle.kts")
-            // No `package` line in Gradle scripts; place header above the first `/*`.
-            licenseHeader(licenseHeaderText, "/*")
+            // No `package` line in Gradle scripts; place header above `plugins {`,
+            // which every subproject's build.gradle.kts has. Note: the delimiter is
+            // a regex — the previous value of `"/*"` was actually `0-or-more /`, so
+            // it silently matched everywhere and Spotless never rewrote the existing
+            // `// Copyright …` line when adopters changed template.company.
+            licenseHeader(licenseHeaderText, "plugins \\{")
             ktlint(libs.ktlint.get().version)
         }
     }
