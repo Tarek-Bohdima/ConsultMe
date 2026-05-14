@@ -29,6 +29,9 @@ android {
 dependencies {
     implementation(projects.coreDesignsystem)
     implementation(projects.coreUi)
+    // TODO(template): replace projects.featureExample with your real feature
+    // module(s) before shipping. The launcher activity in :app currently
+    // renders `ExampleScreen` from this placeholder — see feature-example/README.md.
     implementation(projects.featureExample)
 
     implementation(libs.androidx.core.ktx)
