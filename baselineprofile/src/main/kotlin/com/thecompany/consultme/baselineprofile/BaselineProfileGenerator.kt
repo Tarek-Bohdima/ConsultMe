@@ -34,8 +34,12 @@ class BaselineProfileGenerator {
     }
 
     private companion object {
-        // Tracks `:app`'s applicationId. Adopters: keep this in lockstep
-        // when renaming via `scripts/rename-template.py`.
+        // `:app`'s applicationId. The bootstrap script (`scripts/rename-template.py`)
+        // rewrites this when you rename the template's package, but it CANNOT know
+        // about product flavors — if `:app` declares flavors whose applicationId
+        // overrides the defaultConfig, this constant must be updated by hand to
+        // match whichever flavor you're benchmarking, or `generateReleaseBaselineProfile`
+        // fails with "package not found." See `baselineprofile/README.md`.
         const val TARGET_PACKAGE = "com.thecompany.consultme"
     }
 }
