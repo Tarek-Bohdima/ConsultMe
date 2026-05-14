@@ -40,6 +40,7 @@ import os
 import re
 import shutil
 import sys
+import unicodedata
 from pathlib import Path
 
 OLD_PACKAGE = "com.thecompany.consultme"
@@ -67,7 +68,13 @@ def fail(msg: str) -> None:
 
 
 def to_pascal(name: str) -> str:
-    parts = re.findall(r"[A-Za-z0-9]+", name)
+    # NFD-decompose so diacritics split into a base letter plus a combining mark,
+    # then drop the marks. Without this, the [A-Za-z0-9]+ regex below silently
+    # skips non-ASCII letters and produces e.g. "CeGTesc" from "Ce gătesc?"
+    # (Romanian: "What am I cooking?") because "ă" doesn't match the class.
+    decomposed = unicodedata.normalize("NFD", name)
+    ascii_safe = "".join(c for c in decomposed if not unicodedata.combining(c))
+    parts = re.findall(r"[A-Za-z0-9]+", ascii_safe)
     if not parts:
         fail(f"app name '{name}' has no alphanumeric characters")
     return "".join(p[:1].upper() + p[1:] for p in parts)
@@ -139,9 +146,14 @@ def rename_project_files(root: Path, old: str, new: str) -> None:
 
 
 def rename_plugin_files(root: Path, old_slug: str, new_slug: str) -> None:
+    """Rename every precompiled-script plugin under build-logic/ that starts
+    with the template slug. Covers consultme.android.*, consultme.jvm.*,
+    consultme.kover, consultme.modulegraph — all the IDs adopters reference
+    via id("consultme.…") in module build scripts.
+    """
     if old_slug == new_slug:
         return
-    prefix = f"{old_slug}.android."
+    prefix = f"{old_slug}."
     for path in iter_files(root):
         if path.name.startswith(prefix) and path.name.endswith(".gradle.kts"):
             path.rename(path.with_name(path.name.replace(old_slug, new_slug, 1)))
@@ -211,16 +223,18 @@ def main() -> int:
 
     print(f"Package:      {OLD_PACKAGE} -> {new_package}")
     print(f"Project name: {OLD_PROJECT} -> {new_project}")
-    print(f"Plugin slug:  {OLD_PLUGIN_SLUG}.android.* -> {new_plugin_slug}.android.*")
+    print(f"Plugin slug:  {OLD_PLUGIN_SLUG}.* -> {new_plugin_slug}.*")
     print(f"App name:     '{OLD_APP_NAME}' -> '{new_app_name}'")
 
-    # Order matters: the package replacement runs first so that the lowercase
-    # 'consultme' slug replacement that follows only touches plugin IDs, not
-    # the package suffix.
+    # Order matters: the package replacement runs first so the broader slug
+    # replacement that follows only touches plugin IDs, not the package suffix.
+    # The slug replacement covers consultme.android.*, consultme.jvm.*,
+    # consultme.kover, consultme.modulegraph — every precompiled-script plugin
+    # under build-logic/ that adopters reference via id("consultme.…").
     replacements = [
         (OLD_PACKAGE, new_package),
         (OLD_PROJECT, new_project),
-        (f"{OLD_PLUGIN_SLUG}.android.", f"{new_plugin_slug}.android."),
+        (f"{OLD_PLUGIN_SLUG}.", f"{new_plugin_slug}."),
         (OLD_APP_NAME, new_app_name),
     ]
     changed = 0
