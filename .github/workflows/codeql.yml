@@ -72,7 +72,11 @@ jobs:
 
   analyze:
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    # Skip on private-repo forks: CodeQL requires GitHub Advanced Security on
+    # private repos (paid), and every PR's analyze jobs fail with "Code scanning
+    # is not enabled for this repository" — burning ~3 min per PR per language.
+    # Adopters with GHAS on a private fork can drop the `private == false` half.
+    if: needs.changes.outputs.code == 'true' && github.event.repository.private == false
     name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
