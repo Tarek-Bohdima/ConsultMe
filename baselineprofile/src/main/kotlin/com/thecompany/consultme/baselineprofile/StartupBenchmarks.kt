@@ -46,6 +46,11 @@ class StartupBenchmarks {
     }
 
     private companion object {
+        // Must match the applicationId of the `:app` variant being benchmarked.
+        // Adopters who add product flavors must update this per flavor —
+        // macrobenchmark targets a single package, and the defaultConfig value
+        // is never what ships when any flavor sets its own applicationId.
+        // See `baselineprofile/README.md`.
         const val TARGET_PACKAGE = "com.thecompany.consultme"
     }
 }
