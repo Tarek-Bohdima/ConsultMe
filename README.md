@@ -137,6 +137,46 @@ The template ships these modules (NIA-aligned):
 - `consultme.kover` — coverage instrumentation (auto-applied by every Android/JVM convention; opt out by removing the line).
 - `consultme.modulegraph` — root-only; registers `:moduleGraph` to emit `docs/MODULE_GRAPH.md`.
 
+### Using vector icons
+
+`material3` ships a small set of icons (`Icons.Default.MoreVert`, `Icons.Filled.Add`, etc.). For the full Material catalog (`Icons.Default.Restaurant`, `Icons.Filled.Star`, …), add to your feature module:
+
+```kotlin
+dependencies {
+    implementation("androidx.compose.material:material-icons-extended")
+}
+```
+
+The Compose BOM (already on the classpath via `consultme.android.compose`) supplies the version. Not bundled by default because `material-icons-extended` is ~1.5 MB — adopters who only need a handful of icons can import individual icon files via `material-icons-core` instead.
+
+## Adding product flavors
+
+Many adopters with a Play Store presence run multiple flavors (e.g. `lite` / `pro` for a free/paid split). The template ships a single-variant `:app` with `defaultConfig.applicationId = "com.thecompany.consultme"`. **When you add product flavors, each flavor _overrides_ the default `applicationId`** — the `defaultConfig` value never ships if any flavor declares its own `applicationId`. Adopters new to AGP have miswired Firebase / lost Play Store identity continuity by treating the default as authoritative.
+
+Typical wiring in `app/build.gradle.kts`:
+
+```kotlin
+android {
+    flavorDimensions += "tier"
+    productFlavors {
+        create("lite") {
+            dimension = "tier"
+            applicationId = "com.thecompany.consultme.lite"
+            versionNameSuffix = "-lite"
+        }
+        create("pro") {
+            dimension = "tier"
+            applicationId = "com.thecompany.consultme.pro"
+            versionNameSuffix = "-pro"
+        }
+    }
+}
+```
+
+Each flavor's `applicationId` is what the Play Store sees and what Firebase / FCM match client SDKs against. Pick deliberately on day one — changing it later means re-publishing as a new app. See AGP's [product flavors documentation](https://developer.android.com/build/build-variants#product-flavors) for the full DSL.
+
+If you wire flavors after generating a baseline profile, also update the `TARGET_PACKAGE` reference in `:baselineprofile` — the macrobenchmark targets a specific applicationId, and the default-flavor value won't match.
+
 ## How to write a Hilt-aware test
 
 Every module declares `:core-testing` for both unit and instrumented tests, so JUnit/Turbine/MockK/Hilt-testing/Espresso are already on the classpath:
