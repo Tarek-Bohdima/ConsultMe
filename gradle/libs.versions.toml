@@ -25,6 +25,8 @@ junit = "4.13.2"
 kotlin = "2.3.21"
 ksp = "2.3.7"
 mockk = "1.14.7" # A recent stable version of MockK
+roborazzi = "1.56.0"   # AGP 9 compatibility starts at 1.56.0 (older 1.x references the removed TestedExtension).
+robolectric = "4.15.1" # Pulled by roborazzi-compose; pinned here so adopters can override.
 turbine = "1.2.1"  # A recent stable version of Turbine
 truth = "1.4.5"    # A recent stable version of Google's Truth
 
@@ -66,6 +68,7 @@ compose-compiler-gradle-plugin = { group = "org.jetbrains.kotlin", name = "compo
 ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 kover-gradle-plugin = { group = "org.jetbrains.kotlinx.kover", name = "org.jetbrains.kotlinx.kover.gradle.plugin", version.ref = "kover" }
 androidx-baselineprofile-gradle-plugin = { group = "androidx.baselineprofile", name = "androidx.baselineprofile.gradle.plugin", version.ref = "androidxBaselineprofile" }
+roborazzi-gradle-plugin = { group = "io.github.takahirom.roborazzi", name = "roborazzi-gradle-plugin", version.ref = "roborazzi" }
 
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -86,6 +89,12 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 
 # Truth (for fluent assertions)
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+
+# Roborazzi (JVM Compose snapshot testing). Brought in via the
+# consultme.android.roborazzi convention plugin.
+roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [bundles]
 # Compose UI deps applied via the consultme.android.compose convention plugin.
@@ -124,4 +133,5 @@ hilt-gradle = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "androidxBaselineprofile" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

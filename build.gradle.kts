@@ -14,6 +14,9 @@ plugins {
     // `consultme.android.application` and `consultme.android.baselineprofile`
     // convention plugins can apply it.
     alias(libs.plugins.androidx.baselineprofile) apply false
+    // Roborazzi plugin on the root classpath so the `consultme.android.roborazzi`
+    // convention plugin can apply it by id without specifying a version.
+    alias(libs.plugins.roborazzi) apply false
     // Kover applied at root aggregates coverage from every module that also
     // applies the consultme.kover convention. `./gradlew koverHtmlReport`
     // produces a project-wide report under `build/reports/kover/`.
