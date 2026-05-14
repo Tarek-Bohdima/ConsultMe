@@ -1,6 +1,7 @@
 // Copyright 2025 MyCompany
 plugins {
     id("consultme.android.feature")
+    id("consultme.android.roborazzi")
 }
 
 android {
