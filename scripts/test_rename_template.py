@@ -63,3 +63,27 @@ def test_rename_plugin_files_covers_all_consultme_plugins(tmp_path):
     expected = {name.replace("consultme.", "acme.", 1) for name in plugins}
     actual = {p.name for p in tmp_path.iterdir()}
     assert actual == expected
+
+
+def test_scrub_deletes_upstream_improvement_plan(tmp_path):
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    plan = docs / "IMPROVEMENT_PLAN.md"
+    plan.write_text("# Template improvement plan\n\nPhase 0: …\n", encoding="utf-8")
+
+    actions = rename_template.scrub_template_owner_files(tmp_path)
+
+    assert not plan.exists()
+    assert any("IMPROVEMENT_PLAN.md" in a for a in actions)
+
+
+def test_scrub_preserves_adopters_own_improvement_plan(tmp_path):
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    plan = docs / "IMPROVEMENT_PLAN.md"
+    plan.write_text("# Acme product roadmap\n\nQ1: …\n", encoding="utf-8")
+
+    actions = rename_template.scrub_template_owner_files(tmp_path)
+
+    assert plan.exists()
+    assert not any("IMPROVEMENT_PLAN.md" in a for a in actions)

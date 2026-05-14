@@ -26,6 +26,10 @@ Performs in one pass:
 - One-shot cleanup: removes .github/workflows/bootstrap-from-template.yml
   if it's still around — that workflow is the UI-equivalent of this
   script and is no longer needed once the rename has run.
+- Template-internal roadmap removal: deletes docs/IMPROVEMENT_PLAN.md.
+  The roadmap is the upstream template's own development plan; adopters
+  shouldn't inherit its phase-tracking noise. Gated on the upstream
+  sentinel header so an adopter's own IMPROVEMENT_PLAN.md is untouched.
 
 Scope: rewrites .kt, .kts, .xml, .toml, .properties files only. README,
 CLAUDE.md, LICENSE.md, and docs/ are intentionally skipped — they contain
@@ -198,6 +202,17 @@ def scrub_template_owner_files(root: Path) -> list[str]:
     if bootstrap_workflow.exists():
         bootstrap_workflow.unlink()
         actions.append("deleted .github/workflows/bootstrap-from-template.yml (one-shot helper)")
+
+    # docs/IMPROVEMENT_PLAN.md tracks the upstream template's own development
+    # phases — it's noise for downstream forks. Gate on the upstream sentinel
+    # header so an adopter who later writes their own IMPROVEMENT_PLAN.md isn't
+    # surprised by re-runs.
+    improvement_plan = root / "docs" / "IMPROVEMENT_PLAN.md"
+    if improvement_plan.exists():
+        first_line = improvement_plan.read_text(encoding="utf-8").splitlines()[:1]
+        if first_line == ["# Template improvement plan"]:
+            improvement_plan.unlink()
+            actions.append("deleted docs/IMPROVEMENT_PLAN.md (template-internal roadmap)")
 
     return actions
 
