@@ -1,7 +1,9 @@
 // Copyright 2026 MyCompany
 package com.thecompany.consultme.buildlogic
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.dsl.ManagedVirtualDevice
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -56,6 +58,27 @@ internal fun CommonExtension.configureManagedDevices() {
         device = "Pixel 6"
         apiLevel = 30
         systemImageSource = "aosp-atd"
+    }
+}
+
+/**
+ * Toggle `testOptions.unitTests.isIncludeAndroidResources` on whichever Android
+ * extension the consuming module declared (library or application). Required
+ * for `stringResource(R.string.…)` to resolve under JVM-runtime test frameworks
+ * like Robolectric / Roborazzi.
+ *
+ * AGP 9 dropped the catch-all `CommonExtension<*, *, *, *, *, *>` generic shape
+ * (the seventh arg shifted, breaking call sites that hardcoded the cardinality),
+ * so this helper resolves the concrete extension type instead. Whichever applies
+ * to the module gets configured; the other findByType returns null and is
+ * skipped.
+ */
+internal fun Project.configureUnitTests(includeAndroidResources: Boolean = true) {
+    extensions.findByType(LibraryExtension::class.java)?.apply {
+        testOptions.unitTests.isIncludeAndroidResources = includeAndroidResources
+    }
+    extensions.findByType(ApplicationExtension::class.java)?.apply {
+        testOptions.unitTests.isIncludeAndroidResources = includeAndroidResources
     }
 }
 

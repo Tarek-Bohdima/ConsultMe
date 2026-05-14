@@ -1,6 +1,5 @@
 // Copyright 2026 MyCompany
-import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.LibraryExtension
+import com.thecompany.consultme.buildlogic.configureUnitTests
 import org.gradle.accessors.dm.LibrariesForLibs
 
 // Roborazzi JVM snapshot-test wiring. Apply to a module that already applies
@@ -23,15 +22,7 @@ plugins {
 
 val libs = the<LibrariesForLibs>()
 
-// AGP 9 dropped the catch-all `CommonExtension<*, *, *, *, *, *>` generic, so
-// resolve the concrete extension type instead — whichever one the consuming
-// module declared via its other conventions.
-extensions.findByType(LibraryExtension::class.java)?.apply {
-    testOptions.unitTests.isIncludeAndroidResources = true
-}
-extensions.findByType(ApplicationExtension::class.java)?.apply {
-    testOptions.unitTests.isIncludeAndroidResources = true
-}
+configureUnitTests()
 
 dependencies {
     // The Compose BOM aligns the test-side compose deps with main-set versions.
