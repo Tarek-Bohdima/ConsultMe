@@ -26,7 +26,7 @@ kotlin = "2.3.21"
 ksp = "2.3.8"
 mockk = "1.14.7" # A recent stable version of MockK
 roborazzi = "1.60.0"   # AGP 9 compatibility starts at 1.56.0 (older 1.x references the removed TestedExtension).
-robolectric = "4.15.1" # Pulled by roborazzi-compose; pinned here so adopters can override.
+robolectric = "4.16.1" # Pulled by roborazzi-compose; pinned here so adopters can override.
 turbine = "1.2.1"  # A recent stable version of Turbine
 truth = "1.4.5"    # A recent stable version of Google's Truth
 
