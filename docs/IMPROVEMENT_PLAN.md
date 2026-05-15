@@ -15,7 +15,8 @@ ConsultMe is a Jetpack Compose multi-module Android template. This document is t
 | 6 | NIA-alignment slice 2 (module scaffolding: `:core-designsystem`, `:core-model`, `:core-common`, `:core-domain`) | **Done** (#124) |
 | 7 | NIA-alignment slice 3 (quality tooling: Kover + module-graph) | **Done** (#126) |
 | 8 | NIA-alignment slice 4 (`:baselineprofile` macrobenchmark + baseline profile) | **Done** (#129, `v3.1.0`) |
-| 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | **Done** (#132, `v4.0.0-rc.1`) |
+| 9 | Deferred migrations (AGP 9, Hilt 2.59+, Kotlin 2.3.20) | **Done** (#132, `v4.0.0-rc.1` → `v4.0.0`) |
+| 10 | Adopter friction polish (real-world port findings) | **Done** (#144–#157, `v4.1.0`) |
 
 Tick the table when phases land. Each phase below lists scope, rationale, and a rough size; sub-bullets are the concrete deltas.
 
@@ -204,6 +205,33 @@ Catalog cleanup:
 - Removed the `kotlin-android = { id = "...", version.ref = "kotlin" }` plugin alias from `[plugins]`.
 - Lifted the AGP semver-major + Hilt 2.59+ ignore entries from `.github/dependabot.yml`. Dependabot is now free to bump these along with the rest of the gradle-and-plugins group.
 
+## Phase 10 — Adopter friction polish (done)
+
+Goal: address concrete adopter pain points surfaced by a real-world downstream port (24-PR effort landing a Java/XML/AppCompat app on the template). Every fix corrects a friction point that bit a first-time adopter in the first 24–72 hours of using the template — diacritic-handling bugs in the bootstrap, a Spotless misconfiguration that silently no-op'd license-header rewrites on Gradle scripts, an unsigned cost on private-repo forks, a missing screenshot-test convention, and so on.
+
+Shipped:
+
+- **Bootstrap script hardening** (#145) — `to_pascal()` now NFD-normalizes and strips combining marks so `"Ce gătesc?"` produces `CeGatesc` instead of `CeGTesc`; `rename_plugin_files` and the text replacement broaden to every `consultme.*` slug so `consultme.jvm.library`, `consultme.kover`, and `consultme.modulegraph` get renamed alongside the `.android.*` plugins. First-ever pytest suite + Python CI workflow added to catch regressions.
+- **Spotless `kotlinGradle` delimiter fix** (#146) — the previous delimiter `"/*"` parses as the regex "zero-or-more '/'", which matched everywhere and made Spotless silently skip every `.gradle.kts` header rewrite. Switched to `plugins \{`, which every subproject `build.gradle.kts` has on its first non-header line.
+- **`consultme.android.roborazzi` convention plugin** (#149) — one-line opt-in for JVM Compose snapshot testing. Wires the Roborazzi plugin + deps + the `includeAndroidResources` flag, plus Compose BOM and `ui-test-junit4` for `createComposeRule`. Catalog pins Roborazzi `1.56.0` (the first version with AGP 9 support) and Robolectric `4.15.1`. Ships with a worked example test (`@Ignore`'d until baselines are recorded).
+- **`configureUnitTests` helper** (#154) — extracted the AGP 9 `findByType<LibraryExtension>` / `findByType<ApplicationExtension>` dance from the Roborazzi convention into a reusable `Project.configureUnitTests()` helper on `AndroidExtensions.kt`. Documents the dropped `CommonExtension<*, *, *, *, *, *>` generic shape so the next contributor doesn't trip over it.
+- **CodeQL private-repo gate** (#150) — `analyze` job now gates on `github.event.repository.private == false`. Private-repo forks without GitHub Advanced Security stop wasting ~3 min per PR per language on failing scans.
+- **`:feature-example` placeholder warnings** (#147) — TODO comment on `projects.featureExample` dep line in `app/build.gradle.kts` + `feature-example/README.md` explaining the removal steps. Keeps the worked example as scaffolding without letting it accidentally ship.
+- **`:core-domain` / `:core-ui` / `:core-common` orientation READMEs** (#151) — one paragraph per module on role + what belongs / doesn't belong, so adopters opening the dir tree know what each scaffold module is for without grepping `MODULE_GRAPH.md`.
+- **`:baselineprofile` flavor caveat** (#155) — multi-line comment on `TARGET_PACKAGE` in both `BaselineProfileGenerator.kt` and `StartupBenchmarks.kt` + a new `baselineprofile/README.md` documenting the per-flavor override workflow. (Considered runtime derivation via `InstrumentationRegistry`; doesn't apply for macrobenchmark since the test runs in a separate process from the benchmarked app.)
+- **Bootstrap deletes upstream `IMPROVEMENT_PLAN.md`** (#153) — same pattern as `.github/FUNDING.yml`. Gated on the upstream sentinel header so an adopter's own roadmap doc is untouched on re-runs.
+- **README adopter sections** (#152) — "Using vector icons" (callout, not bundling, for `material-icons-extended`) + "Adding product flavors" (the `defaultConfig.applicationId` override semantics that real adopters trip on, with a worked `productFlavors {}` snippet).
+- **`google-services.json` gitignore softening** (#148) — replaced "CRITICAL TO IGNORE" with a softer comment + a commented-out `!app/google-services.json` example so private-repo adopters who need flavor-driven Firebase client selection don't have their `git add` silently skipped.
+- **`createComposeRule` v2 migration** (#157) — the example snapshot test added in #149 imported the deprecated v1 createComposeRule. Migrated to `androidx.compose.ui.test.junit4.v2.createComposeRule` so adopters who copy-paste the example don't carry the deprecation forward.
+- **Repository hygiene** — `__pycache__/` and `.pytest_cache/` added to `.gitignore` (#144, #156).
+
+Not shipped (pushback accepted):
+
+- **Auto-bundle `material-icons-extended`** — would have added ~1.5 MB across every adopter to cover an opt-in need. Shipped as a README callout instead (#152).
+- **Bootstrap-script deletes `:feature-example`** — too aggressive. Adopters use the placeholder as scaffolding while writing their first real feature module. Loud warnings + module README (#147) achieve the same end without removing the worked example.
+- **Bootstrap rewrites `IMPROVEMENT_PLAN.md` to an empty stub** — extra ceremony for no benefit. Plain delete matches the existing `.github/FUNDING.yml` handling (#153).
+- **Runtime derivation of `TARGET_PACKAGE`** for `:baselineprofile` — `InstrumentationRegistry.targetContext.packageName` doesn't reach across to the benchmarked app's process in macrobenchmark. Documenting the per-flavor override was the simpler, correct answer (#155).
+
 ## Phase 9 — original (kept for history)
 
 Currently silenced in `.github/dependabot.yml`. Each is its own dedicated PR, not a passive bot bump:
@@ -251,6 +279,7 @@ Cut a GitHub Release at every phase boundary, not arbitrarily. Actual phase → 
 
 - **Phases 5–7** (NIA-alignment slices 1–3) bundled into `v3.0.0`. MAJOR because slice 2 moved the theme package (`com.thecompany.consultme.ui.theme` → `core.designsystem.theme`) — breaking for forks at v2.x.
 - **Phase 8** (`:baselineprofile` macrobenchmark + pipeline) shipped as `v3.1.0` (additive, non-breaking).
-- **Phase 9** (deferred migrations: AGP 9.2.1 / Hilt 2.59.2) shipped as `v4.0.0-rc.1` (pre-release; promotion to `v4.0.0` blocked on `androidx.baselineprofile` 1.5.x stable).
+- **Phase 9** (deferred migrations: AGP 9.2.1 / Hilt 2.59.2) shipped as `v4.0.0-rc.1`, promoted to `v4.0.0` on 2026-05-10. The `androidx.baselineprofile` 1.5.x stable concern that originally blocked promotion was accepted as a known alpha pin.
+- **Phase 10** (adopter friction polish from real-world port findings) shipped as `v4.1.0` (additive: new `consultme.android.roborazzi` convention plugin + bug fixes + adopter-facing docs; non-breaking).
 
 See `CLAUDE.md` "Versioning and tags" for the full policy.
