@@ -177,6 +177,30 @@ Each flavor's `applicationId` is what the Play Store sees and what Firebase / FC
 
 If you wire flavors after generating a baseline profile, also update the `TARGET_PACKAGE` reference in `:baselineprofile` — the macrobenchmark targets a specific applicationId, and the default-flavor value won't match.
 
+## Logging
+
+The template ships **no logging library** — picking one is a cross-cutting decision (alongside networking, analytics, image-loading) that downstream forks tend to make on their own terms. This section is a pointer, not a default.
+
+The conventional baseline for an app of this shape is [Timber](https://github.com/JakeWharton/timber):
+
+```kotlin
+// app/build.gradle.kts (you add this; the template does not)
+dependencies {
+    implementation("com.jakewharton.timber:timber:5.0.1")
+}
+
+// ConsultMeApplication.kt
+override fun onCreate() {
+    super.onCreate()
+    if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+    // else Timber.plant(CrashlyticsTree())  // see below
+}
+```
+
+For release builds, the standard pattern is a custom `Timber.Tree` that forwards to your crash reporter — most commonly `CrashlyticsTree` forwarding to `FirebaseCrashlytics.recordException(...)`. Keep the `DebugTree` debug-only so noisy logs don't ship to production.
+
+If you'd rather use platform `android.util.Log` directly, SLF4J + Logback, or roll a thin `Logger` interface that adopts a different vendor later, that's fully supported — the template doesn't wire anything that would conflict.
+
 ## How to write a Hilt-aware test
 
 Every module declares `:core-testing` for both unit and instrumented tests, so JUnit/Turbine/MockK/Hilt-testing/Espresso are already on the classpath:
