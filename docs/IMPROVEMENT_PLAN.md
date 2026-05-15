@@ -213,7 +213,7 @@ Shipped:
 
 - **Bootstrap script hardening** (#145) — `to_pascal()` now NFD-normalizes and strips combining marks so `"Ce gătesc?"` produces `CeGatesc` instead of `CeGTesc`; `rename_plugin_files` and the text replacement broaden to every `consultme.*` slug so `consultme.jvm.library`, `consultme.kover`, and `consultme.modulegraph` get renamed alongside the `.android.*` plugins. First-ever pytest suite + Python CI workflow added to catch regressions.
 - **Spotless `kotlinGradle` delimiter fix** (#146) — the previous delimiter `"/*"` parses as the regex "zero-or-more '/'", which matched everywhere and made Spotless silently skip every `.gradle.kts` header rewrite. Switched to `plugins \{`, which every subproject `build.gradle.kts` has on its first non-header line.
-- **`consultme.android.roborazzi` convention plugin** (#149) — one-line opt-in for JVM Compose snapshot testing. Wires the Roborazzi plugin + deps + the `includeAndroidResources` flag, plus Compose BOM and `ui-test-junit4` for `createComposeRule`. Catalog pins Roborazzi `1.56.0` (the first version with AGP 9 support) and Robolectric `4.15.1`. Ships with a worked example test (`@Ignore`'d until baselines are recorded).
+- **`consultme.android.roborazzi` convention plugin** (#149) — one-line opt-in for JVM Compose snapshot testing. Wires the Roborazzi plugin + deps + the `includeAndroidResources` flag, plus Compose BOM and `ui-test-junit4` for `createComposeRule`. Catalog pins Roborazzi `1.56.0` (the first version with AGP 9 support) and Robolectric `4.15.1` at ship time; both have since been bumped by Dependabot to Roborazzi `1.60.0` (#163) and Robolectric `4.16.1` (#164). Ships with a worked example test (`@Ignore`'d until baselines are recorded).
 - **`configureUnitTests` helper** (#154) — extracted the AGP 9 `findByType<LibraryExtension>` / `findByType<ApplicationExtension>` dance from the Roborazzi convention into a reusable `Project.configureUnitTests()` helper on `AndroidExtensions.kt`. Documents the dropped `CommonExtension<*, *, *, *, *, *>` generic shape so the next contributor doesn't trip over it.
 - **CodeQL private-repo gate** (#150) — `analyze` job now gates on `github.event.repository.private == false`. Private-repo forks without GitHub Advanced Security stop wasting ~3 min per PR per language on failing scans.
 - **`:feature-example` placeholder warnings** (#147) — TODO comment on `projects.featureExample` dep line in `app/build.gradle.kts` + `feature-example/README.md` explaining the removal steps. Keeps the worked example as scaffolding without letting it accidentally ship.
@@ -239,10 +239,6 @@ Currently silenced in `.github/dependabot.yml`. Each is its own dedicated PR, no
 - **AGP 8.x → 9.x.** Drops the `kotlin-android` plugin requirement and forces Gradle ≥ 9.4. Touches every module's plugin block. Requires removing `alias(libs.plugins.kotlin.android)` and verifying Compose/KSP/Hilt all play nicely with AGP 9's bundled Kotlin support. The official [`agp-9-upgrade`](https://github.com/android/skills) Claude Code skill is a ready-made playbook for this migration.
 - **Hilt 2.59+.** Hard-requires AGP 9; do this in the same PR or a follow-up to the AGP 9 migration.
 
-## Known follow-ups not yet phased
-
-- **KSP `2.3.4` lags Kotlin `2.3.10`.** Dependabot will likely propose a bump on the next run; let it.
-
 ## Recently shipped follow-ups
 
 - **`-Xcontext-receivers` → `-Xcontext-parameters`** (tracked in issue #117). The flag is set in one place — `build-logic/.../AndroidExtensions.kt` — and no source code uses `context(...)` syntax, so the migration was a one-line swap. This unblocked the `org.jetbrains.kotlin.*` `>=2.3.20` pin in `.github/dependabot.yml`; the next bot run can propose the Kotlin bump.
@@ -259,15 +255,27 @@ These are valuable but don't fit cleanly into the above. Worth deciding on befor
 
 ## Recommended Claude Code skills
 
-Google maintains official AI-optimized skills for Android at <https://github.com/android/skills>. Skills relevant to this template's roadmap:
+Google maintains official AI-optimized skills for Android at <https://github.com/android/skills>. The upstream catalog has grown to 16 skills as of v0.0.10 (2026-05-15); the ones relevant to this template's roadmap and to adopters porting real features on top of it:
+
+**Phase migrations** (template-author work):
 
 | Skill | Use when |
 |---|---|
-| [`agp-9-upgrade`](https://github.com/android/skills) | Working on Phase 9 (AGP 8 → 9 migration) |
-| [`r8-analyzer`](https://github.com/android/skills) | Working on Phase 4 (release minification, keep rules) |
-| [`edge-to-edge`](https://github.com/android/skills) | Adopting edge-to-edge (see Quality bets) |
+| [`build/agp/agp-9-upgrade`](https://github.com/android/skills) | Phase 9 (AGP 8 → 9 migration); kept for AGP 10 prep |
+| [`performance/r8-analyzer`](https://github.com/android/skills) | Phase 4 (release minification, keep rules) |
+| [`system/edge-to-edge`](https://github.com/android/skills) | Adopting edge-to-edge (see Quality bets) |
 
-Skills are not vendored into the template — they're maintained upstream by Google. Install them locally when starting the matching phase.
+**Adopter-facing** (downstream-fork work after they take the template):
+
+| Skill | Use when |
+|---|---|
+| [`testing/testing-setup`](https://github.com/android/skills) | Wiring tests on top of `:core-testing` |
+| [`jetpack-compose/theming/styles`](https://github.com/android/skills) | Extending `:core-designsystem` (icons, typography, components) |
+| [`jetpack-compose/migration/migrate-xml-views-to-jetpack-compose`](https://github.com/android/skills) | Porting a legacy Views codebase onto the Compose template |
+| [`navigation/navigation-3`](https://github.com/android/skills) | Growing a real nav graph beyond `:feature-example` |
+| [`profilers/perfetto-sql`](https://github.com/android/skills), [`profilers/perfetto-trace-analysis`](https://github.com/android/skills) | Investigating startup regressions alongside `:baselineprofile` |
+
+Skills are not vendored into the template — they're maintained upstream by Google. Install them locally when starting the matching work. Keep this list in sync with `CLAUDE.md`'s "Recommended Claude Code skills" section.
 
 ## How to use this document
 
