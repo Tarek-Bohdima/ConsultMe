@@ -141,9 +141,10 @@ hs_err_pid*
 replay_pid*
 
 # === Python ===
-# Bytecode caches from scripts/ helpers
+# Bytecode caches + pytest scratch from scripts/ helpers
 __pycache__/
 *.pyc
+.pytest_cache/
 
 # === AI tooling ===
 # Claude Code local state (settings, scheduled task locks)
