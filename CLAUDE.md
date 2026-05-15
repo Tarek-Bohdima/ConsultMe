@@ -66,11 +66,19 @@ Active ignore rules in `.github/dependabot.yml` — leave these alone unless doi
 
 Google's official Android Claude Code skills live at <https://github.com/android/skills>. Skills relevant to this template:
 
-- `agp-9-upgrade` — playbook for the Phase 9 AGP 8 → 9 migration (shipped in `v4.0.0-rc.1`; the local copy at `.claude/skills/agp-9-upgrade/` stays useful for AGP 10 prep).
-- `r8-analyzer` — helps analyze keep rules when ramping Phase 4 (release minification).
-- `edge-to-edge` — adoption guide if/when the template adopts edge-to-edge.
+**Phase migrations:**
+- `build/agp/agp-9-upgrade` — playbook for the Phase 9 AGP 8 → 9 migration (shipped in `v4.0.0-rc.1`; the local copy at `.claude/skills/agp-9-upgrade/` stays useful for AGP 10 prep).
+- `performance/r8-analyzer` — helps analyze keep rules when ramping Phase 4 (release minification).
+- `system/edge-to-edge` — adoption guide if/when the template adopts edge-to-edge.
 
-Skills are not vendored — install locally when starting the matching phase. See `docs/IMPROVEMENT_PLAN.md` for the phase mapping.
+**Adopter-facing (use when porting a real feature on top of the template):**
+- `testing/testing-setup` — companion to `:core-testing`; helps wire JUnit / Espresso / Hilt-test scaffolding into a new feature module.
+- `jetpack-compose/theming/styles` — extend `:core-designsystem` (icon registries, typography tokens, component variants).
+- `jetpack-compose/migration/migrate-xml-views-to-jetpack-compose` — for adopters porting a legacy Views codebase onto the Compose template.
+- `navigation/navigation-3` — once the template grows a real nav graph beyond the `:feature-example` placeholder.
+- `profilers/perfetto-sql`, `profilers/perfetto-trace-analysis` — companions to `:baselineprofile` when investigating startup regressions.
+
+Skills are not vendored — install locally when starting the matching work. See `docs/IMPROVEMENT_PLAN.md` for phase-skill mappings.
 
 ## CI / branch protection
 
