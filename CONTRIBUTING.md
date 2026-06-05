@@ -31,7 +31,7 @@ You'll need:
   it on `JAVA_HOME` keeps Android Studio happy).
 - **Android Studio** (any version that supports AGP 9.2). The project opens
   cleanly with no manual configuration.
-- **Android SDK with API 26+** for `minSdk` and API 36 for `compileSdk` /
+- **Android SDK with API 26+** for `minSdk` and API 37 for `compileSdk` /
   `targetSdk`. AGP will prompt to install missing components on first sync.
 
 ## The local CI loop

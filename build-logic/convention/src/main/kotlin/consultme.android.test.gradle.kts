@@ -11,7 +11,7 @@ plugins {
 
 extensions.configure<TestExtension> {
     configureKotlinAndroid(this)
-    defaultConfig.targetSdk = 36
+    defaultConfig.targetSdk = 37
     configureBuildFeatures()
     // Macrobenchmark + baseline profile generation runs against a GMD; share
     // the same `pixel6api30` device the application/library conventions use
