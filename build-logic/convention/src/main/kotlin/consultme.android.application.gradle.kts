@@ -24,7 +24,7 @@ pluginManager.withPlugin("com.android.application") {
 extensions.configure<ApplicationExtension> {
     configureKotlinAndroid(this)
     defaultConfig {
-        targetSdk = 36
+        targetSdk = 37
         testInstrumentationRunner = "com.thecompany.consultme.core.testing.HiltTestRunner"
     }
     buildTypes {
