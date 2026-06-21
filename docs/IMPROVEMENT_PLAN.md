@@ -242,6 +242,7 @@ Currently silenced in `.github/dependabot.yml`. Each is its own dedicated PR, no
 ## Recently shipped follow-ups
 
 - **`-Xcontext-receivers` → `-Xcontext-parameters`** (tracked in issue #117). The flag is set in one place — `build-logic/.../AndroidExtensions.kt` — and no source code uses `context(...)` syntax, so the migration was a one-line swap. This unblocked the `org.jetbrains.kotlin.*` `>=2.3.20` pin in `.github/dependabot.yml`; the next bot run can propose the Kotlin bump.
+- **Kotlin 2.4.0 bump — deferred, blocked on Hilt** (tracked in issue #185). Dependabot's Kotlin `2.3.21 → 2.4.0` bumps (#184, #189) fail at `:app:hiltJavaCompileDebug` with `[Hilt] Provided Metadata instance has version 2.4.0, while maximum supported version is 2.3.0` — Hilt 2.59.2's bundled `kotlin-metadata-jvm` is not yet Kotlin-2.4-aware. Lands as a coordinated `kotlin` + `ksp` + `hilt` bump on the `v4.x-rc` pre-release channel once an upstream Hilt release supports Kotlin 2.4 metadata. Same shape as the Phase 9 deferral.
 
 ## Quality bets to consider (no phase yet)
 
