@@ -76,6 +76,7 @@ Google's official Android Claude Code skills live at <https://github.com/android
 - `jetpack-compose/theming/styles` — extend `:core-designsystem` (icon registries, typography tokens, component variants).
 - `jetpack-compose/migration/migrate-xml-views-to-jetpack-compose` — for adopters porting a legacy Views codebase onto the Compose template.
 - `navigation/navigation-3` — once the template grows a real nav graph beyond the `:feature-example` placeholder.
+- `jetpack-compose/adaptive` — supporting large screens / foldables (`WindowSizeClass`, list-detail / supporting-pane scaffolds). See README "How to support adaptive layouts."
 - `profilers/perfetto-sql`, `profilers/perfetto-trace-analysis` — companions to `:baselineprofile` when investigating startup regressions.
 
 Skills are not vendored — install locally when starting the matching work. See `docs/IMPROVEMENT_PLAN.md` for phase-skill mappings.

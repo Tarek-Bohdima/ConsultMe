@@ -276,6 +276,7 @@ Google maintains official AI-optimized skills for Android at <https://github.com
 | [`jetpack-compose/theming/styles`](https://github.com/android/skills) | Extending `:core-designsystem` (icons, typography, components) |
 | [`jetpack-compose/migration/migrate-xml-views-to-jetpack-compose`](https://github.com/android/skills) | Porting a legacy Views codebase onto the Compose template |
 | [`navigation/navigation-3`](https://github.com/android/skills) | Growing a real nav graph beyond `:feature-example` |
+| [`jetpack-compose/adaptive`](https://github.com/android/skills) | Supporting large screens / foldables (see README "How to support adaptive layouts") |
 | [`profilers/perfetto-sql`](https://github.com/android/skills), [`profilers/perfetto-trace-analysis`](https://github.com/android/skills) | Investigating startup regressions alongside `:baselineprofile` |
 
 Skills are not vendored into the template — they're maintained upstream by Google. Install them locally when starting the matching work. Keep this list in sync with `CLAUDE.md`'s "Recommended Claude Code skills" section.

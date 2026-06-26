@@ -235,6 +235,19 @@ Each module ships its own `lint-baseline.xml`. Regenerate after adding code that
 
 Replace `:feature-example` with the module you're updating. CI runs `lintRelease` and fails on any non-baselined violation.
 
+## How to support adaptive layouts (large screens & foldables)
+
+The template already draws **edge-to-edge** — `MainActivity` calls `enableEdgeToEdge()` and the root `Scaffold` consumes window insets — so content lays out correctly behind the system bars on every device.
+
+What the template intentionally does **not** ship is large-screen *layout adaptation*, because `:feature-example` is a throwaway placeholder. When you build your real feature, add the adaptive dependencies to `gradle/libs.versions.toml` (they're left out to keep the template's dependency graph lean):
+
+- `androidx.compose.material3:material3-window-size-class` — read the `WindowSizeClass` to branch between compact/medium/expanded layouts.
+- `androidx.compose.material3.adaptive:adaptive-layout` and `:adaptive-navigation` — list-detail and supporting-pane scaffolds that fold/unfold with available width.
+
+Where things live: put **shared** adaptive containers in `:core-ui` (it's Hilt-free and already the home for reusable UI scaffolds); keep pane/selection logic in the feature module. Full adaptive **navigation** (`NavigationSuiteScaffold`, `SceneStrategy`) pairs with the Navigation 3 work that's still on the roadmap — see the [`navigation/navigation-3`](https://github.com/android/skills) skill for that.
+
+The official [`jetpack-compose/adaptive`](https://github.com/android/skills) Claude Code skill is a step-by-step playbook for the above.
+
 ## Code Quality
 
 - **Spotless + ktlint**: Consistent formatting and license-header enforcement on every `.kt` / `.gradle.kts` file.
