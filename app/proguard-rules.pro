@@ -24,3 +24,10 @@
 # to obfuscated identifiers with no source positions.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# Error Prone annotations are compileOnly and never on the runtime classpath.
+# Dagger/Hilt 2.60's generated code references them (e.g.
+# ActivityRetainedComponentBuilder.savedStateHandleHolder is annotated
+# @CanIgnoreReturnValue), so R8 full-mode reports them as missing classes and
+# fails the release build. They are annotations only — safe to not warn about.
+-dontwarn com.google.errorprone.annotations.**
