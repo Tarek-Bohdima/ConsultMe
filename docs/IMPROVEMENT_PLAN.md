@@ -155,11 +155,9 @@ Shipped:
 - **Kover** for aggregated test coverage. Convention plugin `consultme.kover` is auto-applied by every Android (`application`, `library`) and JVM (`jvm.library`) convention. Generated Hilt/Room/Compose code is excluded so the metric reflects real coverage, not noise. `./gradlew koverHtmlReport` and `./gradlew koverXmlReport` produce project-wide reports under `build/reports/kover/`. CI uploads the reports as artifacts.
 - **Module-graph generation** with a **Strategy-pattern renderer**. `:moduleGraph` walks every subproject's `api` / `implementation` / `compileOnly` / `runtimeOnly` configurations to build a [`ModuleGraph`](../build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/ModuleGraph.kt), then delegates rendering to a [`ModuleGraphRenderer`](../build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/ModuleGraphRenderer.kt). A [`MermaidModuleGraphRenderer`](../build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/MermaidModuleGraphRenderer.kt) ships by default; adopters wanting DOT/ASCII/JSON drop in their own implementation. Output lands at [`docs/MODULE_GRAPH.md`](MODULE_GRAPH.md). CI runs the task and fails the build if the committed graph is stale.
 
-Deferred from this slice (tracked separately):
+Deferred from this slice:
 
-- **`dependency-analysis-gradle-plugin`** — both 2.x and 3.x lines fail on the current Kotlin 2.3 + AGP 8.13 combo (2.x errors on Kotlin 2.3 metadata; 3.x errors on Android-test-runtime graph resolution for `:core-testing`). Will reland once an upstream version supports both. The `consultme.modulegraph` Strategy seam already covers part of dep-analysis's value (visualizing inter-module deps). Tracking: #122.
-
-Tracking: #122.
+- **`dependency-analysis-gradle-plugin`** — historically failed on the Kotlin 2.3 + AGP 8.x combo (2.x errored on Kotlin 2.3 metadata; 3.x errored on Android-test-runtime graph resolution for `:core-testing`). Worth re-evaluating against the current AGP 9.2 + Kotlin 2.3 stack — latest is 3.16.0. The `consultme.modulegraph` Strategy seam already covers part of dep-analysis's value (visualizing inter-module deps). No open tracking issue — the original umbrella #122 is closed.
 
 ## Phase 8 — NIA-alignment slice 4 (baseline profile + macrobenchmark)
 
@@ -247,13 +245,16 @@ Currently silenced in `.github/dependabot.yml`. Each is its own dedicated PR, no
 
 ## Quality bets to consider (no phase yet)
 
-These are valuable but don't fit cleanly into the above. Worth deciding on before Phase 4:
+These are valuable but don't fit cleanly into the phases above:
 
-- **Kover** for coverage with HTML/XML reports. Add to `:core-testing` consumers.
-- **Baseline profiles + macrobenchmark module** for startup performance.
-- **`dependency-analysis-android-gradle-plugin`** to flag unused/misplaced dependencies — high signal for multi-module hygiene.
+- **`dependency-analysis-android-gradle-plugin`** to flag unused/misplaced dependencies — high signal for multi-module hygiene. Historically blocked on the stack (see Phase 7 "Deferred from this slice"); latest is 3.16.0, worth re-testing against AGP 9.2 + Kotlin 2.3. No open tracking issue.
 - **Gradle build scans** opt-in via `develocity { server = ... }` if there's a Develocity instance available.
-- **Edge-to-edge layouts.** Modern Android (16+) effectively requires opt-in; the template currently doesn't enforce it. The official [`edge-to-edge`](https://github.com/android/skills) Claude Code skill is a ready-made adoption guide.
+
+Already shipped — kept here only as pointers so they're not re-proposed:
+
+- **Kover** coverage — shipped in Phase 7.
+- **Baseline profiles + macrobenchmark module** — shipped in Phase 8.
+- **Edge-to-edge layouts** — wired from the start via `enableEdgeToEdge()` + an inset-consuming `Scaffold` in `app/src/main/java/com/thecompany/consultme/MainActivity.kt`. The [`edge-to-edge`](https://github.com/android/skills) skill is a reference for extending inset handling, not a net-new adoption.
 
 ## Recommended Claude Code skills
 
