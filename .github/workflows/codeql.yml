@@ -1,10 +1,12 @@
 name: CodeQL
 
 # Custom override of GitHub's default code scanning. Reuses the same
-# `gh api .../files` paths-classifier as `android_ci.yml` so docs-only PRs
-# skip the (~10-minute) java-kotlin analysis. Code/build PRs and pushes
-# to `main` run the full matrix; a weekly schedule is the safety net for
-# new dependency vulnerabilities surfacing without code changes.
+# paths-classifier as `android_ci.yml` so docs-only changes skip the
+# (~10-minute) java-kotlin analysis — on both PRs and pushes to `main`
+# (the latter diffed via the compare API on the pushed range). Code/build
+# changes run the full matrix; the weekly schedule is the safety net that
+# always runs a full scan, catching new dependency vulnerabilities that
+# surface without code changes.
 #
 # This file replaces the GitHub-managed default code-scanning workflow.
 # Adopters who fork inherit the same gating without configuring their
@@ -31,9 +33,10 @@ concurrency:
 
 jobs:
   changes:
-    # Runs on every event. For PR events, classifies the diff against the
-    # docs-only filter. For push/schedule, sets `code=true` unconditionally
-    # so the analysis matrix runs.
+    # Runs on every event. PR and push events classify their changed files
+    # against the docs-only filter (PRs via the pulls/files API, pushes via
+    # the compare API on the pushed range). The weekly `schedule` event has
+    # nothing to diff, so it always runs a full scan as the safety net.
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.filter.outputs.code }}
@@ -45,15 +48,33 @@ jobs:
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
         run: |
           set -euo pipefail
-          if [ "$EVENT" != "pull_request" ]; then
-            echo "code=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::Non-PR event ($EVENT) — CodeQL analyze will run."
-            exit 0
-          fi
-          changed=$(gh api --paginate "repos/${REPO}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
-          echo "Changed files in PR #${PR_NUMBER}:"
+          case "$EVENT" in
+            pull_request)
+              changed=$(gh api --paginate "repos/${REPO}/pulls/${PR_NUMBER}/files" --jq '.[].filename')
+              label="PR #${PR_NUMBER}"
+              ;;
+            push)
+              # A brand-new branch (or missing base) reports an all-zero
+              # `before` with nothing to diff against — run the full scan.
+              if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+                echo "code=true" >> "$GITHUB_OUTPUT"
+                echo "::notice::Push with no prior commit to diff — CodeQL analyze will run."
+                exit 0
+              fi
+              changed=$(gh api --paginate "repos/${REPO}/compare/${BEFORE}...${AFTER}" --jq '(.files // [])[].filename')
+              label="push ${BEFORE}...${AFTER}"
+              ;;
+            *)
+              echo "code=true" >> "$GITHUB_OUTPUT"
+              echo "::notice::Event ($EVENT) is not diffable (e.g. schedule) — CodeQL analyze will run."
+              exit 0
+              ;;
+          esac
+          echo "Changed files for ${label}:"
           printf '  %s\n' "$changed"
           # Defense-in-depth: same tightened classifier as `android_ci.yml`.
           # Skips by extension + path, not path prefix alone, so an attacker-
@@ -67,7 +88,7 @@ jobs:
             echo "::notice::Code/build changes detected — CodeQL analyze will run."
           else
             echo "code=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Docs-only PR — CodeQL analyze will be skipped."
+            echo "::notice::Docs-only change — CodeQL analyze will be skipped."
           fi
 
   analyze:
