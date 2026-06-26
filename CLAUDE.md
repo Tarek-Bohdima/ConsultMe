@@ -69,7 +69,7 @@ Google's official Android Claude Code skills live at <https://github.com/android
 **Phase migrations:**
 - `build/agp/agp-9-upgrade` — playbook for the Phase 9 AGP 8 → 9 migration (shipped in `v4.0.0-rc.1`; the local copy at `.claude/skills/agp-9-upgrade/` stays useful for AGP 10 prep).
 - `performance/r8-analyzer` — helps analyze keep rules when ramping Phase 4 (release minification).
-- `system/edge-to-edge` — adoption guide if/when the template adopts edge-to-edge.
+- `system/edge-to-edge` — reference for extending the edge-to-edge setup the template already ships (`enableEdgeToEdge()` + inset-consuming `Scaffold` in `MainActivity`).
 
 **Adopter-facing (use when porting a real feature on top of the template):**
 - `testing/testing-setup` — companion to `:core-testing`; helps wire JUnit / Espresso / Hilt-test scaffolding into a new feature module.
