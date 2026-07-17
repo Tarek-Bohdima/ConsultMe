@@ -28,5 +28,6 @@ object FakeDataModule {
     @Singleton
     fun provideExampleRepository(): ExampleRepository = object : ExampleRepository {
         override fun getExampleItems(): Flow<List<ExampleItem>> = flowOf(emptyList())
+        override fun getExampleItem(id: Long): Flow<ExampleItem?> = flowOf(null)
     }
 }

@@ -244,7 +244,7 @@ What the template intentionally does **not** ship is large-screen *layout adapta
 - `androidx.compose.material3:material3-window-size-class` — read the `WindowSizeClass` to branch between compact/medium/expanded layouts.
 - `androidx.compose.material3.adaptive:adaptive-layout` and `:adaptive-navigation` — list-detail and supporting-pane scaffolds that fold/unfold with available width.
 
-Where things live: put **shared** adaptive containers in `:core-ui` (it's Hilt-free and already the home for reusable UI scaffolds); keep pane/selection logic in the feature module. Full adaptive **navigation** (`NavigationSuiteScaffold`, `SceneStrategy`) pairs with the Navigation 3 work that's still on the roadmap — see the [`navigation/navigation-3`](https://github.com/android/skills) skill for that.
+Where things live: put **shared** adaptive containers in `:core-ui` (it's Hilt-free and already the home for reusable UI scaffolds); keep pane/selection logic in the feature module. Full adaptive **navigation** (`NavigationSuiteScaffold`, `SceneStrategy`) builds on the Navigation 3 graph the template already ships in `:app` — see the [`navigation/navigation-3`](https://github.com/android/skills) skill for extending it.
 
 The official [`jetpack-compose/adaptive`](https://github.com/android/skills) Claude Code skill is a step-by-step playbook for the above.
 

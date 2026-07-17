@@ -118,21 +118,38 @@ Why both:
 
 ## Navigation
 
-Navigation is owned by `:app` — it's the only module that knows about every feature. Each feature exposes a public composable entry point and a route:
+The template uses **[Navigation 3](https://developer.android.com/guide/navigation/navigation-3)** — the app owns the back stack as a plain observable list of type-safe `NavKey`s. Navigation is owned by `:app`: it's the only module that knows about every feature, so it holds the back stack and composes each feature's destinations into a single `NavDisplay`.
+
+Each feature exposes **`@Serializable` `NavKey` route types** and public screen composables; `:app` maps keys to screens:
 
 ```kotlin
-// :feature-example
-@Composable fun ExampleScreen(...)
-fun NavGraphBuilder.exampleScreen() { composable<ExampleRoute> { ExampleScreen() } }
+// :feature-example  (route keys — arguments are constructor properties)
+@Serializable data object ExampleListRoute : NavKey
+@Serializable data class ExampleDetailRoute(val id: Long) : NavKey
 
-// :app
-NavHost(...) {
-    exampleScreen()
-    // otherFeatureScreen()
-}
+// :app  (owns the back stack; one NavDisplay for the whole app)
+val backStack = rememberNavBackStack(ExampleListRoute)
+NavDisplay(
+    backStack = backStack,
+    onBack = { backStack.removeLastOrNull() },
+    entryDecorators = listOf(
+        rememberSaveableStateHolderNavEntryDecorator(),
+        rememberViewModelStoreNavEntryDecorator(), // per-entry ViewModelStore for hiltViewModel()
+    ),
+    entryProvider = entryProvider {
+        entry<ExampleListRoute> {
+            ExampleScreen(onItemClick = { backStack.add(ExampleDetailRoute(it.id)) })
+        }
+        entry<ExampleDetailRoute> { key ->
+            ExampleDetailScreen(itemId = key.id, onBack = { backStack.removeLastOrNull() })
+        }
+    },
+)
 ```
 
-Adopters add destinations the same way. **Never reach into a feature's internal composables** from `:app` or another feature — go through the public route extension.
+Navigate by mutating the back stack (`backStack.add(key)` / `removeLastOrNull()`). Add destinations by adding a route `NavKey` in the feature and an `entry<…>` block in `:app`. **Never reach into a feature's internal composables** — go through the feature's public screen entry point.
+
+**Passing arguments to a ViewModel**: `ExampleDetailViewModel` uses Hilt assisted injection to receive the route id — the `entry<ExampleDetailRoute>` block obtains it via `hiltViewModel<VM, VM.Factory>(creationCallback = { it.create(key.id) })`. The `rememberViewModelStoreNavEntryDecorator()` scopes each entry's ViewModel to that back-stack entry (cleared when it's popped).
 
 ## Why pure-Kotlin domain layers
 

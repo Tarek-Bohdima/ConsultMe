@@ -19,4 +19,7 @@ class DefaultExampleRepository @Inject constructor(private val exampleItemDao: E
     override fun getExampleItems(): Flow<List<ExampleItem>> = exampleItemDao.getExampleItems().map { entities ->
         entities.map(ExampleItemEntity::asExternalModel)
     }
+
+    override fun getExampleItem(id: Long): Flow<ExampleItem?> =
+        exampleItemDao.getExampleItem(id).map { entity -> entity?.asExternalModel() }
 }

@@ -38,5 +38,6 @@ class DefaultExampleRepositoryTest {
 
 private class FakeExampleItemDao(private val items: List<ExampleItemEntity>) : ExampleItemDao {
     override fun getExampleItems(): Flow<List<ExampleItemEntity>> = flowOf(items)
+    override fun getExampleItem(id: Long): Flow<ExampleItemEntity?> = flowOf(items.firstOrNull { it.id == id })
     override suspend fun insertAll(items: List<ExampleItemEntity>) = Unit
 }

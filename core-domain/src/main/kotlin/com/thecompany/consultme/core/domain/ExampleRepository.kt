@@ -17,4 +17,7 @@ import kotlinx.coroutines.flow.Flow
 interface ExampleRepository {
     /** A stream of the example items, emitting a new list whenever they change. */
     fun getExampleItems(): Flow<List<ExampleItem>>
+
+    /** A stream of a single item by id, emitting `null` if it doesn't exist. */
+    fun getExampleItem(id: Long): Flow<ExampleItem?>
 }

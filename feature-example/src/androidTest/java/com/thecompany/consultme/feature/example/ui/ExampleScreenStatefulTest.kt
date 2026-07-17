@@ -52,4 +52,5 @@ class ExampleScreenStatefulTest {
 
 private class FakeExampleRepository(private val items: List<ExampleItem>) : ExampleRepository {
     override fun getExampleItems(): Flow<List<ExampleItem>> = flowOf(items)
+    override fun getExampleItem(id: Long): Flow<ExampleItem?> = flowOf(items.firstOrNull { it.id == id })
 }
