@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ConsultMe is a **Jetpack Compose template** for new Android apps — multi-module, Kotlin-only, with code-quality plumbing (Spotless + ktlint, Android Lint) wired in. Apps generated from this template start by replacing the placeholder content in `:feature-example` (see README.md "How to Rename and Refactor"). Default package is `com.thecompany.consultme` and is expected to be renamed downstream.
 
-**Roadmap and ongoing improvements** live in `docs/IMPROVEMENT_PLAN.md`. Check it before starting non-trivial work — it lists what's intentionally deferred (AGP 9, Hilt 2.59+, Kotlin 2.3.20) and what the next planned phases are.
+**Roadmap and ongoing improvements** live in `docs/IMPROVEMENT_PLAN.md`. Check it before starting non-trivial work — phases 0–10 are done (archived at the bottom of that doc); the top lists recent work, what's currently deferred/blocked (Kotlin 2.4.x, KSP 2.3.10 — both pinned in `dependabot.yml`), and unscheduled quality bets.
 
 ## Common commands
 
