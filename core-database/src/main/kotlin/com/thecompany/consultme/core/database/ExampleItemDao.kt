@@ -17,6 +17,10 @@ interface ExampleItemDao {
     @Query("SELECT * FROM example_items ORDER BY id")
     fun getExampleItems(): Flow<List<ExampleItemEntity>>
 
+    /** Observes a single item by id, emitting `null` if it no longer exists. */
+    @Query("SELECT * FROM example_items WHERE id = :id")
+    fun getExampleItem(id: Long): Flow<ExampleItemEntity?>
+
     @Insert
     suspend fun insertAll(items: List<ExampleItemEntity>)
 }

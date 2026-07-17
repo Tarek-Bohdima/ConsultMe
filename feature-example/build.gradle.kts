@@ -2,6 +2,8 @@
 plugins {
     id("consultme.android.feature")
     id("consultme.android.roborazzi")
+    // NavKey route types are @Serializable so Nav3 can save/restore the back stack.
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -17,4 +19,7 @@ dependencies {
     api(projects.coreDomain)
 
     implementation(libs.androidx.core.ktx)
+    // Route keys implement NavKey; `api` so :app can reference them as NavKey.
+    api(libs.androidx.navigation3.runtime)
+    implementation(libs.kotlinx.serialization.core)
 }

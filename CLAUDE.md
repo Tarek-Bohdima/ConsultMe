@@ -75,7 +75,7 @@ Google's official Android Claude Code skills live at <https://github.com/android
 - `testing/testing-setup` — companion to `:core-testing`; helps wire JUnit / Espresso / Hilt-test scaffolding into a new feature module.
 - `jetpack-compose/theming/styles` — extend `:core-designsystem` (icon registries, typography tokens, component variants).
 - `jetpack-compose/migration/migrate-xml-views-to-jetpack-compose` — for adopters porting a legacy Views codebase onto the Compose template.
-- `navigation/navigation-3` — once the template grows a real nav graph beyond the `:feature-example` placeholder.
+- `navigation/navigation-3` — the template ships a Navigation 3 graph in `:app` (`NavDisplay` + `@Serializable` `NavKey` routes owned by features; list→detail with an assisted-inject ViewModel). Use the skill when extending it with more destinations or adaptive `NavigationSuiteScaffold` / `SceneStrategy`.
 - `jetpack-compose/adaptive` — supporting large screens / foldables (`WindowSizeClass`, list-detail / supporting-pane scaffolds). See README "How to support adaptive layouts."
 - `profilers/perfetto-sql`, `profilers/perfetto-trace-analysis` — companions to `:baselineprofile` when investigating startup regressions.
 
