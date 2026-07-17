@@ -28,15 +28,18 @@ graph TD
     APP --> FEAT
     APP --> DS
     APP --> UI
+    APP --> DAT
     FEAT --> DS
     FEAT --> UI
     FEAT --> DOM
     DOM --> MOD
+    DAT --> DOM
     DAT --> DB
-    DAT --> MOD
 ```
 
 The Presentation layer is Android. The Domain layer and `:core-common` are **pure-Kotlin** modules (`consultme.jvm.library`) — no Android SDK on the classpath, so framework imports won't compile there. The Data layer is Android (Room).
+
+Note the direction of `:core-data → :core-domain`: because the domain layer is pure-Kotlin it can't depend on the Android data module, so the repository **port (interface) lives in `:core-domain`** and its **adapter (implementation) lives in `:core-data`** (ports & adapters). Features depend only on `:core-domain`; `:app` is the one module that pulls `:core-data` in, so Hilt can find the adapter binding at the top of the graph. `:core-data → :core-model` is transitive (via `:core-domain`'s `api` dependency).
 
 `./gradlew moduleGraph` regenerates [`docs/MODULE_GRAPH.md`](docs/MODULE_GRAPH.md) — that file reflects the actual dep tree, including the `:baselineprofile` producer→`:app` consumer relationship.
 
@@ -48,10 +51,10 @@ The Presentation layer is Android. The Domain layer and `:core-common` are **pur
 | `:feature-*` | Presentation | Screens, ViewModels, screen-specific state and side-effects | Cross-feature shared composables (use `:core-ui`) |
 | `:core-designsystem` | Presentation | Theme (`ConsultMeTheme`), color/typography/icon registries | Stateful composables, business logic |
 | `:core-ui` | Presentation | Cross-feature stateless composables (loading, empty, error states, etc.) | Domain types, business logic |
-| `:core-domain` | Domain (pure Kotlin) | Use-cases (`Get*UseCase`, `Update*UseCase`, etc.) | Android types, framework dependencies |
+| `:core-domain` | Domain (pure Kotlin) | Use-cases (`Get*UseCase`, …), repository **ports** (interfaces) | Android types, framework dependencies, repository *impls* |
 | `:core-model` | Domain (pure Kotlin) | Pure data classes / sealed types | Logic, side-effects, persistence concerns |
-| `:core-data` | Data | Repositories, DTO ↔ domain mappers, network/database orchestration | Database tables (those are in `:core-database`) |
-| `:core-database` | Data | Room entities, DAOs, database class | Repository APIs (those live in `:core-data`) |
+| `:core-data` | Data | Repository **implementations** of `:core-domain` ports, entity ↔ domain mappers, network/database orchestration, Hilt `@Binds` | Database tables (those are in `:core-database`), repository interfaces (those are in `:core-domain`) |
+| `:core-database` | Data | Room entities, DAOs, database class, DB Hilt module | Repository APIs, domain models |
 | `:core-common` | Cross-cutting (pure Kotlin) | Dispatchers, qualifiers, generic utilities | Anything Android-specific |
 | `:core-testing` | Cross-cutting | Test fixtures, dispatcher rule, Hilt test runner | Production code |
 | `:baselineprofile` | Build-only producer | `BaselineProfileGenerator`, `StartupBenchmarks` | Anything that ships in `:app`'s release APK except `baseline-prof.txt` |
@@ -87,7 +90,7 @@ State is **unidirectional**:
 - **Events flow down** (`Screen → VM → UseCase → Repo → DataSource`).
 - **State flows up** (`Repo → UseCase → VM → Screen`) as `Flow<T>`, lifted to `StateFlow<T>` at the VM boundary so Compose can collect with lifecycle awareness.
 
-The `:feature-example` module ships a worked example of this pattern at minimal scope: `ExampleViewModel` exposes a `StateFlow<ExampleUiState>` and `onClicked()`, and `ExampleScreen` collects via `collectAsStateWithLifecycle()`.
+The `:feature-example` module ships a worked example of this pattern end-to-end at minimal scope: `ExampleViewModel` injects `GetExampleItemsUseCase` (`:core-domain`), which reads through the `ExampleRepository` port to `DefaultExampleRepository` (`:core-data`) and the Room `ExampleItemDao` (`:core-database`), mapping entities to `ExampleItem` (`:core-model`). The VM lifts that `Flow` into a `StateFlow<ExampleUiState>` (`Loading` / `Empty` / `Success`), and `ExampleScreen` collects it via `collectAsStateWithLifecycle()`.
 
 ## Stateless / stateful screen split
 
@@ -96,16 +99,20 @@ Each feature exposes **two overloads**:
 ```kotlin
 // Stateful — used by the host activity / nav graph. Pulls a hilt-managed ViewModel.
 @Composable
-fun ExampleScreen(modifier: Modifier = Modifier, viewModel: ExampleViewModel = hiltViewModel())
+fun ExampleScreen(
+    modifier: Modifier = Modifier,
+    onItemClick: (ExampleItem) -> Unit = {},
+    viewModel: ExampleViewModel = hiltViewModel(),
+)
 
 // Stateless — used by `@Preview` and Compose UI tests. No ViewModel coupling.
 @Composable
-fun ExampleScreen(uiState: ExampleUiState, onClick: () -> Unit, modifier: Modifier = Modifier)
+fun ExampleScreen(uiState: ExampleUiState, onItemClick: (ExampleItem) -> Unit, modifier: Modifier = Modifier)
 ```
 
 Why both:
 
-- **Previews** can render every UI state without a Hilt graph — pass `ExampleUiState.Clicked`, see what it looks like.
+- **Previews** can render every UI state without a Hilt graph — pass `ExampleUiState.Empty` or `ExampleUiState.Success(...)`, see what it looks like.
 - **UI tests** of the stateless overload (`ExampleScreenTest`) are a one-liner: drive state via the parameter, assert what's on screen.
 - **Stateful tests** (`ExampleScreenStatefulTest`) construct a real `ExampleViewModel` instance and pass it as `viewModel = ...`, exercising the full screen↔VM round-trip without needing Hilt.
 

@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.thecompany.consultme.core.model.ExampleItem
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,12 +20,24 @@ class ExampleScreenTest {
 
     @get:Rule val composeTestRule = createComposeRule()
 
-    @Test fun screen_rendersIdleLabel() {
+    @Test fun screen_rendersItemLabels() {
         composeTestRule.setContent {
-            ExampleScreen(uiState = ExampleUiState.Idle, onClick = {})
+            ExampleScreen(
+                uiState = ExampleUiState.Success(
+                    items = listOf(ExampleItem(1, "First example item")),
+                ),
+                onItemClick = {},
+            )
+        }
+        composeTestRule.onNodeWithText("First example item").assertIsDisplayed()
+    }
+
+    @Test fun screen_rendersEmptyState() {
+        composeTestRule.setContent {
+            ExampleScreen(uiState = ExampleUiState.Empty, onItemClick = {})
         }
         composeTestRule
-            .onNodeWithText("Replace this screen with your feature.")
+            .onNodeWithText("No items yet — replace this screen with your feature.")
             .assertIsDisplayed()
     }
 }
