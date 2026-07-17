@@ -21,6 +21,7 @@
 ## Features
 
 - Fully configured for Jetpack Compose and a multi-module architecture.
+- Worked end-to-end example: a layered slice (Room → repository → use-case → ViewModel) and a **Navigation 3** list→detail flow, so the layers are demonstrated, not just scaffolded.
 - Code quality tools included and pre-configured.
 - 100% Kotlin codebase, using Coroutines and Flow.
 - Dependency injection with Hilt.
@@ -110,15 +111,15 @@ Add `include(":feature-<name>")` to `settings.gradle.kts` and depend on it from 
 
 The template ships these modules (NIA-aligned):
 
-- `:app` — application module, Compose root + nav.
-- `:feature-example` — placeholder feature module; replace with your own and rename.
+- `:app` — application module, Compose root + Navigation 3 host (`NavDisplay`).
+- `:feature-example` — placeholder feature module demonstrating a screen end-to-end (list + detail, ViewModel, Nav3 routes); replace with your own and rename.
 - `:core-designsystem` — Compose theme (`ConsultMeTheme`), color/typography tokens.
 - `:core-ui` — shared Compose composables (loading/empty/error states). Scaffold.
-- `:core-model` — pure-Kotlin data classes (no Android). Scaffold.
+- `:core-model` — pure-Kotlin data classes (no Android); ships the example `ExampleItem`.
 - `:core-common` — pure-Kotlin shared utilities; ships the `Dispatcher` qualifier + `AppDispatchers` enum.
-- `:core-domain` — pure-Kotlin use-cases; depends on `:core-model`. Scaffold.
-- `:core-data` — repository layer.
-- `:core-database` — Room database (uses `consultme.android.room`).
+- `:core-domain` — pure-Kotlin use-cases + repository **ports** (interfaces); depends on `:core-model`.
+- `:core-data` — repository **implementations** (adapters) of `:core-domain` ports + entity↔model mappers; Room-backed via `:core-database`.
+- `:core-database` — Room database (entity/DAO/`@Database` + Hilt module) via `consultme.android.room`.
 - `:core-testing` — re-exports JUnit/Truth/Turbine/MockK/Hilt-testing/Espresso via `api(...)`, plus `HiltTestRunner`.
 - `:baselineprofile` — macrobenchmark + baseline-profile generator that ships the profile with `:app`'s release APK. See `docs/MODULE_GRAPH.md` for the producer→consumer wiring.
 
