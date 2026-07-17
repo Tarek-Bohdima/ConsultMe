@@ -16,6 +16,28 @@ updates:
     # All Phase 9 ignore entries (AGP semver-major + Hilt 2.59+) lifted in
     # the Phase 9 PR. Dependabot is now free to bump these along with the
     # rest of the gradle-and-plugins group.
+    ignore:
+      # KSP > 2.3.9 held: 2.3.10 introduced an `onlyIf` gate that SKIPs
+      # `kspDebug<Variant>AndroidTestKotlin` on library-module androidTest source
+      # sets, so Hilt test-component codegen never runs and instrumented tests
+      # fail with ClassNotFound for *_TestComponentDataSupplier (#217, #219).
+      # Reproduced locally: 2.3.9 runs the task, 2.3.10 skips it. Suspected origin
+      # is google/ksp PR #2996 (@SkipWhenEmpty / source-tree filtering rework); no
+      # fixed release exists yet (2.3.11 unreleased). Drop this once a KSP release
+      # restores androidTest processing.
+      - dependency-name: "com.google.devtools.ksp*"
+        versions: [">2.3.9"]
+      # Kotlin >= 2.4 held: it's a coordinated kotlin+ksp+hilt migration (issue
+      # #185), still blocked on all three fronts — no Kotlin-2.4 KSP exists
+      # (google/ksp#2965), Hilt 2.60.1 still caps kotlin-metadata-jvm at 2.3.0, and
+      # CodeQL 2.26.x doesn't yet support Kotlin 2.4.10 (CI CodeQL fails to extract
+      # it). The `>=2.4.0` guard scopes this to Kotlin only; org.jetbrains.kotlinx.*
+      # (coroutines 1.x, kover 0.x) stay unaffected. Revisit as its own pre-release
+      # PR once KSP 2.4.x ships, a Hilt release bumps bundled metadata to 2.4, and
+      # CodeQL supports 2.4.10.
+      - dependency-name: "org.jetbrains.kotlin*"
+        versions: [">=2.4.0"]
+
     # Group related dependency updates into single pull requests
     groups:
       # Group all Gradle and build plugin updates
