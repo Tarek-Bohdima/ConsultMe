@@ -2,7 +2,8 @@
 plugins {
     id("consultme.android.library")
     id("consultme.android.compose")
-    id("consultme.android.hilt")
+    // No Hilt: :core-ui is deliberately DI-free (see README) so every feature
+    // can consume its stateless composables without pulling in a Hilt graph.
 }
 
 android {
