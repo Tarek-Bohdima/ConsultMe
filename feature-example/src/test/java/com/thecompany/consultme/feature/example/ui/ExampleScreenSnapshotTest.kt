@@ -4,6 +4,7 @@ package com.thecompany.consultme.feature.example.ui
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.thecompany.consultme.core.model.ExampleItem
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -37,9 +38,17 @@ class ExampleScreenSnapshotTest {
 
     @Test
     @Ignore("Remove after running ./gradlew :feature-example:recordRoborazziDebug")
-    fun exampleScreen_idle_matchesBaseline() {
+    fun exampleScreen_success_matchesBaseline() {
         composeRule.setContent {
-            ExampleScreen(uiState = ExampleUiState.Idle, onClick = {})
+            ExampleScreen(
+                uiState = ExampleUiState.Success(
+                    items = listOf(
+                        ExampleItem(1, "First example item"),
+                        ExampleItem(2, "Second example item"),
+                    ),
+                ),
+                onItemClick = {},
+            )
         }
         composeRule.onRoot().captureRoboImage()
     }

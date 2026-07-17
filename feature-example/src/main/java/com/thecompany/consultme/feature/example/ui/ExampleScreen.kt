@@ -1,18 +1,27 @@
 // Copyright 2026 MyCompany
 package com.thecompany.consultme.feature.example.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.thecompany.consultme.core.model.ExampleItem
 
 /**
  * Stateful entry point — pulls the ViewModel via Hilt and forwards state to
@@ -20,13 +29,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
  * should depend on this version.
  */
 @Composable
-fun ExampleScreen(modifier: Modifier = Modifier, viewModel: ExampleViewModel = hiltViewModel()) {
+fun ExampleScreen(
+    modifier: Modifier = Modifier,
+    onItemClick: (ExampleItem) -> Unit = {},
+    viewModel: ExampleViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ExampleScreen(
-        uiState = uiState,
-        onClick = viewModel::onClicked,
-        modifier = modifier,
-    )
+    ExampleScreen(uiState = uiState, onItemClick = onItemClick, modifier = modifier)
 }
 
 /**
@@ -34,26 +43,52 @@ fun ExampleScreen(modifier: Modifier = Modifier, viewModel: ExampleViewModel = h
  * need a ViewModel at construction.
  */
 @Composable
-fun ExampleScreen(uiState: ExampleUiState, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(text = uiState.label())
-        Button(onClick = onClick) {
-            Text(text = "Click me")
+fun ExampleScreen(uiState: ExampleUiState, onItemClick: (ExampleItem) -> Unit, modifier: Modifier = Modifier) {
+    when (uiState) {
+        ExampleUiState.Loading -> CenteredBox(modifier) { CircularProgressIndicator() }
+
+        ExampleUiState.Empty -> CenteredBox(modifier) {
+            Text(text = "No items yet — replace this screen with your feature.")
+        }
+
+        is ExampleUiState.Success -> LazyColumn(modifier = modifier.fillMaxSize()) {
+            items(items = uiState.items, key = { it.id }) { item ->
+                Text(
+                    text = item.label,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onItemClick(item) }
+                        .padding(16.dp),
+                )
+                HorizontalDivider()
+            }
         }
     }
 }
 
-private fun ExampleUiState.label(): String = when (this) {
-    ExampleUiState.Idle -> "Replace this screen with your feature."
-    ExampleUiState.Clicked -> "Clicked!"
+@Composable
+private fun CenteredBox(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) { content() }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun ExampleScreenPreview() {
-    ExampleScreen(uiState = ExampleUiState.Idle, onClick = {})
+private fun ExampleScreenSuccessPreview() {
+    Column(verticalArrangement = Arrangement.Center) {
+        ExampleScreen(
+            uiState = ExampleUiState.Success(
+                items = listOf(
+                    ExampleItem(1, "First example item"),
+                    ExampleItem(2, "Second example item"),
+                ),
+            ),
+            onItemClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ExampleScreenEmptyPreview() {
+    ExampleScreen(uiState = ExampleUiState.Empty, onItemClick = {})
 }

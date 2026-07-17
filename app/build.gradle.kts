@@ -33,6 +33,9 @@ dependencies {
     // module(s) before shipping. The launcher activity in :app currently
     // renders `ExampleScreen` from this placeholder — see feature-example/README.md.
     implementation(projects.featureExample)
+    // Data layer — features depend only on :core-domain (ports), so :app must
+    // include the adapter module for Hilt to find the repository/Room bindings.
+    implementation(projects.coreData)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

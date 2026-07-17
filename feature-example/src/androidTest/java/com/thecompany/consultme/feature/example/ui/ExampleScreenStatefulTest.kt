@@ -6,26 +6,26 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.common.truth.Truth.assertThat
+import com.thecompany.consultme.core.domain.ExampleRepository
+import com.thecompany.consultme.core.domain.GetExampleItemsUseCase
+import com.thecompany.consultme.core.model.ExampleItem
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Demonstrates the stateful-screen test pattern: pass a real
- * [ExampleViewModel] instance via the screen's `viewModel = ...` parameter
- * (avoiding the `hiltViewModel()` default), drive state by calling the
- * ViewModel's public API, and observe the screen recompose.
+ * Demonstrates the stateful-screen test pattern: build a real
+ * [ExampleViewModel] from a fake use-case, pass it via the screen's
+ * `viewModel = ...` parameter (avoiding the `hiltViewModel()` default), and
+ * observe the round-trip — data layer → ViewModel state → recomposition — plus
+ * click forwarding, without standing up a full Hilt graph.
  *
  * This complements [ExampleScreenTest], which tests the stateless overload
- * directly (the simpler path). Use this pattern when you want to verify
- * the round-trip — UI event → ViewModel → state change → recomposition —
- * without standing up a full Hilt graph.
- *
- * For tests that need to mock a Repository or other ViewModel
- * dependencies, prefer the same shape: construct the ViewModel with fakes
- * passed to its constructor, then proceed exactly as below. MockK is on
- * the classpath via `:core-testing` if you need it; this template just
- * doesn't need it for the placeholder feature.
+ * directly (the simpler path). For dependencies you'd rather mock than fake,
+ * MockK is on the classpath via `:core-testing`.
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleScreenStatefulTest {
@@ -33,22 +33,23 @@ class ExampleScreenStatefulTest {
     @get:Rule val composeTestRule = createComposeRule()
 
     @Test
-    fun screen_reactsToViewModelStateAndForwardsClicks() {
-        val viewModel = ExampleViewModel()
+    fun screen_rendersViewModelItems_andForwardsClicks() {
+        val items = listOf(ExampleItem(1, "First example item"))
+        val viewModel = ExampleViewModel(GetExampleItemsUseCase(FakeExampleRepository(items)))
+        var clicked: ExampleItem? = null
 
         composeTestRule.setContent {
-            ExampleScreen(viewModel = viewModel)
+            ExampleScreen(viewModel = viewModel, onItemClick = { clicked = it })
         }
 
-        // Idle state renders the placeholder label.
-        composeTestRule
-            .onNodeWithText("Replace this screen with your feature.")
-            .assertIsDisplayed()
+        // The VM's StateFlow drives the list; the item renders after recomposition.
+        composeTestRule.onNodeWithText("First example item").assertIsDisplayed().performClick()
 
-        // Tap the button — the stateful screen forwards to viewModel.onClicked().
-        composeTestRule.onNodeWithText("Click me").performClick()
-
-        // The click flips the VM's StateFlow; the screen recomposes against the new state.
-        composeTestRule.onNodeWithText("Clicked!").assertIsDisplayed()
+        // The click bubbles out through the screen's onItemClick callback.
+        composeTestRule.runOnIdle { assertThat(clicked).isEqualTo(items.first()) }
     }
+}
+
+private class FakeExampleRepository(private val items: List<ExampleItem>) : ExampleRepository {
+    override fun getExampleItems(): Flow<List<ExampleItem>> = flowOf(items)
 }

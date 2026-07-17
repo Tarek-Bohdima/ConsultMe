@@ -35,6 +35,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainActivityPreview() {
     ConsultMeTheme {
-        ExampleScreen(uiState = ExampleUiState.Idle, onClick = {})
+        ExampleScreen(uiState = ExampleUiState.Empty, onItemClick = {})
     }
 }

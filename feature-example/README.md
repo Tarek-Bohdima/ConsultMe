@@ -6,7 +6,10 @@ This module exists to give new adopters a worked example of how a
 `consultme.android.feature`-conventioned screen module is wired:
 
 - One Composable per screen (stateful + stateless overloads)
-- One `ViewModel` exposing a `StateFlow<UiState>`
+- One `ViewModel` exposing a `StateFlow<UiState>`, fed by a domain use-case
+- A full end-to-end slice: `ExampleViewModel` → `GetExampleItemsUseCase`
+  (`:core-domain`) → `ExampleRepository` port → `DefaultExampleRepository`
+  (`:core-data`) → Room DAO (`:core-database`) → `ExampleItem` (`:core-model`)
 - Unit tests in `src/test/`, Compose UI tests in `src/androidTest/`
 - Hilt-injected smoke test under `src/androidTest/` showing the runner+rule wiring
 
