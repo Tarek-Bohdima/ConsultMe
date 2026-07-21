@@ -17,16 +17,16 @@ updates:
     # the Phase 9 PR. Dependabot is now free to bump these along with the
     # rest of the gradle-and-plugins group.
     ignore:
-      # KSP > 2.3.9 held: 2.3.10 introduced an `onlyIf` gate that SKIPs
+      # KSP 2.3.10 held: it introduced an `onlyIf` gate that SKIPs
       # `kspDebug<Variant>AndroidTestKotlin` on library-module androidTest source
       # sets, so Hilt test-component codegen never runs and instrumented tests
       # fail with ClassNotFound for *_TestComponentDataSupplier (#217, #219).
-      # Reproduced locally: 2.3.9 runs the task, 2.3.10 skips it. Suspected origin
-      # is google/ksp PR #2996 (@SkipWhenEmpty / source-tree filtering rework); no
-      # fixed release exists yet (2.3.11 unreleased). Drop this once a KSP release
-      # restores androidTest processing.
+      # Reproduced locally: 2.3.9 runs the task, 2.3.10 skips it. Filed upstream
+      # as google/ksp#3050; fix verified on 2.3.11-SNAPSHOT (task runs again).
+      # Ignore is scoped to 2.3.10 ONLY, so Dependabot surfaces 2.3.11 as soon as
+      # it's released; drop this entry once 2.3.11 lands and CI is green.
       - dependency-name: "com.google.devtools.ksp*"
-        versions: [">2.3.9"]
+        versions: ["2.3.10"]
       # Kotlin >= 2.4 held: it's a coordinated kotlin+ksp+hilt migration (issue
       # #185), still blocked on all three fronts — no Kotlin-2.4 KSP exists
       # (google/ksp#2965), Hilt 2.60.1 still caps kotlin-metadata-jvm at 2.3.0, and
