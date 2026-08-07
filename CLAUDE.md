@@ -30,7 +30,7 @@ Running one test:
 
 `spotlessApply` is the autofix; the license header gets injected with the current year and the value of `template.company` from `gradle.properties` (defaults to `MyCompany`). Adopters override `template.company` once per fork; the bootstrap script (`scripts/rename-template.py`) handles this automatically.
 
-Lint baselines (`<module>/lint-baseline.xml`) exist per module — regenerate with `./gradlew :<module>:updateLintBaseline` rather than hand-editing.
+Lint baselines (`<module>/lint-baseline.xml`) exist per module; regenerate with `./gradlew :<module>:updateLintBaseline` rather than hand-editing. They currently sit empty. The dependency-version checks (`GradleDependency`, `NewerVersionAvailable`, `AndroidGradlePluginVersion`) are disabled in `configureLint` because Dependabot owns version bumps, so those warnings no longer churn the baselines.
 
 ## Module graph
 

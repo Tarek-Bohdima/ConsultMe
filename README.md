@@ -295,7 +295,7 @@ After bootstrap (rename script + customizing `:feature-example`), the ongoing ma
 
   CI fails if the committed graph drifts from what's in the build files.
 
-- **Lint baselines.** When new Lint warnings appear (a dependency bump, new code, …), regenerate the affected module's baseline rather than hand-editing the XML:
+- **Lint baselines.** When new Lint warnings appear (usually from new code), regenerate the affected module's baseline rather than hand-editing the XML:
 
   ```bash
   ./gradlew :<module>:updateLintBaseline

@@ -90,5 +90,8 @@ internal fun Project.configureLint(commonExtension: CommonExtension) {
     commonExtension.lint.apply {
         baseline = file("lint-baseline.xml")
         quiet = true
+        // Dependency freshness is Dependabot's job. These informational checks
+        // only add noise and keep re-staling the baseline as versions drift.
+        disable += setOf("GradleDependency", "NewerVersionAvailable", "AndroidGradlePluginVersion")
     }
 }
