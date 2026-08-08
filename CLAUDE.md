@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ConsultMe is a **Jetpack Compose template** for new Android apps — multi-module, Kotlin-only, with code-quality plumbing (Spotless + ktlint, Android Lint) wired in. Apps generated from this template start by replacing the placeholder content in `:feature-example` (see README.md "How to Rename and Refactor"). Default package is `com.thecompany.consultme` and is expected to be renamed downstream.
 
-**Roadmap and ongoing improvements** live in `docs/IMPROVEMENT_PLAN.md`. Check it before starting non-trivial work — phases 0–10 are done (archived at the bottom of that doc); the top lists recent work, what's currently deferred/blocked (Kotlin 2.4.x, KSP 2.3.10 — both pinned in `dependabot.yml`), and unscheduled quality bets.
+**Roadmap and ongoing improvements** live in `docs/IMPROVEMENT_PLAN.md`. Check it before starting non-trivial work. Phases 0-10 are done (archived at the bottom of that doc); the top lists recent work, what's currently deferred/blocked (Kotlin 2.4.x, and KSP 2.3.10/2.3.11, both pinned in `dependabot.yml`), and unscheduled quality bets.
 
 ## Common commands
 
@@ -58,9 +58,12 @@ Lint baselines (`<module>/lint-baseline.xml`) exist per module; regenerate with 
 
 All versions live in `gradle/libs.versions.toml`. Dependabot is enabled with grouped updates (`androidx`, `kotlin-and-coroutines`, `gradle-and-plugins`, `jetpack-compose`, `testing-libs`).
 
-Active ignore rules in `.github/dependabot.yml` — leave these alone unless doing the corresponding migration:
+Active ignore rules in `.github/dependabot.yml`, with rationale in that file and in `docs/IMPROVEMENT_PLAN.md`. Leave them alone unless doing the corresponding migration:
 
-- All AGP-major and Hilt 2.59+ ignore entries lifted in Phase 9 (AGP 9.2.1 / Hilt 2.59.2 are live now). Future major-version migrations get their own dedicated-PR pin again on a case-by-case basis.
+- `com.google.devtools.ksp*` at `2.3.10` and `2.3.11`: both break androidTest KSP output (Hilt test-component codegen fails). Tracked upstream at google/ksp#3050. The list names known-broken versions only, so Dependabot still surfaces 2.3.12+.
+- `org.jetbrains.kotlin* >= 2.4.0`: Kotlin 2.4 is a coordinated kotlin + ksp + hilt migration, still blocked on KSP (no 2.4.x line), Hilt metadata, and CodeQL. Tracked in issue #185.
+
+The Phase 9 AGP-major and Hilt 2.59+ ignores were lifted once that migration landed. Future major-version migrations get their own dedicated-PR pin case by case.
 
 ## Recommended Claude Code skills
 
