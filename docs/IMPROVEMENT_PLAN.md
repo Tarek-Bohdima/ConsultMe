@@ -28,7 +28,8 @@ Feature and hygiene work since `v4.1.x`, outside the numbered phases:
 
 - **End-to-end vertical slice** (#227) — populated the previously-empty domain/data layers with one canonical ports-&-adapters slice: `ExampleItem` (`:core-model`) → Room DAO (`:core-database`) → `ExampleRepository` port (`:core-domain`) / `DefaultExampleRepository` adapter (`:core-data`) → `GetExampleItemsUseCase` → `ExampleViewModel`. Replaced placeholder test stubs with real per-layer tests, and reconciled `ARCHITECTURE.md` with the actual module graph.
 - **Navigation 3** (#229) — migrated `:app` off the (declared-but-unused) Nav2 `navigation-compose` to Navigation 3 (stable `1.1.4`): app-owned `NavDisplay`, `@Serializable` `NavKey` routes owned by features, and a list→detail flow whose detail ViewModel uses Hilt assisted injection for the route argument.
-- **Dependency maintenance** — AGP 9.3.0 (#222), Hilt 2.60.1 (#214), kover 0.9.9 + spotless 8.8.0 (#224), plus the roborazzi / uiautomator / androidx / github-actions Dependabot groups.
+- **Dependency maintenance**: AGP 9.3.1, Hilt 2.60.1, Kover 0.9.9, Spotless 8.9.0, Roborazzi 1.70.0, kotlinx-serialization-core 1.11.0, androidx baselineprofile/benchmark 1.5.0-beta01, plus the testing and github-actions Dependabot groups.
+- **AGP 9 flag follow-up and lint cleanup** (#250, #251): dropped the deprecated AGP 9 default-preservation flags and took the new defaults (optimized resource shrinking on, resValues off, dependency constraints off), leaving only `android.r8.strictFullModeForKeepRules=false` pending a keep-rule audit. Removed the unused Android Studio wizard colors from `:app` and disabled the dependency-version lint checks (Dependabot owns versions), so the per-module lint baselines are now empty.
 
 ## Deferred / blocked
 
