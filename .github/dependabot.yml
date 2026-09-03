@@ -17,20 +17,12 @@ updates:
     # the Phase 9 PR. Dependabot is now free to bump these along with the
     # rest of the gradle-and-plugins group.
     ignore:
-      # KSP 2.3.10 + 2.3.11 held: androidTest KSP processing is broken, so Hilt
-      # test-component codegen never runs and instrumented tests fail with
-      # ClassNotFound for *_TestComponentDataSupplier (#217, #219, #244, #246).
-      #   - 2.3.10: an `onlyIf` gate SKIPs `kspDebug<Variant>AndroidTestKotlin`.
-      #   - 2.3.11: the task now runs but emits NO output for androidTest (the
-      #     `build/generated/ksp/debugAndroidTest` dir is never created), so the
-      #     supplier still isn't generated. (2.3.11-SNAPSHOT did work — it
-      #     regressed between snapshot and the release.)
-      # Filed upstream as google/ksp#3050. The list names the known-broken
-      # versions only, so Dependabot still surfaces the next release (2.3.12+);
-      # drop the matching entry once a KSP release restores androidTest
-      # processing (CI `instrumented_tests` green).
-      - dependency-name: "com.google.devtools.ksp*"
-        versions: ["2.3.10", "2.3.11"]
+      # (KSP 2.3.10/2.3.11 were pinned here while androidTest codegen looked
+      # broken. Root cause was a config gap on our side, not a KSP bug: KSP
+      # 2.3.10 defaults ksp.allow.all.target.configuration to false, so the
+      # global ksp(...) no longer propagates to test variants. Fixed in #265 by
+      # declaring kspAndroidTest/kspTest in the Hilt convention. Ignore lifted.
+      # See google/ksp#3050.)
       # Kotlin >= 2.4 held: it's a coordinated kotlin+ksp+hilt migration (issue
       # #185), still blocked on all three fronts — no Kotlin-2.4 KSP exists
       # (google/ksp#2965), Hilt 2.60.1 still caps kotlin-metadata-jvm at 2.3.0, and

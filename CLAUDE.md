@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ConsultMe is a **Jetpack Compose template** for new Android apps — multi-module, Kotlin-only, with code-quality plumbing (Spotless + ktlint, Android Lint) wired in. Apps generated from this template start by replacing the placeholder content in `:feature-example` (see README.md "How to Rename and Refactor"). Default package is `com.thecompany.consultme` and is expected to be renamed downstream.
 
-**Roadmap and ongoing improvements** live in `docs/IMPROVEMENT_PLAN.md`. Check it before starting non-trivial work. Phases 0-10 are done (archived at the bottom of that doc); the top lists recent work, what's currently deferred/blocked (Kotlin 2.4.x, and KSP 2.3.10/2.3.11, both pinned in `dependabot.yml`), and unscheduled quality bets.
+**Roadmap and ongoing improvements** live in `docs/IMPROVEMENT_PLAN.md`. Check it before starting non-trivial work. Phases 0-10 are done (archived at the bottom of that doc); the top lists recent work, what's currently deferred/blocked (Kotlin 2.4.x, pinned in `dependabot.yml`), and unscheduled quality bets.
 
 ## Common commands
 
@@ -50,7 +50,7 @@ Lint baselines (`<module>/lint-baseline.xml`) exist per module; regenerate with 
 - **License header**: Spotless (configured in root `build.gradle.kts`) requires `// Copyright $YEAR MyCompany` on every `.kt` and `.gradle.kts` file. Placement is delimiter-driven: above the `package` line for Kotlin, above the first `/*` for Gradle Kotlin scripts. New files without the header fail `spotlessCheck`. The "MyCompany" / `$YEAR` literals get rewritten by `spotlessApply`.
 - **Convention plugins**: Module build scripts compose plugins from `build-logic/` instead of redeclaring AGP/Kotlin/JVM/lint config. Available: `consultme.android.application`, `consultme.android.library`, `consultme.android.compose`, `consultme.android.hilt`, `consultme.android.feature` (library + compose + hilt + standard feature deps + `:core-testing`), `consultme.android.room` (KSP + Room runtime/ktx/compiler + schema export), `consultme.android.test` (`com.android.test`, for benchmark modules), `consultme.android.baselineprofile` (test + `androidx.baselineprofile` + macro/uiautomator deps), `consultme.android.lint` (custom-Lint-check modules), `consultme.jvm.library` (pure Kotlin, no AGP), `consultme.kover` (coverage; auto-applied by every Android/JVM convention), `consultme.modulegraph` (root-only; registers the `:moduleGraph` task that emits `docs/MODULE_GRAPH.md` via a Strategy-pattern renderer). Shared helpers live in `build-logic/convention/src/main/kotlin/com/thecompany/consultme/buildlogic/AndroidExtensions.kt` — extend those rather than duplicating config in module scripts.
 - **Toolchain**: `jvmToolchain(17)`, JVM target 17, `freeCompilerArgs = ["-Xcontext-parameters"]` — set by the convention plugins.
-- **DI**: Hilt + KSP, applied via `consultme.android.hilt`. The convention adds `hilt-android` impl + `hilt-compiler` ksp; don't redeclare them per module.
+- **DI**: Hilt + KSP, applied via `consultme.android.hilt`. The convention adds `hilt-android` impl + `hilt-compiler` on `ksp`, `kspAndroidTest`, and `kspTest` (KSP 2.3.10+ no longer propagates the global `ksp(...)` to test variants); don't redeclare them per module.
 - **Compose**: BOM-managed via `consultme.android.compose` (Compose BOM + ui/graphics/tooling-preview/material3). The convention enables `buildFeatures.compose`. `buildConfig`, `aidl`, `renderScript`, `shaders` are turned off everywhere by the library/application conventions.
 - **SDKs**: `compileSdk = 37`, `targetSdk = 37`, `minSdk = 26` (set by the conventions).
 
@@ -60,8 +60,9 @@ All versions live in `gradle/libs.versions.toml`. Dependabot is enabled with gro
 
 Active ignore rules in `.github/dependabot.yml`, with rationale in that file and in `docs/IMPROVEMENT_PLAN.md`. Leave them alone unless doing the corresponding migration:
 
-- `com.google.devtools.ksp*` at `2.3.10` and `2.3.11`: both break androidTest KSP output (Hilt test-component codegen fails). Tracked upstream at google/ksp#3050. The list names known-broken versions only, so Dependabot still surfaces 2.3.12+.
 - `org.jetbrains.kotlin* >= 2.4.0`: Kotlin 2.4 is a coordinated kotlin + ksp + hilt migration, still blocked on KSP (no 2.4.x line), Hilt metadata, and CodeQL. Tracked in issue #185.
+
+The KSP `2.3.10`/`2.3.11` pin was lifted in #265. Those versions default `ksp.allow.all.target.configuration` to false, so the global `ksp(...)` stops reaching test variants; the fix was declaring `kspAndroidTest`/`kspTest` in `consultme.android.hilt`, not a version pin. See google/ksp#3050.
 
 The Phase 9 AGP-major and Hilt 2.59+ ignores were lifted once that migration landed. Future major-version migrations get their own dedicated-PR pin case by case.
 
