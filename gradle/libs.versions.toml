@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "9.4.0"
+androidGradlePlugin = "9.4.1"
 androidxActivity = "1.13.0"
 androidxBaselineprofile = "1.5.0-rc02"
 androidxBenchmark = "1.5.0-rc02"
@@ -19,12 +19,12 @@ espressoCore = "3.7.0"
 appcompat = "1.8.0"
 javaxInject = "1"
 kover = "0.9.9"
-spotless = "8.10.1"
+spotless = "8.10.2"
 hilt = "2.60.1"
 junit = "4.13.2"
 kotlin = "2.3.21"
 kotlinxSerialization = "1.11.0"
-ksp = "2.3.11"
+ksp = "2.3.12"
 mockk = "1.14.11" # A recent stable version of MockK
 roborazzi = "1.73.0"   # AGP 9 compatibility starts at 1.56.0 (older 1.x references the removed TestedExtension).
 robolectric = "4.16.1" # Pulled by roborazzi-compose; pinned here so adopters can override.
