@@ -131,6 +131,16 @@ jobs:
         if: matrix.language == 'java-kotlin'
         run: chmod +x ./gradlew
 
+      # CodeQL's autobuild runs a full assemble under its tracer; D8 dexing
+      # OOMs at the project's 2048m daemon heap. Raise it CI-only via the
+      # GRADLE_USER_HOME gradle.properties (which overrides the project value)
+      # so adopters/local builds keep the smaller default.
+      - name: Raise Gradle heap for CodeQL autobuild
+        if: matrix.language == 'java-kotlin'
+        run: |
+          mkdir -p "$HOME/.gradle"
+          echo 'org.gradle.jvmargs=-Xmx5g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8' >> "$HOME/.gradle/gradle.properties"
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
         with:
