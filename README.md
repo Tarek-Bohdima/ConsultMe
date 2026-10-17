@@ -66,7 +66,7 @@ The script also scrubs three template-maintainer-personal files so they don't ca
 ### Post-bootstrap steps (both options)
 
 1. **License header company name:** open `gradle.properties` and set `template.company` (consumed by the root `build.gradle.kts` Spotless config). Then run `./gradlew spotlessApply` to rewrite every header.
-2. **License file:** open `LICENSE.md` and replace `[year]` and the placeholder name with your own.
+2. **License file:** open `LICENSE` and replace the copyright year and holder (`2025 Tarek Bohdima`) with your own.
 3. **README and docs:** update the badges (CI, stars, forks) to point at your repo, and replace the project description in this file. The script intentionally skips `*.md` so it doesn't break upstream-template links.
 4. **Feature module:** replace the placeholder content in `:feature-example` (start with `ExampleScreen.kt`), and rename the module (`:feature-example` → `:feature-yourname`) once you know what you're building.
 
@@ -333,4 +333,4 @@ Scaffolded from [`Tarek-Bohdima/ConsultMe`](https://github.com/Tarek-Bohdima/Con
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
