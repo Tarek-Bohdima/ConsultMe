@@ -32,7 +32,7 @@ Performs in one pass:
   sentinel header so an adopter's own IMPROVEMENT_PLAN.md is untouched.
 
 Scope: rewrites .kt, .kts, .xml, .toml, .properties files only. README,
-CLAUDE.md, LICENSE.md, and docs/ are intentionally skipped — they contain
+CLAUDE.md, LICENSE, and docs/ are intentionally skipped — they contain
 upstream-template references (badge URLs, etc.) that adopters update by hand.
 
 Run from the repo root. Re-running with the same args is a no-op.
