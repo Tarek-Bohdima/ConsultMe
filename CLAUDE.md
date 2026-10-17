@@ -81,6 +81,7 @@ Google's official Android Claude Code skills live at <https://github.com/android
 - `jetpack-compose/migration/migrate-xml-views-to-jetpack-compose` — for adopters porting a legacy Views codebase onto the Compose template.
 - `navigation/navigation-3` — the template ships a Navigation 3 graph in `:app` (`NavDisplay` + `@Serializable` `NavKey` routes owned by features; list→detail with an assisted-inject ViewModel). Use the skill when extending it with more destinations or adaptive `NavigationSuiteScaffold` / `SceneStrategy`.
 - `jetpack-compose/adaptive` — supporting large screens / foldables (`WindowSizeClass`, list-detail / supporting-pane scaffolds). See README "How to support adaptive layouts."
+- `jetpack-compose/jetpack-compose-performance` — diagnoses recomposition / dropped-frame bottlenecks in existing Compose code (state stability, lazy-layout keys/contentType, modifier chains, effects, custom drawing). Profile release builds with R8 on and a baseline profile first; pairs with `:baselineprofile` and the perfetto skills below.
 - `profilers/perfetto-sql`, `profilers/perfetto-trace-analysis` — companions to `:baselineprofile` when investigating startup regressions.
 
 Skills are not vendored — install locally when starting the matching work. See `docs/IMPROVEMENT_PLAN.md` for phase-skill mappings.
