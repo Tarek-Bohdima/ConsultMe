@@ -70,6 +70,7 @@ Google maintains official AI-optimized skills for Android at <https://github.com
 | `jetpack-compose/migration/migrate-xml-views-to-jetpack-compose` | Porting a legacy Views codebase |
 | `navigation/navigation-3` | Extending the Nav3 graph shipped in `:app` (more destinations, adaptive `NavigationSuiteScaffold` / `SceneStrategy`) |
 | `jetpack-compose/adaptive` | Large screens / foldables (see README "How to support adaptive layouts") |
+| `jetpack-compose/jetpack-compose-performance` | Recomposition / dropped-frame bottlenecks in existing Compose code (profile release + R8 + baseline profile first) |
 | `profilers/perfetto-sql`, `profilers/perfetto-trace-analysis` | Startup regressions alongside `:baselineprofile` |
 
 Keep this list in sync with `CLAUDE.md`'s "Recommended Claude Code skills" section.
