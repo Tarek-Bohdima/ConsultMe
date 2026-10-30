@@ -25,11 +25,15 @@ on:
   schedule:
     - cron: '0 14 * * 1'  # Monday 14:00 UTC, weekly
 
-# Cancel superseded runs on the same ref so a quick follow-up commit
-# doesn't keep two CodeQL runs in flight.
+# Cancel superseded PR runs so a quick follow-up commit doesn't keep two
+# CodeQL runs in flight. Push-to-main and scheduled runs are NOT cancelled:
+# otherwise a docs-only push merged right after a code push cancels the slow
+# (~11 min) java-kotlin analysis mid-flight, and since the docs push skips
+# java-kotlin via the path filter it never re-runs, leaving the config stuck
+# on a cancelled run rendered as "CodeQL exited with errors" (#311).
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   changes:
